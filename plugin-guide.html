@@ -129,7 +129,7 @@
 
     <li><h3>모드 SDK 받아 풀기</h3>
       <p>플러그인을 굽는 데 필요한 것이 모두 든 zip 파일입니다.</p>
-      <p><strong>할 일.</strong> <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK 다운로드</a>에서 <strong>내가 쓰는 루미와 같은 판</strong>의 릴리스를 고르고, <strong>Assets</strong> 아래의 <code>LittleLUMI-ModSDK-1.3.0-…zip</code> 을 받습니다(이 가이드 기준 앱과 SDK 는 1.3.0 입니다). 탐색기에서 그 zip 을 오른쪽 단추 → <strong>압축 풀기</strong>. 푸는 자리는 <strong>한글과 빈칸이 없는 짧은 경로</strong>가 편합니다 — 아래에서는 <code>C:\LumiSDK</code> 를 쓰겠습니다.</p>
+      <p><strong>할 일.</strong> <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK 다운로드</a>에서 <strong>내가 쓰는 루미와 같은 버전</strong>의 릴리스를 고르고, <strong>Assets</strong> 아래의 <code>LittleLUMI-ModSDK-1.3.0-…zip</code> 을 받습니다(이 가이드 기준 앱과 SDK 는 1.3.0 입니다). 탐색기에서 그 zip 을 오른쪽 단추 → <strong>압축 풀기</strong>. 푸는 자리는 <strong>한글과 빈칸이 없는 짧은 경로</strong>가 편합니다 — 아래에서는 <code>C:\LumiSDK</code> 를 쓰겠습니다.</p>
       <p>다 풀면 <code>C:\LumiSDK</code> 바로 아래가 이렇게 생겼습니다.</p>
 <div class="tree">C:\LumiSDK\
 ├─ lib\                  <span class="c">← 굽기에만 쓰는 루미 jar. 이것으로 루미를 실행할 수는 없습니다</span>
@@ -140,7 +140,7 @@
 ├─ plugin-guide.html     <span class="c">← 이 문서</span>
 ├─ README.md             <span class="c">← 한 장짜리 요약</span>
 ├─ LICENSE-SDK.txt       <span class="c">← 쓰는 조건</span>
-└─ sdk.json              <span class="c">← 이 SDK 의 판 정보</span></div>
+└─ sdk.json              <span class="c">← 이 SDK 의 버전 정보</span></div>
       <p><strong>됐다는 표시.</strong> 명령 프롬프트에서 아래 두 줄을 차례로 칩니다. 위 이름들이 목록에 보이면 됩니다.</p>
 <pre><button class="copy">복사</button><code>cd C:\LumiSDK
 dir</code></pre>
@@ -151,7 +151,7 @@ dir</code></pre>
       <p><strong>할 일.</strong> 명령 프롬프트에서 아래 두 줄.</p>
 <pre><button class="copy">복사</button><code>cd C:\LumiSDK
 python tools\build_plugin.py examples\hello</code></pre>
-      <p><strong>됐다는 표시.</strong> 몇 초 뒤 <code>built:</code> 로 시작하는 줄이 나옵니다. 이 줄에 적힌 자리에 jar 파일이 만들어진 것입니다(괄호 안 숫자는 판에 따라 다를 수 있습니다).</p>
+      <p><strong>됐다는 표시.</strong> 몇 초 뒤 <code>built:</code> 로 시작하는 줄이 나옵니다. 이 줄에 적힌 자리에 jar 파일이 만들어진 것입니다(괄호 안 숫자는 버전에 따라 다를 수 있습니다).</p>
 <pre><span class="fn">이렇게 나오면 성공</span><code>built: C:\LumiSDK\dist\hello.lumi.sample\plugins\hello.lumi.sample.jar  (hello.lumi.sample, 2 source(s), 4 resource(s))
 done: copy C:\LumiSDK\dist\hello.lumi.sample into the game as mods\&lt;name&gt; and restart</code></pre>
       <p><strong>안 되면.</strong> <code>javac not found</code> 은 2번 걸음이 덜 된 것입니다 — <code>javac -version</code> 부터 다시 확인하거나, 아래처럼 자리를 직접 알려 주세요.</p>
@@ -331,7 +331,7 @@ python tools\build_plugin.py examples\hello</code></pre>
         <tr><td><code>name</code> · <code>version</code> · <code>author</code> · <code>description</code></td><td>「모드」 탭에 그대로 보입니다. 버전은 <code>1.0.0</code> 꼴.</td></tr>
         <tr><td><code>dependencies</code></td><td>먼저 실려야 하는 다른 플러그인의 id 목록. 그것이 안 실려 있으면 내 플러그인은 실리지 않고 탭에 「다른 플러그인이 필요해요」로 표시됩니다.</td></tr>
         <tr><td><code>api_version</code></td><td>이 가이드 기준 <code>1</code>.</td></tr>
-        <tr><td><code>app_version</code></td><td>동작을 확인한 앱 판. 지금 앱과 다르면 「모드」 탭에 「1.3.0용」 같은 칩이 붙습니다 — 알림일 뿐 막지 않습니다.</td></tr>
+        <tr><td><code>app_version</code></td><td>동작을 확인한 앱 버전. 지금 앱과 다르면 「모드」 탭에 「1.3.0용」 같은 칩이 붙습니다 — 알림일 뿐 막지 않습니다.</td></tr>
         <tr><td><code>affects_character</code></td><td>루미의 행동이나 대사를 바꾸면 <code>true</code>. 탭에 「행동을 바꿈」 표시가 붙습니다.</td></tr>
         <tr><td><code>network</code></td><td>인터넷을 쓰면 <code>true</code>. 탭에 「인터넷 사용」 표시가 붙습니다. 사용자에게 솔직하게 알리는 용도입니다.</td></tr>
       </table></div></li>
@@ -666,19 +666,19 @@ python tools\pack_workshop.py C:\LumiPlugins\hello-workshop</code></pre>
 
   <h2 id="sdk">모드 SDK</h2>
   <p><a href="#first">첫 플러그인</a>에서 쓴 <strong>모드 SDK</strong> 는 zip 하나입니다. 이런 것이 들어 있습니다.</p>
-<div class="tree">LittleLUMI-ModSDK-&lt;앱판&gt;-&lt;빌드&gt;\
+<div class="tree">LittleLUMI-ModSDK-&lt;앱 버전&gt;-&lt;빌드&gt;\
 ├─ lib\                    <span class="c">← 컴파일 전용 jar (루미 본체 + 라이브러리). 스팀 없이는 실행되지 않습니다</span>
 ├─ tools\build_plugin.py   <span class="c">← 플러그인 굽기 (첫 플러그인에서 쓴 그 도구)</span>
 ├─ tools\run_tests.py      <span class="c">← 내 플러그인의 test\*.java 를 굽고 돌리기 (PluginTestKit)</span>
 ├─ tools\pack_workshop.py  <span class="c">← 창작마당에 올리기 전 검사 + 걸러진 폴더와 item.vdf 밑틀</span>
-├─ docs\API.md             <span class="c">← 공개 API 참조 (API.md 한국어 · API.en.md 영어) — 안정/「실험」 표시와 「호환 정책」. CATALOG.md = 행동·이벤트·훅·설정 키 표, CHANGELOG.md = 앱 판마다 바뀐 것</span>
+├─ docs\API.md             <span class="c">← 공개 API 참조 (API.md 한국어 · API.en.md 영어) — 안정/「실험」 표시와 「호환 정책」. CATALOG.md = 행동·이벤트·훅·설정 키 표, CHANGELOG.md = 앱 버전마다 바뀐 것</span>
 ├─ docs\javadoc\ · api-src\ <span class="c">← 공개 API 의 javadoc 과 소스</span>
 ├─ plugin-guide.html       <span class="c">← 이 문서. zip 뿌리에 있습니다</span>
 ├─ examples\hello\         <span class="c">← 이벤트·설정 카드·트레이 행·변환기 뼈대 + test\ — 여기서 복사해 시작</span>
 └─ examples\plugin-transformer\  <span class="c">← java.lang.classfile 로 본체 메서드 하나 고치기 (고급)</span></div>
   <p><strong>필요한 것.</strong> JDK 25 와 파이썬 3(<a href="#prep">준비물</a>). 도구는 <code>--javac</code> → <code>JAVAC</code> → <code>JAVA_HOME</code> → PATH 순으로 <code>javac</code>를 찾습니다(<code>build_plugin.py</code>·<code>run_tests.py</code> 둘 다).</p>
-  <p><strong>어디서 받나요.</strong> <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK 다운로드</a>에서 사용하는 루미와 같은 버전의 릴리스를 고르세요. <strong>Assets</strong>에서 <code>LittleLUMI-ModSDK-</code>로 시작하는 ZIP을 받으면 됩니다. 압축을 푼 뒤 <code>lib\Shimeji-ee.jar</code>와 <code>sdk.json</code>이 있는지 확인하세요. SDK 와 본체는 같은 버전 번호를 씁니다(현재 SDK/앱 1.3.0, API 1). 문서나 예제만 다시 묶은 개정본은 버전을 유지하고, 파일 이름 끝의 빌드 표시와 <code>sdk.json</code>의 <code>commit</code>으로 구분합니다. 앱 판마다 바뀐 것은 <code>docs\CHANGELOG.md</code>에 있습니다.</p>
-  <p><strong>호환 정책.</strong> API 표의 항목은 <strong>안정</strong>과 <strong>실험</strong> 둘로 나뉩니다. 표시가 없는 항목은 안정이고, 같은 <code>api_version</code> 안에서는 더해지기만 합니다 — 없어지거나 모양이 바뀌지 않습니다. 「실험」 칩이 붙은 항목은 아직 바뀌거나 없어질 수 있고, 그럴 때는 <code>docs\CHANGELOG.md</code>에 적힙니다. <code>api_version</code>이 오르면 직전 판을 위해 만든 플러그인은 한 판 더 실립니다. 나중 판에서 더해진 문은 같은 <code>api_version</code>이라도 옛 앱에는 없으니, 검증한 앱 판을 <code>plugin.json</code>의 <code>app_version</code>에 적어 두세요. 전문은 <code>docs\API.md</code> 「호환 정책」.</p>
+  <p><strong>어디서 받나요.</strong> <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK 다운로드</a>에서 사용하는 루미와 같은 버전의 릴리스를 고르세요. <strong>Assets</strong>에서 <code>LittleLUMI-ModSDK-</code>로 시작하는 ZIP을 받으면 됩니다. 압축을 푼 뒤 <code>lib\Shimeji-ee.jar</code>와 <code>sdk.json</code>이 있는지 확인하세요. SDK 와 본체는 같은 버전 번호를 씁니다(현재 SDK/앱 1.3.0, API 1). 문서나 예제만 다시 묶은 개정본은 버전을 유지하고, 파일 이름 끝의 빌드 표시와 <code>sdk.json</code>의 <code>commit</code>으로 구분합니다. 앱 버전마다 바뀐 것은 <code>docs\CHANGELOG.md</code>에 있습니다.</p>
+  <p><strong>호환 정책.</strong> API 표의 항목은 <strong>안정</strong>과 <strong>실험</strong> 둘로 나뉩니다. 표시가 없는 항목은 안정이고, 같은 <code>api_version</code> 안에서는 더해지기만 합니다 — 없어지거나 모양이 바뀌지 않습니다. 「실험」 칩이 붙은 항목은 아직 바뀌거나 없어질 수 있고, 그럴 때는 <code>docs\CHANGELOG.md</code>에 적힙니다. <code>api_version</code>이 오르면 직전 버전을 위해 만든 플러그인은 한 버전 더 실립니다. 나중 버전에서 더해진 문은 같은 <code>api_version</code>이라도 옛 앱에는 없으니, 검증한 앱 버전을 <code>plugin.json</code>의 <code>app_version</code>에 적어 두세요. 전문은 <code>docs\API.md</code> 「호환 정책」.</p>
   <p><strong>조건 한 줄.</strong> SDK 는 루미 플러그인을 만드는 데만 쓰고 다시 배포하지 않기, 만든 모드는 무료로만 공개하기, 루미 캐릭터·그림·대사의 권리는 STUDIO LUMI 에 있음 — 전문은 zip 안 <code>LICENSE-SDK.txt</code>.</p>
   <p><strong>끝날 때.</strong> <code>stop()</code> 뒤에는 컨텍스트로 등록한 것만 루미가 거둡니다 — 직접 만든 창·작업 스레드·<code>prefs().onChange</code> 리스너는 <code>stop()</code>에서 직접 정리하세요. 해제된 컨텍스트의 <code>ask()</code>는 부른 스레드에서 바로 <code>-2</code>를 돌려주고, 잘못된 <code>every()</code> 인자(null·주기 0 이하)는 그 뒤에도 예외를 던집니다. 자세한 규약은 <code>docs\API.md</code>의 「생명주기」.</p>
   <div class="callout"><strong>판정을 바꾸고 싶다면 훅부터.</strong> 이벤트는 「일어난 뒤 알림」이고, 기능 안의 <em>판정</em>(조용히 할지, 어떤 대사를 고를지, 호감도를 얼마나 줄지)은 <a href="#hooks">훅</a>이 먼저 물어봅니다. 훅이 없는 자리만 <code>examples\plugin-transformer</code>처럼 클래스 변환기로 고치세요 — 그것은 <strong>마지막 수단</strong>입니다. 변환기가 건드리는 본체 클래스의 모양은 호환 정책 밖이라, 앱이 업데이트되어 그 메서드가 바뀌면 깨집니다. 여러 플러그인은 함께 삽니다 — 클래스패스가 모드 목록의 역순으로 붙어 <strong>아래 모드의 변환기가 먼저</strong> 등록되지만, <code>ServiceLoader</code> 의 순서는 약속이 아니니 순서에 기대지 마세요.</div>
@@ -711,7 +711,7 @@ ctx.hook("behavior.force", (hook, current, c) -&gt; "HappyHop".equals(current) &
   &lt;/BehaviorList&gt;
 &lt;/Mascot&gt;</code></pre>
   <p><strong>규칙.</strong> ① 조각은 원본과 같은 모양의 온전한 XML입니다(뿌리 <code>&lt;Mascot&gt;</code>). 목록 안의 것이 원본에 <strong>덧붙고</strong>, 같은 <code>Name</code>이 이미 있으면 <strong>그 자리에서 바뀝니다</strong>. ② 여러 모드가 같은 이름을 바꾸면 모드 목록에서 <strong>아래가 이깁니다</strong>. ③ 대사 조각은 원본 뒤에 붙어서 보이스팩 번호가 안 밀립니다. ④ 문구 조각은 파일 이름 끝의 언어(<code>_ko</code>·<code>_ja</code>·<code>_zh</code>·<code>_zh_TW</code>·<code>_en</code>)에만 적용됩니다. ⑤ 깨진 조각은 그 파일만 건너뛰고 로그에 한 줄 남습니다. 합친 결과가 엔진 검사에 걸리면 루미는 조각 없이 다시 읽습니다 — 캐릭터가 사라지는 일은 없습니다. ⑥ 조각은 모드 탭 「겹침」에 안 셉니다.</p>
-  <p><strong>판 표기.</strong> 모드 폴더 맨 위의 <code>mod.json</code>(플러그인이면 <code>plugin.json</code>)에 <code>version</code>과 <code>app_version</code>을 적어 두면 모드 탭 줄에 <code>v1.0.0</code> 칩이 붙고, 지금 루미 판과 다르면 「〈그 판〉용」 칩으로 알려 줍니다(막지는 않습니다).</p>
+  <p><strong>버전 표기.</strong> 모드 폴더 맨 위의 <code>mod.json</code>(플러그인이면 <code>plugin.json</code>)에 <code>version</code>과 <code>app_version</code>을 적어 두면 모드 탭 줄에 <code>v1.0.0</code> 칩이 붙고, 지금 루미 버전과 다르면 「〈그 버전〉용」 칩으로 알려 줍니다(막지는 않습니다).</p>
 
   <h2 id="trouble">안 될 때</h2>
   <div class="tw"><table>

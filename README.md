@@ -22,7 +22,7 @@
 | `tools\` | 굽기·검사·창작마당 준비 스크립트 |
 | `examples\` | 그대로 구워 볼 수 있는 본보기 둘 |
 | `docs\` | API 참조 · 이름 카탈로그 · 변경 이력 · javadoc |
-| `sdk.json` | 이 배포본의 판번호와, 이 앱이 주는 훅·이벤트 목록 |
+| `sdk.json` | 이 배포본의 버전 번호와, 이 앱이 주는 훅·이벤트 목록 |
 | `LICENSE-SDK.txt` | 이용 조건 |
 
 ## 처음이라면
@@ -50,15 +50,15 @@ Copy-Item -Recurse dist\hello.lumi.sample "<설치 폴더>\mods\hello.lumi.sampl
 | [plugin-guide.html](plugin-guide.html) | 첫걸음 — 아무것도 모르는 상태에서 시작 |
 | [docs/API.md](docs/API.md) | 할 수 있는 것 전부 |
 | [docs/CATALOG.md](docs/CATALOG.md) | 행동·이벤트·훅·설정 키의 이름 찾기 |
-| [docs/CHANGELOG.md](docs/CHANGELOG.md) | 판마다 바뀐 것 |
+| [docs/CHANGELOG.md](docs/CHANGELOG.md) | 버전마다 바뀐 것 |
 | `examples\` | 본보기 둘 — 인사 플러그인과 바이트코드 변환기 |
 | `tools\` | 굽기·검사, 그리고 창작마당에 올리기 전 확인 |
 
 ## 알아 둘 것
 
-- **SDK 판은 앱 판과 같습니다.** 쓰시는 루미와 같은 판의 SDK 를 고르세요.
+- **SDK 버전은 앱 버전과 같습니다.** 쓰시는 루미와 같은 버전의 SDK 를 고르세요.
 - `lib\Shimeji-ee.jar` 는 **컴파일 전용**입니다. 스팀 배포판 그대로라 SDK 만으로는 앱이 뜨지 않습니다 — 확인은 구매한 설치본에서 하세요.
 - 플러그인은 앱과 **같은 권한으로 앱 안에서** 돕니다(샌드박스 없음). 나눠 줄 때 받는 분께 그렇게 알려 주세요.
 - 이용 조건은 [LICENSE-SDK.txt](LICENSE-SDK.txt) 에 있습니다.
 
-앱이 새 판으로 올라갈 때 무엇이 그대로 남고 무엇이 바뀔 수 있는지는 [API.md 「호환 약속」](docs/API.md#compatibility)에 적혀 있습니다.
+앱이 새 버전으로 올라갈 때 무엇이 그대로 남고 무엇이 바뀔 수 있는지는 [API.md 「호환 약속」](docs/API.md#compatibility)에 적혀 있습니다.

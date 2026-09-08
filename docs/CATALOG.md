@@ -219,7 +219,7 @@
 
 ## 5. 앱 설정 키 — `ctx.setting(key, fallback)` (읽기만)
 
-● = `Preferences.KEYS`(스팀 클라우드에 오르는 취향 값, `conf\preferences.properties` 에도 사본). 나머지는 앱이 `conf\settings.properties` 에 실제로 읽고 쓰는 키입니다 — 앱 소스에서 설정 저장소(`LumiSettings`)를 지나는 자리에서만 모았습니다. 값은 전부 문자열이고 앱 판마다 늘 수 있으며, 표에 실렸다고 고정 계약이 되지는 않습니다.
+● = `Preferences.KEYS`(스팀 클라우드에 오르는 취향 값, `conf\preferences.properties` 에도 사본). 나머지는 앱이 `conf\settings.properties` 에 실제로 읽고 쓰는 키입니다 — 앱 소스에서 설정 저장소(`LumiSettings`)를 지나는 자리에서만 모았습니다. 값은 전부 문자열이고 앱 버전마다 늘 수 있으며, 표에 실렸다고 고정 계약이 되지는 않습니다.
 
 대응하는 공개 조회 메서드가 없을 때만 `ctx.setting(key, fallback)` 으로 읽고 없는 경우를 처리하세요 — 언어는 `language()`, 활성 셋은 `activeImageSets()`, 기능은 `featureEnabled(id)` 입니다. **플러그인은 앱 키를 쓰지 않습니다** — 제 것은 `ctx.prefs()` 에 둡니다.
 
