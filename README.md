@@ -5,7 +5,7 @@
 
 > **이 저장소는 읽을 것만 담고 있습니다.** 문서·예제·도구·공개 API 소스입니다.
 > **플러그인을 만들려면 [Releases](https://github.com/studio-lumi-h/little-lumi-sdk/releases)에서 ZIP 을 받으세요** — 컴파일에 필요한
-> `lib/` 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 판은 **1.3.0** 입니다.
+> `lib/` 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 **1.3.0** 입니다.
 
 ---
 
