@@ -1,0 +1,93 @@
+Little LUMI Model — Mod SDK
+
+This SDK exists so that owners of Little LUMI Model can build plugins for it.
+It contains (a) compiled jars of the app and its libraries, provided for
+COMPILING plugins only, (b) a build tool and example plugins, (c) the API
+reference (docs/: the public API source files, their javadoc, the guide, the catalogue).
+
+========================================
+Little LUMI 모드 SDK 이용 조건
+========================================
+
+1. 이 SDK(소스·jar·도구·예제)는 Little LUMI 용 모드를 만드는 목적에만 쓸 수 있습니다.
+2. SDK 자체를 다시 배포하거나, 이 SDK 로 Little LUMI 를 대체·우회하는 실행물을 만드는 것은
+   금지합니다.
+3. 만든 모드는 스팀 창작마당이나 다른 곳에 무료로 공개할 수 있습니다. 모드를 판매하거나
+   유료 접근 뒤에 두는 것은 금지합니다.
+4. 모드에 SDK 의 소스나 jar 가 포함되어도 됩니다. 단 그 안의 루미 캐릭터·이름·그림·대사에
+   대한 권리는 STUDIO LUMI 에 있습니다.
+4-2. 루미의 그림·대사를 바탕으로 한 파생물(의상·표정·포즈·이미지셋·대사 조각 등)은
+   Little LUMI 안에서 쓰는 모드로 만들어 3항의 조건(무료 공개)으로 창작마당이나 다른 곳에
+   공개할 수 있습니다. 그 파생물을 Little LUMI 밖의 다른 제품·상품·굿즈에 쓰는 것, 그리고
+   루미의 이름·모습을 성적·혐오·정치적 표현이나 STUDIO LUMI 를 사칭하는 데 쓰는 것은
+   별도 허락 없이는 금지합니다.
+5. 모드가 일으킨 문제에 대해 STUDIO LUMI 는 책임지지 않으며, 모드 제작자가 책임집니다.
+   사용자 개인정보를 다루는 모드는 그 사실을 설명에 밝혀야 합니다.
+6. 스톡 엔진(Shimeji-ee)에서 온 부분은 원래 라이선스를 따릅니다(docs/licenses/THIRD_PARTY_LICENSES.txt 참조).
+7. 이 조건은 예고 후 바뀔 수 있으며, 바뀐 뒤 받은 SDK 부터 적용됩니다.
+
+========================================
+Little LUMI Mod SDK — Terms of Use
+========================================
+
+1. This SDK (sources, jars, tools, examples) may be used only to make mods for
+   Little LUMI.
+2. Redistributing the SDK itself, or using it to build anything that replaces
+   or bypasses Little LUMI, is not allowed.
+3. Mods you make may be published for free on the Steam Workshop or elsewhere.
+   Selling a mod, or putting it behind a paywall, is not allowed.
+4. A mod may include sources or jars from this SDK. The rights to the Lumi
+   character, name, artwork and lines inside them remain with STUDIO LUMI.
+4-2. Derivative works of Lumi's artwork and lines (costumes, expressions, poses,
+   image sets, line fragments and the like) may be made as mods used inside
+   Little LUMI and published under clause 3 (free of charge) on the Steam
+   Workshop or elsewhere. Using such derivatives in other products, merchandise
+   or goods outside Little LUMI, or using Lumi's name or likeness for sexual,
+   hateful or political expression or to impersonate STUDIO LUMI, is not allowed
+   without separate permission.
+5. STUDIO LUMI is not liable for problems caused by a mod; the mod's author is.
+   A mod that handles personal data must say so in its description.
+6. Parts that come from the stock engine (Shimeji-ee) keep their original
+   licences (see docs/licenses/THIRD_PARTY_LICENSES.txt).
+7. These terms may change with notice; the change applies to SDKs downloaded
+   after it.
+
+Where the terms above and the licence notices below overlap, the terms above
+apply to this SDK.
+
+--------
+
+1. Examples and tools (examples/, tools/) and documents (docs/, including the
+   API source files under docs/api-src/)
+   These are "Little LUMI Model additions" in the sense of docs/licenses/APP-LICENSE.txt of the
+   app; the New BSD notice reproduced below (part B of that file) accompanies
+   them, subject to the terms above. Files derived from the stock Shimeji-Desktop engine keep their
+   upstream licences (Shimeji zlib/libpng, Shimeji-ee New BSD) — the full
+   texts are included in this SDK at docs/licenses/APP-LICENSE.txt.
+
+2. Compiled jars (lib/)
+   lib/Shimeji-ee.jar is the app's own build output, made available here so
+   that a plugin compiles against the exact classes the app ships. They are the Steam build: the ownership gate inside them refuses to
+   start without Steam, so the SDK is not a runnable copy of the app. Redistribute
+   them only as part of this SDK. The third-party jars in lib/ carry their own
+   licences (see docs/licenses/THIRD_PARTY_LICENSES.txt).
+
+3. Not included on purpose
+   The character artwork, sprites, persona texts, configuration and the bundled
+   runtime are NOT part of this SDK. They are covered by part A of the app's
+   LICENSE.txt (reproduced at docs/licenses/APP-LICENSE.txt; all rights reserved, STUDIO LUMI) and stay inside the purchased
+   installation. A mod may reference them by name; it may not copy them.
+
+--------
+
+Little LUMI Model additions — Copyright (c) 2026 STUDIO LUMI
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of STUDIO LUMI nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

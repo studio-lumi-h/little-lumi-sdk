@@ -1,0 +1,6 @@
+# 빌드 산출물은 Releases 로 나갑니다 — 저장소에는 두지 않습니다.
+lib/
+docs/javadoc/
+dist/
+__pycache__/
+*.pyc

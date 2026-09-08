@@ -1,0 +1,24 @@
+{
+  "id": "hello.lumi.sample",
+  "name": "Hello LUMI (sample plugin)",
+  "version": "1.0.0",
+  "author": "Little LUMI team",
+  "description": "Says hello once the app is up, logs every behaviour change and answers two hooks. Copy this folder to start your own plugin.",
+  "dependencies": [],
+  "api_version": 1,
+  "app_version": "1.3.0",
+  "affects_character": false,
+  "network": false,
+  "hooks": ["focus.quiet", "speech.greeting"],
+  "settings": [
+    { "key": "greet", "type": "bool", "default": true,
+      "label": { "ko": "시작할 때 인사하기", "en": "Greet when the app is up", "ja": "起動時にあいさつ", "zh": "启动时打招呼", "zh_TW": "啟動時打招呼" } },
+    { "key": "mood", "type": "choice", "default": "calm",
+      "label": { "ko": "인사 말투", "en": "Greeting mood" },
+      "hint": { "ko": "트레이 줄 「Hello LUMI: 인사하기」의 말투예요.", "en": "The mood of the tray row 「Hello LUMI: say hi」." },
+      "options": [
+        { "value": "calm", "label": { "ko": "차분하게", "en": "Calm" } },
+        { "value": "loud", "label": { "ko": "신나게", "en": "Loud" } }
+      ] }
+  ]
+}

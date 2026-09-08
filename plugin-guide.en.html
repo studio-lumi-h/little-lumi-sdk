@@ -1,0 +1,772 @@
+<title>Little LUMI plugins — first steps</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f3f5f9; --paper: #ffffff; --ink: #1b2440; --ink-2: #4a5470; --ink-3: #7d869e;
+    --line: #d7dce8; --navy: #24356b; --navy-soft: #e4e9f7; --go: #2f8f83; --go-soft: #dff1ee;
+    --warn: #b8741f; --warn-soft: #fbeed8; --code-bg: #1e2540; --code-ink: #e8ecf7; --code-inline: #e9edf5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #10152a; --paper: #171d35; --ink: #e6e9f3; --ink-2: #b4bbd0; --ink-3: #8089a6;
+      --line: #2c3556; --navy: #9fb1ea; --navy-soft: #23305b; --go: #6fd0c2; --go-soft: #173b39;
+      --warn: #f0b76a; --warn-soft: #3e2e14; --code-bg: #0c1020; --code-ink: #dfe4f3; --code-inline: #222a47;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #10152a; --paper: #171d35; --ink: #e6e9f3; --ink-2: #b4bbd0; --ink-3: #8089a6;
+    --line: #2c3556; --navy: #9fb1ea; --navy-soft: #23305b; --go: #6fd0c2; --go-soft: #173b39;
+    --warn: #f0b76a; --warn-soft: #3e2e14; --code-bg: #0c1020; --code-ink: #dfe4f3; --code-inline: #222a47;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--ink); font-family: "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif; font-size: 15.5px; line-height: 1.75; margin: 0; }
+  .wrap { display: grid; grid-template-columns: 15rem minmax(0, 46rem); gap: 3rem; max-width: 66rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+  nav.toc { position: sticky; top: 1.5rem; align-self: start; font-size: .85rem; }
+  nav.toc .t { font-family: "Jua", sans-serif; font-size: 1rem; color: var(--navy); margin-bottom: .5rem; }
+  nav.toc a { display: block; color: var(--ink-2); text-decoration: none; padding: .18rem 0 .18rem .6rem; border-left: 2px solid var(--line); }
+  nav.toc a:hover, nav.toc a:focus { color: var(--navy); border-left-color: var(--navy); outline: none; }
+  h1, h2, h3, h4 { font-family: "Jua", "Noto Sans KR", sans-serif; font-weight: 400; text-wrap: balance; color: var(--ink); }
+  h1 { font-size: 2.5rem; line-height: 1.15; margin: 0 0 .4rem; }
+  h2 { font-size: 1.5rem; margin: 3rem 0 .8rem; padding-top: 1.2rem; border-top: 2px solid var(--navy); }
+  h3 { font-size: 1.12rem; margin: 1.8rem 0 .4rem; color: var(--navy); }
+  p { margin: 0 0 .9rem; }
+  .lede { color: var(--ink-2); font-size: 1.08rem; margin-bottom: 1rem; }
+  .eyebrow { font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 .6rem; }
+  .meta { font-size: .85rem; color: var(--ink-3); border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.2rem; display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; }
+  code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: .86em; background: var(--code-inline); padding: .05em .35em; border-radius: 3px; }
+  pre { position: relative; background: var(--code-bg); color: var(--code-ink); padding: .95rem 1rem; border-radius: 8px; overflow-x: auto; line-height: 1.55; margin: .5rem 0 1.1rem; font-family: "IBM Plex Mono", Consolas, monospace; font-size: .84rem; }
+  pre code { background: none; padding: 0; font-size: 1em; color: inherit; }
+  pre .fn { display: block; color: #9fb1ea; font-size: .78rem; margin-bottom: .5rem; letter-spacing: .04em; }
+  pre button.copy { position: absolute; top: .55rem; right: .6rem; font: 500 .72rem "Noto Sans KR", sans-serif; background: rgba(255,255,255,.12); color: var(--code-ink); border: 1px solid rgba(255,255,255,.25); border-radius: 4px; padding: .15rem .55rem; cursor: pointer; }
+  pre button.copy:hover, pre button.copy:focus { background: rgba(255,255,255,.22); outline: none; }
+  ul, ol { padding-left: 1.3rem; margin: 0 0 1rem; }
+  li { margin-bottom: .35rem; }
+  li::marker { color: var(--ink-3); }
+  strong { font-weight: 700; }
+  .callout { border-left: 4px solid var(--go); background: var(--go-soft); padding: .7rem 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+  .callout .k { font-family: "Jua", sans-serif; font-size: .95rem; margin-right: .4rem; }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0 0 1rem; }
+  .steps > li { counter-increment: s; position: relative; padding: 1rem 1.1rem 1rem 3.4rem; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; margin-bottom: .8rem; }
+  .steps > li::before { content: counter(s); position: absolute; left: 1rem; top: .9rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--navy); color: #fff; font-family: "Jua", sans-serif; font-size: 1rem; display: grid; place-items: center; }
+  .steps h3 { margin: 0 0 .4rem; color: var(--ink); font-size: 1.1rem; }
+  .tw { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; margin: .4rem 0 1.1rem; }
+  th, td { text-align: left; vertical-align: top; padding: .5rem .6rem; border-bottom: 1px solid var(--line); }
+  th { font-weight: 500; color: var(--ink-3); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  td code { white-space: nowrap; }
+  .tree { font-family: "IBM Plex Mono", Consolas, monospace; font-size: .86rem; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: .8rem 1rem; white-space: pre; overflow-x: auto; margin: .4rem 0 1rem; line-height: 1.6; }
+  .tree .c { color: var(--ink-3); }
+  .glossary dt { font-weight: 700; margin-top: .6rem; }
+  .glossary dd { margin: 0 0 .2rem; color: var(--ink-2); }
+  .muted { color: var(--ink-3); font-size: .85rem; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; gap: 1.5rem; } nav.toc { position: static; } h1 { font-size: 2rem; } }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <div class="t">Contents</div>
+  <a href="#zero">Step 0 — starting from nothing</a>
+  <a href="#ai">Building it with an AI tool</a>
+  <a href="#intro">What a plugin is</a>
+  <a href="#prep">What you need</a>
+  <a href="#first">Your first plugin</a>
+  <a href="#api">What you can do</a>
+  <a href="#examples">Examples</a>
+  <a href="#behaviors">Finding behaviour names</a>
+  <a href="#rules">Rules and cautions</a>
+  <a href="#share">Sharing it</a>
+  <a href="#sdk">The Mod SDK</a>
+  <a href="#hooks">Changing decisions with hooks</a>
+  <a href="#fragments">Data mods go in fragments</a>
+  <a href="#trouble">When it does not work</a>
+  <a href="#glossary">Glossary</a>
+</nav>
+
+<main>
+  <p class="eyebrow">Little LUMI Model · Plugin guide</p>
+  <h1>Little LUMI plugins — first steps</h1>
+  <p class="lede">It is fine if you have never written code. Follow this page from the top and within thirty minutes Lumi will be saying the words you gave her.</p>
+  <div class="meta"><span>Plugin API version 1</span><span>Java 25</span><span>Windows</span><span>App 1.3.0</span><span><a href="plugin-guide.html">한국어</a></span></div>
+
+  <h2 id="zero">Step 0 — starting from nothing</h2>
+  <p>This section is for <strong>someone who has never programmed</strong>. You do not need to know what a command prompt is, or what "compile" means. Click and type what is written below and you will be done in thirty minutes. If you already use a command prompt, skip this section and start at <a href="#prep">What you need</a>.</p>
+  <p><strong>What you will do today.</strong> A plugin is a small program that adds something to Lumi. Today you will not write code — you will take an <strong>example plugin</strong> that is already written and shipped inside the SDK, build it, put it into Lumi, and have Lumi greet you on startup. At the very end you will change that one greeting line. That is the whole skeleton of making a plugin; every other section is just that one line getting longer.</p>
+  <p><strong>What you need.</strong> A Windows PC, Little LUMI Model bought on Steam, and an internet connection. You will install two new programs (JDK 25 and Python 3). Both are free, and neither touches anything but Lumi.</p>
+  <div class="callout"><span class="k">How to read this</span> Take the eight steps below in order. Each one has <strong>what to do</strong> · <strong>what success looks like</strong> · <strong>if it does not work</strong>. If you cannot see "what success looks like", do not move on — read "if it does not work" right where you are. Carrying an unfinished step forward makes the error messages in the later steps impossible to understand.</div>
+
+  <ol class="steps">
+    <li><h3>Opening a command prompt</h3>
+      <p>The commands in this guide are typed into a black window called the <strong>command prompt</strong>. It is the window where you give the computer work in writing.</p>
+      <p><strong>What to do.</strong> Press the <strong>Windows key</strong> (the one with the window on it), type <code>cmd</code>, and press <strong>Enter</strong>. A black window appears.</p>
+      <p><strong>What success looks like.</strong> The window holds a line like <code>C:\Users\yourname&gt;</code> with a cursor blinking after it. That line is called the <strong>prompt</strong>: type one line there, press Enter, and that command runs. Try this one — if a list of the files in the current folder scrolls past, the window is working.</p>
+<pre><button class="copy">Copy</button><code>dir</code></pre>
+      <p><strong>Four things you must know.</strong></p>
+      <ul>
+        <li><strong>Change folder with <code>cd</code>.</strong> Type <code>cd C:\LumiSDK</code> and the prompt line becomes <code>C:\LumiSDK&gt;</code>. Commands after that run inside that folder. To move to another drive, type just the drive letter first, like <code>D:</code>, and press Enter.</li>
+        <li><strong>Wrap a path that has spaces in double quotes.</strong> <code>cd "C:\Program Files (x86)\Steam"</code> — leave the quotes out and it cuts at the space and says "The system cannot find the path specified."</li>
+        <li><strong>Paste with the right mouse button.</strong> Press the <strong>Copy</strong> button at the top right of a code box on this page, then click once with the right mouse button inside the black window and it lands there (<code>Ctrl+V</code> works too). Do not retype commands by hand — typos are most of what goes wrong.</li>
+        <li><strong>To close the window</strong> type <code>exit</code> or press the X at its top right. Closing the window does not undo what you have done.</li>
+      </ul>
+      <p><strong>If it does not work.</strong> If pressing the Windows key opens no search box, click the Start button at the bottom of the screen with the mouse and type <code>command prompt</code>. If the window opens but every command answers "is not recognized as an internal or external command", that is still normal — you have not installed anything yet. The next step installs it.</p></li>
+
+    <li><h3>Install JDK 25 — the tool that builds Java code</h3>
+      <p>Plugins are written in Java. Turning Java code a person can read into a <code>jar</code> file a computer can read is called <strong>building (compiling)</strong>, and the tool for it is the <strong>JDK</strong>. Lumi carries a Java of its own, but that one only runs code; it cannot build it.</p>
+      <p><strong>What to do.</strong> Go to <a href="https://adoptium.net/">adoptium.net</a> and pick <strong>Temurin 25</strong> · <strong>Windows</strong> · <strong>x64</strong> · <strong>JDK</strong> · <strong>.msi</strong> (JDK, not JRE). Double-click the downloaded file to install it. On the <strong>Custom Setup</strong> screen that appears while you click "Next", click the icons on the two lines <strong>"Set JAVA_HOME variable"</strong> and <strong>"Add to PATH"</strong> and change them to <strong>"Will be installed on local hard drive"</strong>. They are off by default (marked with an X), and skipping past them means the commands will not work later.</p>
+      <p><strong>What success looks like.</strong> When the install finishes, <strong>close the command prompt and open a new one</strong> (the settings only apply to new windows). Then type this.</p>
+<pre><button class="copy">Copy</button><code>javac -version</code></pre>
+<pre><span class="fn">this means it worked (the trailing digits may differ)</span><code>javac 25.0.4</code></pre>
+      <p><strong>If it does not work.</strong> "'javac' is not recognized as an internal or external command, operable program or batch file" has three causes. ① You did not open a new command prompt — close the window and open it again. ② You did not switch the two options on during the install — run the <code>.msi</code> again, choose <strong>Change</strong>, and switch them on. ③ You downloaded the JRE instead of the JDK — download again. If the number comes out lower than 25, like <code>javac 21</code>, an older Java is being found first; install 25 and check again.</p></li>
+
+    <li><h3>Install Python 3 — the tool that does the building for you</h3>
+      <p>The SDK's build tool (<code>build_plugin.py</code>) and test tool (<code>run_tests.py</code>) are written in Python. You will never write Python; it is only needed to run those tools.</p>
+      <p><strong>What to do.</strong> On <a href="https://www.python.org/downloads/">python.org/downloads</a> press the yellow <strong>"Download Python 3.x"</strong> button. Double-click the downloaded file: at the <strong>very bottom</strong> of the first screen there is a checkbox <strong>"Add python.exe to PATH"</strong>. <strong>Switch it on</strong> and press "Install Now".</p>
+      <p><strong>What success looks like.</strong> Close the command prompt, open a new one again, and type this.</p>
+<pre><button class="copy">Copy</button><code>python --version</code></pre>
+<pre><span class="fn">this means it worked</span><code>Python 3.13.5</code></pre>
+      <p><strong>If it does not work.</strong> If a Microsoft Store window opens or you get "Python was not found", it is not installed yet. Windows carries a <strong>stub that opens the Store</strong> under the name <code>python</code> even before Python is installed. Run the install again, with "Add python.exe to PATH" switched on. If you definitely installed it and the Store still opens, go to <strong>Settings → Apps → Advanced app settings → App execution aliases</strong>, switch off <code>python.exe</code> and <code>python3.exe</code>, and open a new command prompt.</p></li>
+
+    <li><h3>Download and unpack the Mod SDK</h3>
+      <p>It is a zip file holding everything you need to build a plugin.</p>
+      <p><strong>What to do.</strong> On the <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK downloads</a> page pick the release of <strong>the same version as the Lumi you run</strong>, and under <strong>Assets</strong> download <code>LittleLUMI-ModSDK-1.3.0-…zip</code> (as of this guide the app and the SDK are both 1.3.0). In Explorer, right-click the zip → <strong>Extract All</strong>. A <strong>short path with no spaces and no non-English characters</strong> is easiest — below we will use <code>C:\LumiSDK</code>.</p>
+      <p>When it is unpacked, <code>C:\LumiSDK</code> looks like this at the top level.</p>
+<div class="tree">C:\LumiSDK\
+├─ lib\                  <span class="c">← the Lumi jars, for building only. You cannot run Lumi with these</span>
+├─ tools\                <span class="c">← build_plugin.py (build) · run_tests.py (test without the app) · pack_workshop.py (check before a Workshop upload)</span>
+├─ docs\                 <span class="c">← API.en.md (what you can do) · CATALOG.en.md (the identifiers) · CHANGELOG.md</span>
+├─ examples\hello\       <span class="c">← the example plugin you will use today</span>
+├─ examples\plugin-transformer\  <span class="c">← an advanced example. Not used today</span>
+├─ plugin-guide.en.html  <span class="c">← this document</span>
+├─ README.en.md          <span class="c">← the one-page summary</span>
+├─ LICENSE-SDK.txt       <span class="c">← the terms of use</span>
+└─ sdk.json              <span class="c">← the version information for this SDK</span></div>
+      <p><strong>What success looks like.</strong> Type these two lines in the command prompt, one after the other. The names above should appear in the listing.</p>
+<pre><button class="copy">Copy</button><code>cd C:\LumiSDK
+dir</code></pre>
+      <p><strong>If it does not work.</strong> If the listing shows a single <code>LittleLUMI-ModSDK-…</code> folder instead of <code>lib</code> · <code>tools</code>, everything sits one level deeper. Either drag the contents of that folder up into <code>C:\LumiSDK</code>, or <code>cd</code> into that folder from now on. If <code>lib\Shimeji-ee.jar</code> is missing, the zip was not fully extracted — extract it again.</p></li>
+
+    <li><h3>Build the example — your first command</h3>
+      <p>Now you build. All you do is hand the example folder <code>examples\hello</code> to the tool.</p>
+      <p><strong>What to do.</strong> These two lines in the command prompt.</p>
+<pre><button class="copy">Copy</button><code>cd C:\LumiSDK
+python tools\build_plugin.py examples\hello</code></pre>
+      <p><strong>What success looks like.</strong> After a few seconds a line starting with <code>built:</code> appears. The jar has been created at the place that line names (the numbers in brackets may differ from version to version).</p>
+<pre><span class="fn">this means it worked</span><code>built: C:\LumiSDK\dist\hello.lumi.sample\plugins\hello.lumi.sample.jar  (hello.lumi.sample, 2 source(s), 4 resource(s))
+done: copy C:\LumiSDK\dist\hello.lumi.sample into the game as mods\&lt;name&gt; and restart</code></pre>
+      <p><strong>If it does not work.</strong> <code>javac not found</code> means step 2 is unfinished — check <code>javac -version</code> again, or point at it directly like this.</p>
+<pre><button class="copy">Copy</button><code>python tools\build_plugin.py examples\hello --javac "C:\Program Files\Eclipse Adoptium\jdk-25.0.4.7-hotspot\bin\javac.exe"</code></pre>
+      <p>If the Store window opens, step 3 is unfinished. <code>plugin.json missing: …</code> means you typed the folder name wrong — check the spelling of <code>examples\hello</code>. <code>can't open file …build_plugin.py</code> means you typed it somewhere other than <code>C:\LumiSDK</code> — start again from <code>cd</code>.</p></li>
+
+    <li><h3>Put it into Lumi and check</h3>
+      <p>Installing means putting the built jar into Lumi's <code>mods\</code> folder. Copying is all there is; there is no installer to run.</p>
+      <p><strong>What to do ① close Lumi.</strong> Press the <strong>^</strong> next to the clock at the bottom right to open the tray, right-click the Lumi icon and choose <strong>Quit</strong>. While Lumi is running its files are locked and the copy is refused.</p>
+      <p><strong>What to do ② open the Lumi folder.</strong> In the Steam library, right-click Little LUMI Model → <strong>Manage</strong> → <strong>Browse local files</strong>. That is the window where you can see the <code>mods\</code> folder.</p>
+      <p><strong>What to do ③ copy.</strong> Open a second Explorer window and go to <code>C:\LumiSDK\dist</code>. Drag <strong>the whole <code>hello.lumi.sample</code> folder</strong> into the <code>mods\</code> folder of the Lumi folder. The result must look like this.</p>
+<div class="tree">&lt;LUMI folder&gt;\mods\
+└─ hello.lumi.sample\
+    └─ plugins\
+        └─ hello.lumi.sample.jar</div>
+      <p><strong>What to do ④ run it.</strong> Start Lumi again from Steam (plugins are read once, at startup).</p>
+      <p><strong>What success looks like.</strong> Any one of these three is enough.</p>
+      <ul>
+        <li>Lumi appears and a moment later her bubble says <strong>"Luba! (plugin)"</strong>. If the app language is Korean it is 「루바! (플러그인)」.</li>
+        <li>If you missed the greeting, right-click the Lumi icon in the tray. A new row <strong>"Hello LUMI: say hi"</strong> is there, and pressing it makes Lumi say a line.</li>
+        <li>Tray → <strong>Settings</strong> → the <strong>Mods tab</strong> shows a <code>hello.lumi.sample</code> row with a <strong>"plugin"</strong> chip. Press <strong>Details</strong> on that row and the two settings the example declares ("Greet when the app is up" · "Greeting mood") are drawn right inside Lumi's own window.</li>
+      </ul>
+      <p><strong>If it does not work.</strong> If the Mods tab has no row at all, you put the jar directly under <code>mods\</code> — a row appears for each <strong>folder</strong> under <code>mods\</code>, and loose files are ignored. If the row is there but carries a <strong>"files" chip instead of "plugin"</strong>, the folder depth is wrong; check that the jar sits inside <code>mods\hello.lumi.sample\plugins\</code>. If the row is there and says "could not be loaded", open <code>&lt;LUMI folder&gt;\app\LittleLumiLog0.log.0</code> in Notepad and look for lines containing <code>Plugin</code>. A table by symptom is in <a href="#trouble">When it does not work</a>.</p></li>
+
+    <li><h3>Change one line</h3>
+      <p>Now make the greeting yours. You are not editing Java code, just one line of a text file.</p>
+      <p><strong>What to do ①.</strong> Open <code>C:\LumiSDK\examples\hello\src\plugin_en.properties</code> in Notepad or <a href="https://code.visualstudio.com/">VS Code</a>. It has a line like this.</p>
+<pre><span class="fn">examples\hello\src\plugin_en.properties</span><code>greeting=Luba! (plugin)</code></pre>
+      <p>Change only what is to the right of <code>=</code>, and <strong>save as UTF-8</strong> (in Notepad, pick UTF-8 under "Encoding" at the bottom of the save dialog).</p>
+<pre><span class="fn">after the edit</span><code>greeting=This is my own greeting</code></pre>
+      <p><strong>What to do ②.</strong> <strong>Quit Lumi.</strong> While it runs the jar is locked and overwriting is refused — forgetting this is the most common cause of "I changed it and nothing changed".</p>
+      <p><strong>What to do ③.</strong> Build again and overwrite the new jar in the same place as before.</p>
+<pre><button class="copy">Copy</button><code>cd C:\LumiSDK
+python tools\build_plugin.py examples\hello</code></pre>
+      <p>Copy <code>C:\LumiSDK\dist\hello.lumi.sample\plugins\hello.lumi.sample.jar</code> to <code>&lt;LUMI folder&gt;\mods\hello.lumi.sample\plugins\</code> and choose "Replace". If copying every time is tiresome, add <code>--out</code> to the build command and it will build straight into that place.</p>
+<pre><button class="copy">Copy</button><code>python tools\build_plugin.py examples\hello --out "&lt;LUMI folder&gt;\mods\hello.lumi.sample\plugins"</code></pre>
+      <p><strong>What to do ④.</strong> Start Lumi again.</p>
+      <p><strong>What success looks like.</strong> The bubble shows the new words you wrote.</p>
+      <p><strong>If it does not work.</strong> If the old words are still there, either ① you overwrote without quitting Lumi and the copy silently failed, ② you did not save the file before building, or ③ you copied it into a different folder. If the letters come out as <code>???</code> or broken symbols, you did not save as UTF-8 — save again and build again.</p></li>
+
+    <li><h3>Where to go from here</h3>
+      <p>Well done. You have gone once round the loop of build · install · change. However big the plugins you make get, that loop stays the same. Read on in this order.</p>
+      <ul>
+        <li><a href="#intro">What a plugin is</a> — what it was that you just did.</li>
+        <li><a href="#first">Your first plugin</a> — building <strong>your own folder</strong> from scratch instead of an example. The quick way is to copy the whole <code>examples\hello</code> folder, rename it to <code>my-plugin</code>, change the <code>id</code> and <code>name</code> in its <code>plugin.json</code> to yours, and type <code>python tools\build_plugin.py my-plugin</code>.</li>
+        <li><a href="#api">What you can do</a> · <a href="#examples">Examples</a> — speaking, behaviours, timers, menus, settings rows.</li>
+        <li><a href="#hooks">Changing decisions with hooks</a> · <a href="#fragments">Data mods go in fragments</a> — reaching into Lumi's decisions and data.</li>
+        <li><a href="#share">Sharing it</a> — when it is done, put it on the Workshop.</li>
+        <li><a href="#trouble">When it does not work</a> · <a href="#glossary">Glossary</a> — whenever you get stuck.</li>
+      </ul></li>
+  </ol>
+
+  <h2 id="ai">Building it with an AI tool</h2>
+  <p>Even without knowing Java you can have a <strong>coding assistant AI</strong> such as Claude Code or Codex build a plugin for you. One thing must be clear, though. <strong>The AI writes the code, but handing it to other people is your responsibility.</strong> A plugin runs inside the same program as Lumi with your account's rights, and the people who install it are trusting you. Do not release code you do not understand.</p>
+  <p>Even when the AI does the work, steps 2, 3 and 4 of <a href="#zero">Step 0</a> (JDK 25 · Python 3 · unpacking the SDK) have to be done by a person first. AI tools usually will not install those for you.</p>
+
+  <h3>What to hand it</h3>
+  <ul>
+    <li>With a <strong>tool that can see a whole folder</strong> (the kind that runs in a command prompt), the best thing is to open <code>C:\LumiSDK</code> as its working folder. Then the AI reads the docs and examples itself, and can run the build and test commands on its own.</li>
+    <li>With a <strong>tool where you only paste text</strong>, give it these four: <code>docs\API.en.md</code> (everything you can do) · <code>docs\CATALOG.en.md</code> (the names of behaviours, events, hooks and settings keys) · <code>examples\hello\plugin.json</code> · <code>examples\hello\src\hello\HelloPlugin.java</code>. If the docs are too long to fit, at least include <code>docs\API.en.md</code> — without it the AI invents methods that do not exist.</li>
+  </ul>
+
+  <h3>A first prompt to paste</h3>
+  <p>Copy the text below as it is and replace only the <code>&lt;…&gt;</code> part with your own words. The constraints listed are the ones that actually go wrong most often.</p>
+<pre><button class="copy">Copy</button><span class="fn">a first prompt for the AI</span><code>I want to make a plugin for Little LUMI Model. The working folder is this Mod SDK folder.
+
+First read docs\API.en.md and docs\CATALOG.en.md, and use examples\hello as the model.
+
+What to make: &lt;one or two sentences about what you want. For example: every 30 minutes Lumi
+suggests a stretch, and she stays quiet while Focus Mode is on&gt;
+
+Rules to follow:
+- It is compiled with JDK 25. Java 25 syntax is fine.
+- Make a new folder my-plugin with the same structure as examples\hello:
+  plugin.json (at the top of the folder) / src\&lt;package&gt;\*.java /
+  src\META-INF\services\com.group_finity.mascot.lumi.plugin.LumiPlugin
+- That services file holds one line: the full name of the entry class (e.g. my.plugin.MyPlugin).
+  It is not the file where the plugin.json id goes.
+- The id in plugin.json uses only lower-case letters, digits, dots, hyphens and underscores,
+  and starts with a lower-case letter or a digit. api_version is 1 and app_version is 1.3.0.
+  The id becomes the data folder name, so do not change it later.
+- Reach app features only through PluginContext (ctx). Do not call app classes that are not in
+  docs\API.en.md, and do not go digging with reflection.
+- If you need to change a decision the app makes, answer it with ctx.hook(...). Do not use
+  bytecode transformation (ctx.patch · ctx.onLoad · LumiTransformer).
+- Never block a promise the user made themselves (alarms, an errand they pressed for).
+- Keep my settings in ctx.prefs(). Do not store passwords or API keys.
+  If it uses the internet, set network to true in plugin.json.
+- Put at least one test in test\*.java using PluginTestKit.
+- Build with python tools\build_plugin.py my-plugin, test with python tools\run_tests.py my-plugin.
+  Keep fixing until both commands pass.
+- Do not invent things. Use only the methods, event topics, hook names and behaviour names that
+  are in docs\API.en.md and docs\CATALOG.en.md, and if something you need is not in the docs, say so.</code></pre>
+
+  <h3>The checks a person has to do</h3>
+  <p>The AI saying "it is all done" is not a check. Do these five with your own hands.</p>
+  <ol>
+    <li><strong>It builds.</strong> <code>python tools\build_plugin.py my-plugin</code> must end with a <code>built: …</code> line. If error text is mixed in, it is not done yet.</li>
+    <li><strong>The tests pass.</strong> <code>python tools\run_tests.py my-plugin</code> must end with <code>OK: N test class(es) passed</code>. If you see <code>FAILED:</code>, hand that line back to the AI as it is.</li>
+    <li><strong>It really works in the app.</strong> Quit Lumi, put the jar into <code>mods\&lt;name&gt;\plugins\</code>, start it again, and see it with your own eyes. The AI cannot start Lumi, so this is the one step it cannot do for you.</li>
+    <li><strong>The log is clean.</strong> Open <code>&lt;LUMI folder&gt;\app\LittleLumiLog0.log.0</code> and look for your id. <code>Plugin loaded: &lt;your id&gt;</code> must be there, with no <code>start() failed</code> and no warning line carrying your id.</li>
+    <li><strong>You read the code once.</strong> Check that nothing deletes files or sends them out, and that <code>network</code> and <code>affects_character</code> in <code>plugin.json</code> match what it actually does. If there is code reading another plugin's folder (<code>plugindata\&lt;someone else's id&gt;\</code>), delete it. If you cannot judge, read <a href="#rules">Rules and cautions</a> and use that as your measure.</li>
+  </ol>
+  <div class="callout warn"><span class="k">Careful</span> AI invents plausible-sounding methods and hook names that do not exist. If the code has a <code>ctx.</code> call you have not seen before, look that name up in <code>docs\API.en.md</code>. If it is not there, it will either fail to build or — worse — build fine and then do nothing at all in the app.</div>
+
+  <h2 id="intro">What a plugin is</h2>
+  <p>There are two kinds of mod for Little LUMI.</p>
+  <ul>
+    <li><strong>Data mods</strong> — changing artwork, lines and behaviour configuration files. No code is needed; you put files into the <code>mods\</code> folder and that is it. How to do it is in <code>mods\Mods Guide.txt</code> in the install folder.</li>
+    <li><strong>Plugins</strong> — running a small program (Java code) inside Lumi. That is what this page is about. It can make Lumi speak, make her act, listen to what she is doing, run timers, and read and write files. Nearly anything the Lumi app can do, it can do.</li>
+  </ul>
+  <p>One plugin is <strong>one jar file</strong>. Inside it are the code you wrote and a <code>plugin.json</code> saying "this is who the plugin is and what it does". At startup Lumi reads every jar in the <code>plugins\</code> folders and shows what got loaded on the <strong>Mods tab</strong> of the settings window.</p>
+  <div class="callout"><span class="k">The flow</span> Make a folder → write three files → build with two lines of command → put it in <code>mods\</code> → run Lumi. That is all of it.</div>
+
+  <h2 id="prep">What you need</h2>
+  <ol class="steps">
+    <li><h3>Install JDK 25</h3>
+      <p>To build Java code into a jar you need the JDK (Java Development Kit). The one inside Lumi only runs code (a JRE) and cannot build. Download <strong>Temurin 25 (Windows x64, .msi)</strong> from <a href="https://adoptium.net/">adoptium.net</a> and install it. Switching on "Set JAVA_HOME" and "Add to PATH" on the install screen makes life easier.</p>
+      <p>To check it installed: open the <strong>command prompt</strong> from the Start menu and type this.</p>
+<pre><button class="copy">Copy</button><code>javac -version</code></pre>
+      <p>Something like <code>javac 25.x.x</code> means you are ready. "is not recognized as an internal or external command" means the PATH option was not switched on. Install again, or open a new command prompt.</p></li>
+    <li><h3>Install Python 3</h3>
+      <p>The SDK's build tool (<code>build_plugin.py</code>) and test tool (<code>run_tests.py</code>) are written in Python. Download <strong>Python 3</strong> from <a href="https://www.python.org/downloads/">python.org</a> and install it, and be sure to switch on "Add python.exe to PATH" on the first screen of the installer.</p>
+      <p>To check: open a new command prompt and type this.</p>
+<pre><button class="copy">Copy</button><code>python --version</code></pre>
+      <p>Something like <code>Python 3.x.x</code> means you are ready. Windows has a command called <code>python</code> even before Python is installed, but it is a <strong>stub that opens the Microsoft Store</strong> — if a Store window opens or you get "Python was not found", it is not installed yet.</p></li>
+    <li><h3>Get the Mod SDK</h3>
+      <p>Plugins are built with the <strong>Mod SDK</strong> — the Lumi jars to compile against, the build tool, the examples and the API docs, all in one zip (see <a href="#sdk">The Mod SDK</a>). Download it and unpack it anywhere. For example <code>C:\LumiSDK</code>. Below we call it <code>&lt;SDK folder&gt;</code>.</p></li>
+    <li><h3>A text editor</h3>
+      <p>Notepad will do, but <a href="https://code.visualstudio.com/">VS Code</a> (free) is better. It saves files as UTF-8 and colours Java syntax for you. If you use Notepad, pick <strong>UTF-8</strong> as the encoding when you save.</p></li>
+    <li><h3>Find the Lumi install folder</h3>
+      <p>In the Steam library, right-click Little LUMI Model → Manage → <strong>Browse local files</strong>. The folder that opens looks like this.</p>
+<div class="tree">Little LUMI Model\
+├─ Little LUMI.exe      <span class="c">← the executable</span>
+├─ mods\                <span class="c">← where mods and plugins go</span>
+│   └─ Mods Guide.txt
+└─ app\                 <span class="c">← Lumi itself</span>
+    ├─ Shimeji-ee.jar   <span class="c">← the Lumi jar (the same one is in the SDK's lib\)</span>
+    ├─ lib\             <span class="c">← the libraries Lumi uses</span>
+    ├─ plugindata\      <span class="c">← each plugin's own data folder (plugindata\&lt;id&gt;\). A mod's jar is read straight from mods\</span>
+    └─ LittleLumiLog0.log.0  <span class="c">← the log. Start here when something goes wrong</span></div>
+      <p>Copy that folder's address somewhere. Below we call it <code>&lt;LUMI folder&gt;</code>. For example: <code>C:\Program Files (x86)\Steam\steamapps\common\Little LUMI Model</code></p></li>
+  </ol>
+
+  <h2 id="first">Your first plugin</h2>
+  <p>A plugin that says "Hi! I'm your first plugin" when Lumi appears, says two lines in turn when you double-click her, and writes a log line every time she changes behaviour. You make three files and type one command.</p>
+  <ol class="steps">
+    <li><h3>Make the folder</h3>
+      <p>Anywhere will do. For example <code>C:\LumiPlugins\hello</code>. Inside it, make folders and files in this shape.</p>
+<div class="tree">C:\LumiPlugins\hello\
+├─ plugin.json                              <span class="c">← the name tag (at the top of the plugin folder)</span>
+└─ src\
+    ├─ hello\
+    │   └─ HelloPlugin.java                 <span class="c">← the code</span>
+    └─ META-INF\
+        └─ services\
+            └─ com.group_finity.mascot.lumi.plugin.LumiPlugin   <span class="c">← a file with no extension. The entry point's name</span></div>
+      <p>The SDK's <code>examples\hello\</code> is exactly this shape. You can copy that whole folder and just rename it to start.</p>
+      <div class="callout warn"><span class="k">Careful</span> The last file <strong>has no extension</strong>. When you save it from Notepad, wrap the name in double quotes as <code>"com.group_finity.mascot.lumi.plugin.LumiPlugin"</code> and no <code>.txt</code> will be added. Switching on "File name extensions" in Windows Explorer makes this easy to verify.</div></li>
+
+    <li><h3>plugin.json — the name tag</h3>
+      <p>Write this in the <code>plugin.json</code> at the top of the plugin folder. The <code>id</code> has to be unique in the world, so name it like <strong>yournick.pluginname</strong>. Only lower-case letters, digits, dots, hyphens and underscores are allowed.</p>
+<pre><button class="copy">Copy</button><span class="fn">plugin.json</span><code>{
+  "id": "mynick.hello",
+  "name": "Hello LUMI",
+  "version": "1.0.0",
+  "author": "my nickname",
+  "description": "Greets you when Lumi appears, and logs every behaviour change.",
+  "dependencies": [],
+  "api_version": 1,
+  "app_version": "1.3.0",
+  "affects_character": false,
+  "network": false
+}</code></pre>
+      <div class="tw"><table>
+        <tr><th>Field</th><th>What it means</th></tr>
+        <tr><td><code>id</code></td><td>The unique name. It is also used as the data folder name and the jar name. Changing it later makes it a different plugin, so choose well the first time.</td></tr>
+        <tr><td><code>name</code> · <code>version</code> · <code>author</code> · <code>description</code></td><td>Shown as they are on the Mods tab. The version is in the <code>1.0.0</code> shape.</td></tr>
+        <tr><td><code>dependencies</code></td><td>The ids of other plugins that must load first. If one of them is not loaded, your plugin does not load either and the tab shows "needs another plugin".</td></tr>
+        <tr><td><code>api_version</code></td><td><code>1</code> as of this guide.</td></tr>
+        <tr><td><code>app_version</code></td><td>The app version you tested against. When the running app differs, the Mods tab shows a chip such as "made for 1.3.0" — information only, it never blocks.</td></tr>
+        <tr><td><code>affects_character</code></td><td><code>true</code> if it changes Lumi's behaviour or her lines. The tab marks it "changes behaviour".</td></tr>
+        <tr><td><code>network</code></td><td><code>true</code> if it uses the internet. The tab marks it "uses the internet". It is there to tell the user honestly.</td></tr>
+      </table></div></li>
+
+    <li><h3>HelloPlugin.java — the code</h3>
+      <p><code>src\hello\HelloPlugin.java</code>. Copy it as it is even if some of the words are new. They are unpacked one by one in <a href="#api">What you can do</a> below.</p>
+<pre><button class="copy">Copy</button><span class="fn">src\hello\HelloPlugin.java</span><code>package hello;
+
+import com.group_finity.mascot.lumi.plugin.LumiPlugin;
+import com.group_finity.mascot.lumi.plugin.PluginContext;
+
+public final class HelloPlugin implements LumiPlugin {
+
+    @Override
+    public void start(PluginContext ctx) {
+        // "ready" comes once, after Lumi and the engine are fully up. Greet then.
+        ctx.on("ready", event -&gt; ctx.say("Hi! I'm your first plugin", 4000));
+
+        // Double-clicking Lumi says two lines in turn. sayQueued shows the next one after the first ends.
+        ctx.on("doubleclick", event -&gt; {
+            ctx.sayQueued("Did you call?", 2500);
+            ctx.sayQueued("I'm right here!", 2500);
+        });
+
+        // Comes every time Lumi changes behaviour. Leaves one line in the log file.
+        ctx.on("behavior", event -&gt;
+                ctx.log().info(event.get("imageSet") + " started " + event.get("name")));
+    }
+
+    @Override
+    public void stop() {
+        // Called when Lumi shuts down. Anything to tidy up goes here.
+    }
+}</code></pre></li>
+
+    <li><h3>The entry point file</h3>
+      <p><code>src\META-INF\services\com.group_finity.mascot.lumi.plugin.LumiPlugin</code> holds exactly one line: the full name of your class. That file is how Lumi knows which class to wake.</p>
+<pre><button class="copy">Copy</button><span class="fn">src\META-INF\services\com.group_finity.mascot.lumi.plugin.LumiPlugin</span><code>hello.HelloPlugin</code></pre></li>
+
+    <li><h3>Build — one line of command</h3>
+      <p>Open a command prompt, go to <code>&lt;SDK folder&gt;</code> and type one line. It compiles against the SDK's <code>lib\</code> and packs the jar with <code>plugin.json</code> and the entry point file included.</p>
+<pre><button class="copy">Copy</button><code>cd &lt;SDK folder&gt;
+python tools\build_plugin.py C:\LumiPlugins\hello</code></pre>
+      <p>A line <code>built: …\dist\mynick.hello\plugins\mynick.hello.jar</code> means it worked. The jar name follows the <code>id</code> in <code>plugin.json</code>. If red text appears, see <a href="#trouble">When it does not work</a>.</p>
+      <div class="callout"><span class="k">Tip</span> With <code>--out</code> you can build straight into the Lumi folder: <code>python tools\build_plugin.py C:\LumiPlugins\hello --out "&lt;LUMI folder&gt;\mods\hello\plugins"</code>. If <code>javac</code> is not on the PATH, point at it like <code>--javac "C:\Program Files\Eclipse Adoptium\jdk-25…\bin\javac.exe"</code>. If typing it every time is tiresome, save the line as <code>build.bat</code> and double-click it.</div>
+      <details><summary>Building by hand, without the tools</summary>
+        <p>The JDK's <code>javac</code> and <code>jar</code> alone are enough. From the plugin folder, with <code>&lt;LUMI folder&gt;</code> replaced by yours, two lines:</p>
+<pre><button class="copy">Copy</button><code>javac --release 25 -encoding UTF-8 -cp "&lt;LUMI folder&gt;\app\Shimeji-ee.jar;&lt;LUMI folder&gt;\app\lib\*" -d out src\hello\HelloPlugin.java
+jar --create --file mynick.hello.jar -C out . plugin.json -C src META-INF</code></pre>
+        <p>The only difference is compiling against the install folder's jar instead of the SDK's; the jar that comes out is the same.</p>
+      </details></li>
+
+    <li><h3>Install it</h3>
+      <p>Make your mod folder under Lumi's <code>mods\</code> and put the jar in the <code>plugins\</code> inside it. If you used <code>--out</code> while building, it is already there.</p>
+<div class="tree">&lt;LUMI folder&gt;\mods\
+└─ hello\
+    └─ plugins\
+        └─ mynick.hello.jar</div>
+      <p>Every time it starts, Lumi lays the folders in <code>mods\</code> over <code>app\</code> (data such as artwork and configuration). Jars in <code>plugins\</code> are not copied; they are read straight from the mod folder. Even if Steam verifies the files and puts them back, the next run lays it over again, so there is nothing to worry about.</p></li>
+
+    <li><h3>Run it and check</h3>
+      <p>If Lumi is already up, quit from the tray and start again (plugins are read only at startup). If Lumi appears and a moment later her bubble says "Hi! I'm your first plugin", that is it! Click her twice quickly and "Did you call?" "I'm right here!" follow one after the other.</p>
+      <p>Two places to check:</p>
+      <ul>
+        <li>Right-click the tray → Settings → the <strong>Mods tab</strong>. Your mod's card is there. Press "Details" and the plugin's state appears, with the reason written there if there is a problem.</li>
+        <li><code>&lt;LUMI folder&gt;\app\LittleLumiLog0.log.0</code>. Open it in Notepad and look for <code>Plugin loaded: mynick.hello</code>. Click Lumi to make her change behaviour and the log lines you wrote pile up too.</li>
+      </ul></li>
+  </ol>
+
+  <h2 id="api">What you can do</h2>
+  <p>The <code>ctx</code> (<code>PluginContext</code>) you get in <code>start()</code> is the door through to Lumi. <strong>The tables in this section do not separate stable entries from experimental ones</strong> — a fair share of the doors listed below are still "experimental", so they may change or disappear even within the same <code>api_version</code>. Which is which is in the table in <code>docs\API.en.md</code> (the "experimental" chip after the name) and in §8 "Compatibility policy". The full list with exact arguments is in the Mod SDK's <code>docs\API.en.md</code> §3, and the identifiers (behaviours, events, hooks, settings keys) are in <code>docs\CATALOG.en.md</code>.</p>
+
+  <h3>Speaking</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.say("line", 4000)</code></td><td>Shows text in the bubble of the character who last spoke. The second number is milliseconds (4000 = 4 seconds; 0 or less means the default length). A line already showing is replaced at once.</td></tr>
+    <tr><td><code>ctx.sayFor("Lumi", "line", 4000)</code></td><td>Makes a particular character (by image set folder name) speak.</td></tr>
+    <tr><td><code>ctx.sayQueued("line", 3000)</code> · <code>ctx.sayQueuedFor("Lumi", "line", 3000)</code></td><td><strong>Queue it.</strong> It comes in turn after the current line goes down (up to 20 lines). Use this for lines that have an order, such as Pomodoro announcements. <code>ctx.clearQueue()</code> empties your own queue and <code>ctx.queueLength()</code> is the total number waiting.</td></tr>
+    <tr><td><code>ctx.ask("question", List.of("Rock", "Paper", "Scissors"), 10000, i -&gt; …)</code> · <code>ctx.askFor("Lumi", …)</code></td><td><strong>A bubble with choices.</strong> Two to four buttons appear below the question. When the user picks one, <code>i</code> gets its number (from 0). <code>-1</code> means it appeared but got no answer (timed out, Esc, the character went away); <code>-2</code> means the app took it back — a question already showing can be taken back too (you called a new <code>ask</code> that replaced it · <code>clearQueue()</code> · it waited too long in the queue · the queue is full). Only one bubble shows at a time and <strong>another plugin's question waits its turn</strong> — your new question replaces only your own old one and never pushes anyone else's aside. The time limit (third argument) counts <em>from the moment it appears</em>, and the longest it may wait in the queue is given as a fourth argument before the callback (<code>ctx.ask("question", options, 10000, 5000, i -&gt; …)</code>; 30 seconds if you leave it out). The answer also goes out as a <code>choice</code> event.</td></tr>
+    <tr><td><code>ctx.hideBubble()</code> · <code>ctx.showBusy("Lumi")</code></td><td>Take the bubble down · show the "···" thinking mark (the next line replaces it).</td></tr>
+  </table></div>
+
+  <h3>Behaviour</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.behave("HappyHop")</code> · <code>ctx.behaveFor("Lumi", "SitDown")</code></td><td>Makes every character / one particular character do a behaviour. For the names see <a href="#behaviors">Finding behaviour names</a>.</td></tr>
+    <tr><td><code>ctx.currentBehavior()</code> · <code>ctx.currentBehavior("Lumi")</code></td><td>Returns the name of the behaviour running now.</td></tr>
+    <tr><td><code>ctx.behaviorNames("Lumi")</code></td><td>Every behaviour name that character knows. Good for building a menu automatically.</td></tr>
+  </table></div>
+
+  <h3>Reading state</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.mascots()</code></td><td>Every character currently up. Each one is a <code>MascotState</code> — <code>id</code>, <code>imageSet</code>, <code>bounds</code> (the screen rectangle), <code>anchor</code> (the feet coordinates), <code>lookRight</code> (is she facing right), <code>behavior</code> (the current behaviour). It is a copy of one moment, so read it again a moment later.</td></tr>
+    <tr><td><code>ctx.mascot("Lumi")</code> · <code>ctx.mascotById(id)</code> · <code>ctx.mascotAt(point)</code></td><td>Picking just one — the first of that character · by the <code>mascotId</code> in an event · the one at that spot on screen. <code>null</code> if there is none.</td></tr>
+    <tr><td><code>ctx.affectionTier()</code> · <code>affectionProgressPercent()</code> · <code>affectionPointsUntilNextTier()</code> · <code>daysTogether()</code></td><td>The affection tier · the percentage towards the next tier · the points left · the days together.</td></tr>
+    <tr><td><code>ctx.affectionTodayRemaining(null)</code></td><td>How many affection points your plugin may still award today (see <code>awardAffection</code> below).</td></tr>
+    <tr><td><code>ctx.focusActive()</code> · <code>focusSources()</code> · <code>screenBusy()</code></td><td>Is Focus Mode on · by which route (<code>manual</code> · <code>pomodoro</code> · <code>auto</code>) · is the screen busy (a fullscreen app and so on).</td></tr>
+    <tr><td><code>ctx.bubbleVisible()</code> · <code>ctx.charactersHidden()</code></td><td>Is a bubble showing · are the characters hidden ("Hide for now").</td></tr>
+    <tr><td><code>ctx.language()</code></td><td>Lumi's UI language — one of <code>ko</code> · <code>en</code> · <code>ja</code> · <code>zh-CN</code> · <code>zh-TW</code>.</td></tr>
+    <tr><td><code>ctx.installedImageSets()</code> · <code>ctx.activeImageSets()</code></td><td>The installed character folder names · the ones switched on now.</td></tr>
+    <tr><td><code>ctx.screens()</code></td><td>The monitor rectangles. Same coordinates as <code>MascotState.bounds</code>.</td></tr>
+  </table></div>
+
+  <h3>Handling characters</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.summon("Lumi")</code> · <code>ctx.dismiss(id)</code></td><td>Call another one (only characters that are switched on; returns the new one's id) · send that one away.</td></tr>
+    <tr><td><code>ctx.moveTo(id, x, y)</code></td><td>Moves the feet to screen coordinates. If that is mid-air, she falls from there.</td></tr>
+    <tr><td><code>ctx.setCharactersVisible(false)</code></td><td>Hide them all / bring them back — the same switch as "Hide for now".</td></tr>
+    <tr><td><code>ctx.awardAffection("quest", 1)</code></td><td>Awards affection directly (a gift, a quest reward). It goes through <strong>the same door</strong> as the points Lumi gives by herself, and is capped at <strong>2 points a day per plugin</strong> — because affection tiers are tied to Steam achievements, and this stops one mod farming them. Returns the points that actually went in.</td></tr>
+    <tr><td><code>ctx.heart("Lumi")</code> · <code>ctx.playSound("img/Lumi/sound/jump.wav")</code></td><td>A heart effect above her head · one sound effect. The path is relative to the Lumi folder — the app's sound effects are under <code>img\&lt;set&gt;\sound\</code>, and a <code>.wav</code> you put in your own mod folder works too (<code>false</code> if the user has muted).</td></tr>
+  </table></div>
+
+  <h3>Listening and asking</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.on("topic", event -&gt; …)</code> · <code>ctx.off(…)</code></td><td>Registers to be told when something happens in Lumi. The topics are in the table below. Listeners run on <strong>a thread of your plugin's own</strong>.</td></tr>
+    <tr><td><code>ctx.hook("focus.quiet", (hook, current, c) -&gt; …)</code></td><td>Answers at a place where Lumi asks <strong>before deciding</strong>. See <a href="#hooks">Changing decisions with hooks</a>.</td></tr>
+    <tr><td><code>ctx.publish("score", "value", 10)</code></td><td>An event <strong>between plugins</strong>. Your id is put in front of the topic, so it goes out as <code>mynick.hello.score</code> and another plugin listens with <code>ctx.on("mynick.hello.score", …)</code>. The payload carries <code>from</code> (your id).</td></tr>
+    <tr><td><code>ctx.claimClickGreeting()</code></td><td>"I will handle the click greeting" — Lumi's built-in click greeting goes quiet.</td></tr>
+  </table></div>
+
+  <h3>Your settings, strings and folder</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.prefs()</code></td><td>Your own settings store (<code>plugindata\&lt;id&gt;\settings.properties</code>). <code>get</code> · <code>getInt</code> · <code>getBoolean(key, default)</code>, <code>set(key, value)</code> (saved at once), <code>onChange((key, value) -&gt; …)</code>. Keep all your values here — it is a plain-text file, so do not put secrets such as API keys in it. A failed save is logged rather than thrown. Lumi does not collect <code>onChange</code> listeners, so remove them yourself in <code>stop()</code> with <code>removeOnChange</code>.</td></tr>
+    <tr><td><code>"settings": [ … ]</code> in <code>plugin.json</code></td><td><strong>Declare</strong> settings rows and the Mods tab draws them, in Lumi's theme and Lumi's language, inside "Details" on your plugin's row — checkbox (<code>bool</code>), slider (<code>int</code>), text (<code>string</code>), pick (<code>choice</code>), hotkey (<code>hotkey</code>). When the user changes one it is saved to <code>ctx.prefs()</code> at once and <code>onChange</code> arrives. Labels can be per language, like <code>{"ko": "…", "en": "…"}</code>. The exact shape is in <code>docs\API.en.md</code> §1.</td></tr>
+    <tr><td><code>ctx.setting("key", "default")</code></td><td><strong>Reads only</strong> a setting value of Lumi itself (the keys you may read are in <code>docs\CATALOG.en.md</code> §5). Do not change app keys — your own go in <code>prefs()</code>.</td></tr>
+    <tr><td><code>ctx.text("key", "default")</code></td><td>Your plugin's strings in five languages. Put <code>plugin_ko.properties</code> · <code>plugin_en.properties</code> (and ja · zh · zh_TW · the base <code>plugin.properties</code>) at the root of your jar and it picks by Lumi's language. If there is none: <code>en</code> → the base file → Lumi's bundle → the default. <code>ctx.text("key", "default", value1)</code> fills in <code>{0}</code>.</td></tr>
+    <tr><td><code>ctx.localized("SpeechGreeting", "Hi")</code></td><td>Fetches one of Lumi's own five-language strings in the current language.</td></tr>
+    <tr><td><code>ctx.dataDir()</code></td><td>A folder for your plugin alone (<code>app\plugindata\&lt;id&gt;\</code>). Big files go here.</td></tr>
+    <tr><td><code>ctx.log().info("…")</code> · <code>ctx.id()</code> · <code>ctx.descriptor()</code></td><td>One line into Lumi's log file · your id · the contents of plugin.json.</td></tr>
+  </table></div>
+
+  <h3>Menus and hotkeys</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.addTrayItem("name", () -&gt; …)</code> → a handle</td><td>Adds a row to the tray menu. Pressing it closes the menu and runs your function. The <strong>handle</strong> you get back (<code>MenuHandle</code>) gives you <code>setLabel</code> · <code>setEnabled</code> · <code>setChecked</code> · <code>remove</code> — use it for a row whose text changes, like "Focus Mode: On", and ignore it for a row that never changes.</td></tr>
+    <tr><td><code>ctx.addTrayToggle("name", initial, on -&gt; …)</code></td><td>A toggle row with an "On/Off" chip. Each press flips it and hands you the new value.</td></tr>
+    <tr><td><code>ctx.addCharacterMenuItem("name", set -&gt; condition, (set, id) -&gt; …)</code> · <code>addCharacterMenuToggle</code></td><td>Adds a row to the character right-click menu. The second argument decides which characters it shows for. Handles and toggles work as in the tray. For complex settings such as entering an API key, open <em>your own window</em> from here or from a tray row, and put the button that clears your data in that window too.</td></tr>
+    <tr><td><code>ctx.bindHotkey("open", "Ctrl+Alt+L", () -&gt; …)</code> → <code>HotkeyResult</code> · <code>unbindHotkey("open")</code></td><td>A <strong>global hotkey</strong> that is heard even when another program is in front. It needs at least one modifier key, and the <code>HotkeyResult</code> you get back (<code>OK</code> · <code>NONE</code> (an empty combination = unbind) · <code>BAD_COMBINATION</code> · <code>REFUSED</code> · <code>UNSUPPORTED</code>) tells you why it did not take. For a field where the user picks a combination there are <code>hotkeyFromKeyEvent</code> and <code>normalizeHotkey</code>.</td></tr>
+  </table></div>
+
+  <h3>Timers and threads</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.every(first, period, () -&gt; …)</code> · <code>ctx.after(ms, () -&gt; …)</code></td><td>Timers. They run on a thread Lumi holds and are cut off by themselves when the app ends — you do not need to make a <code>Timer</code>. Stop one with <code>cancel()</code> on the <code>ScheduledHandle</code> you get back. An exception does not stop the following rounds.</td></tr>
+    <tr><td><code>ctx.onEdt(() -&gt; …)</code> · <code>ctx.offEdt(() -&gt; …)</code></td><td>Use <code>onEdt</code> (the Swing thread) when touching windows and menus, and <code>offEdt</code> (your plugin's thread) for anything slow.</td></tr>
+  </table></div>
+  <div class="callout"><span class="k">Lumi tidies up</span> Once <code>stop()</code> returns, Lumi collects the event listeners, hooks, hotkeys, menu rows and timers you registered through the context, all at once. File handles, worker threads you made yourself and <code>prefs().onChange</code> listeners are unknown to Lumi — close those yourself in <code>stop()</code>.</div>
+
+  <h3>Testing without the app</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>PluginTestKit.start(Path.of("plugin.json"))</code></td><td>Runs your plugin without starting Lumi. Call <code>start()</code> with the <code>kit.context()</code> the kit gives you and what it did is recorded (<code>kit.calls("say")</code>, <code>kit.lastCall("say")</code>); feed events in with <code>kit.publish("ready")</code>, ask hooks with <code>kit.ask("focus.quiet", false)</code>, answer choices with <code>kit.answerChoice(1)</code>, and turn the clock with <code>kit.tick(ms)</code>. State such as characters, affection and language is dressed with <code>kit.mascots(…)</code> · <code>kit.affection(…)</code> · <code>kit.language("en")</code>.</td></tr>
+    <tr><td><code>python tools\run_tests.py my-plugin</code></td><td>A Mod SDK tool. It builds the <code>test\*.java</code> in your plugin folder and runs them one by one. The example is the SDK's <code>examples\hello\test\</code>.</td></tr>
+  </table></div>
+
+  <h3>Advanced — bytecode</h3>
+  <div class="tw"><table>
+    <tr><th>How to call it</th><th>What it does</th></tr>
+    <tr><td><code>ctx.patch(className, transformer)</code></td><td>Changes an already-loaded Lumi class while it runs (method bodies only — a JVM rule). See <a href="#rules">Rules and cautions</a>.</td></tr>
+    <tr><td><code>ctx.onLoad("prefix", transformer)</code></td><td>Rewrites the whole bytecode of a class that is <strong>not loaded yet</strong> as it loads (adding methods and fields too). Engine classes load after plugins start, so most of them are caught here.</td></tr>
+    <tr><td>The <code>LumiTransformer</code> service</td><td>The earliest door. Put <code>META-INF/services/com.group_finity.mascot.lumi.plugin.LumiTransformer</code> in your jar and it is registered right after the Steam gate, before the app loads, so it can see <em>every</em> class. The sample's <code>HelloTransformer</code> is that shape. ASM is inside Lumi (<code>lib\asm-*.jar</code>).</td></tr>
+  </table></div>
+
+  <h3>Event topics</h3>
+  <p>The <code>event</code> in <code>ctx.on(...)</code> is a <code>Map&lt;String, Object&gt;</code>. You take things out with <code>event.get("name")</code>. Every key with an example of a real value is in the Mod SDK's <code>docs\API.en.md</code> §4.</p>
+  <div class="tw"><table>
+    <tr><th>Topic</th><th>When</th><th>What is in it</th></tr>
+    <tr><td><code>ready</code></td><td>Once, right after Lumi and the engine are up and the plugins have started</td><td>nothing</td></tr>
+    <tr><td><code>behavior</code></td><td>Every time any character changes behaviour</td><td><code>imageSet</code>, <code>name</code>, <code>mascotId</code></td></tr>
+    <tr><td><code>bubble</code></td><td>Every time text appears in a bubble</td><td><code>imageSet</code>, <code>mascotId</code> (absent for <code>choice</code>), <code>text</code> (the text actually shown), <code>ms</code>, <code>kind</code> (<code>say</code>/<code>private</code>/<code>choice</code>)</td></tr>
+    <tr><td><code>choice</code></td><td>When a choice bubble gets an answer</td><td><code>imageSet</code>, <code>mascotId</code>, <code>index</code> (-1 = appeared but no answer: timed out, Esc, the character went away; -2 = the app took it back), <code>option</code>, <code>from</code> (the plugin that asked)</td></tr>
+    <tr><td><code>click</code></td><td>When a mouse button is pressed on a character</td><td><code>imageSet</code>, <code>mascotId</code>, <code>button</code> (<code>left</code>/<code>right</code>/<code>middle</code>), <code>x</code>, <code>y</code></td></tr>
+    <tr><td><code>doubleclick</code></td><td>When the same character is pressed twice quickly (Lumi counts them)</td><td><code>imageSet</code>, <code>mascotId</code>, <code>x</code>, <code>y</code></td></tr>
+    <tr><td><code>hover</code></td><td>When the mouse enters or leaves a character</td><td><code>phase</code> (<code>enter</code>/<code>exit</code>), <code>imageSet</code>, <code>mascotId</code></td></tr>
+    <tr><td><code>drag</code></td><td>When a character is picked up or put down</td><td><code>phase</code> (<code>start</code>/<code>end</code>), <code>imageSet</code>, <code>mascotId</code>, <code>x</code>, <code>y</code></td></tr>
+    <tr><td><code>throw</code></td><td>When she is thrown, and when that flight ends</td><td><code>phase</code> (<code>thrown</code>/<code>landed</code>), <code>imageSet</code>, <code>mascotId</code>, <code>x</code>, <code>y</code>, <code>next</code> (the behaviour after landing)</td></tr>
+    <tr><td><code>mascot</code></td><td>When a character appears or goes away</td><td><code>imageSet</code>, <code>mascotId</code>, <code>event</code> (<code>added</code>/<code>removed</code>)</td></tr>
+    <tr><td><code>headpat</code></td><td>When a head pat starts</td><td><code>behavior</code></td></tr>
+    <tr><td><code>affection</code></td><td>When the affection tier changes</td><td><code>tier</code>, <code>previous</code>, <code>points</code></td></tr>
+    <tr><td><code>achievement</code></td><td>When an achievement is unlocked</td><td><code>id</code></td></tr>
+    <tr><td><code>focus</code></td><td>When Focus Mode goes on or off</td><td><code>active</code> (true/false)</td></tr>
+    <tr><td><code>pomodoro</code></td><td>When the focus/break cycle turns over</td><td><code>phase</code> (<code>focus</code>/<code>break</code>/<code>stopped</code>), <code>minutes</code>, <code>round</code></td></tr>
+    <tr><td><code>alarm</code></td><td>When the hourly chime or an alarm the user set goes off</td><td><code>kind</code> (<code>hourly</code>/<code>alarm</code>), <code>time</code>, <code>late</code></td></tr>
+    <tr><td><code>bongo</code></td><td>When Bongo mode draws a keystroke or click (the key itself is not carried)</td><td><code>kind</code> (<code>keyboard</code>/<code>left_click</code>/<code>right_click</code>), <code>frame</code>, <code>look</code></td></tr>
+    <tr><td><code>chat</code></td><td>When a question goes out and a reply comes back in the LUMI Chat plugin</td><td><code>phase</code> (<code>ask</code>/<code>reply</code>), <code>imageSet</code>, <code>text</code></td></tr>
+    <tr><td><code>tts</code></td><td>When one line of speech starts and ends</td><td><code>phase</code> (<code>start</code>/<code>end</code>)</td></tr>
+    <tr><td><code>settings</code></td><td>When [Apply] is pressed in the settings window, or the language changed</td><td><code>phase</code> (<code>apply</code>/<code>language</code>), <code>changed</code> (the list of changed keys), <code>language</code></td></tr>
+    <tr><td><code>island</code> · <code>game</code></td><td>When the garden (island) window opens, closes and takes a photo · when the contraption game board opens, runs and closes</td><td><code>phase</code> (<code>start</code>/<code>stop</code>/<code>photo</code>) · <code>phase</code> (<code>start</code>/<code>run</code>/<code>stop</code>)</td></tr>
+    <tr><td><code>app</code></td><td>Just before Lumi shuts down (before the plugins' <code>stop()</code>)</td><td><code>phase</code> (<code>exit</code>)</td></tr>
+    <tr><td><code>ask</code> · <code>settings_open</code> · <code>say_file</code></td><td>When an outside tool writes <code>speech\ask.txt</code> · <code>settings_open.txt</code> · <code>say.txt</code></td><td><code>text</code> · nothing · <code>text</code></td></tr>
+  </table></div>
+  <div class="callout"><span class="k">Worth knowing</span> Event functions are called on <strong>a thread of your plugin's own</strong>, not on Lumi's display thread. Doing something slow inside one stops neither Lumi nor any other plugin. In exchange, wrap anything that makes or touches a window (Swing) in <code>ctx.onEdt(…)</code>. If you want to keep track of a position, do not wait for a position event — read <code>ctx.mascots()</code> inside <code>ctx.every(…)</code>.</div>
+  <p>Things not in the tables are possible too. Because a plugin runs inside the same program as Lumi, every public class in the Lumi jar can be called. But that side is outside the compatibility policy and can change with an update, so go there only when what is in the tables will not do, and read "Do not" in <code>docs\API.en.md</code> first.</p>
+
+  <h2 id="examples">Examples</h2>
+  <p>Try putting these inside the <code>start()</code> of your first plugin. Building and installing works the same way.</p>
+
+  <h3>Speaking on a particular behaviour</h3>
+<pre><button class="copy">Copy</button><code>ctx.on("behavior", event -&gt; {
+    if ("SitDown".equals(event.get("name"))) {
+        ctx.sayFor((String) event.get("imageSet"), "I'll rest a bit", 3000);
+    }
+});</code></pre>
+
+  <h3>A behaviour every five minutes</h3>
+  <p><code>ctx.every</code> stops by itself when Lumi shuts down. The first number is how long to wait the first time, the second is the period (in milliseconds).</p>
+<pre><button class="copy">Copy</button><code>ctx.every(5 * 60 * 1000, 5 * 60 * 1000, () -&gt; ctx.behave("HappyHop"));</code></pre>
+
+  <h3>Counting and saving</h3>
+  <p>Values you keep in <code>ctx.prefs()</code> survive to the next run.</p>
+<pre><button class="copy">Copy</button><code>ctx.on("headpat", event -&gt; {
+    int n = ctx.prefs().getInt("pats", 0) + 1;
+    ctx.prefs().set("pats", n);
+    if (n % 10 == 0) ctx.say("That's " + n + " head pats already!", 3000);
+});</code></pre>
+  <p>For bigger data, use a file in <code>ctx.dataDir()</code> instead of the settings.</p>
+<pre><button class="copy">Copy</button><code>java.nio.file.Path diary = ctx.dataDir().resolve("diary.txt");
+java.nio.file.Files.writeString(diary, "Another day with Lumi\n",
+        java.nio.charset.StandardCharsets.UTF_8,
+        java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);</code></pre>
+
+  <h3>Rock, paper, scissors with choices</h3>
+<pre><button class="copy">Copy</button><code>ctx.on("doubleclick", event -&gt; {
+    java.util.List&lt;String&gt; hands = java.util.List.of("Rock", "Paper", "Scissors");
+    ctx.ask("Rock, paper, scissors!", hands, 10000, picked -&gt; {
+        if (picked &lt; 0) return;                      // -1 = no answer (timed out, Esc), -2 = the app took it back
+        int mine = new java.util.Random().nextInt(3);
+        boolean win = (picked - mine + 3) % 3 == 1;
+        ctx.sayQueued("Lumi picks " + hands.get(mine) + "!", 2000);
+        ctx.sayQueued(win ? "I lost…" : picked == mine ? "A tie" : "Lumi wins!", 2500);
+        if (win) ctx.awardAffection("rps", 1);
+    });
+});</code></pre>
+
+  <h3>Seeing where a character is</h3>
+<pre><button class="copy">Copy</button><code>ctx.every(1000, 1000, () -&gt; {
+    for (com.group_finity.mascot.lumi.plugin.MascotState m : ctx.mascots()) {
+        ctx.log().fine(m.imageSet() + " #" + m.id() + " feet " + m.anchor()
+                + (m.lookRight() ? " →" : " ←") + " " + m.behavior());
+    }
+});</code></pre>
+
+  <h3>A toggle row in the tray</h3>
+<pre><button class="copy">Copy</button><code>ctx.addTrayToggle("Quiet mode", ctx.prefs().getBoolean("quiet", false), on -&gt; {
+    ctx.prefs().set("quiet", on);
+    ctx.say(on ? "I'll be quiet" : "I'll talk again", 2000);
+});
+ctx.hook("selftalk.line", (hook, current, c) -&gt; ctx.prefs().getBoolean("quiet", false) ? "" : null);</code></pre>
+
+  <h3>Speaking in the current language</h3>
+  <p>Write your own strings in <code>plugin_ko.properties</code> · <code>plugin_en.properties</code> at the root of the jar, like <code>hello=Hi!</code>, and take them out with <code>ctx.text</code>. For Lumi's own strings, <code>ctx.localized</code>.</p>
+<pre><button class="copy">Copy</button><code>ctx.on("ready", e -&gt; ctx.say(ctx.text("hello", "Hi!"), 4000));</code></pre>
+
+  <h3>Bundling artwork and lines with it</h3>
+  <p>The mod folder holding your plugin can carry data as well. It is laid over <code>app\</code> by the same rule.</p>
+<div class="tree">mods\hello\
+├─ plugins\mynick.hello.jar
+├─ img\MyChar\…              <span class="c">← a new character (how to draw one: app\img\Custom Characters.txt)</span>
+└─ conf\language.d\hello_en.properties  <span class="c">← a string fragment (see <a href="#fragments">Data mods go in fragments</a>)</span></div>
+
+  <h3>Using other libraries</h3>
+  <p>You cannot put files into Lumi's <code>lib\</code> (a protected folder). Put the libraries you need <strong>inside your own jar</strong> (a fat jar), or in <code>plugins\lib\</code> in the mod folder — Lumi puts the jars in that folder on the class path too. If the same class is in two jars, the one lower in the mod order wins.</p>
+
+  <h2 id="behaviors">Finding behaviour names</h2>
+  <p>While it runs, <code>ctx.behaviorNames("Lumi")</code> returns every behaviour name that character has. If you want to read a list, the Mod SDK's <code>docs\CATALOG.en.md</code> §1 has a table down to display names, frequencies and whether they are hidden, and the original is <code>Behavior Name="…"</code> in <code>&lt;LUMI folder&gt;\app\img\Lumi\conf\behaviors.xml</code>. A few of the common ones:</p>
+  <div class="tw"><table>
+    <tr><th>Name</th><th>What it is</th></tr>
+    <tr><td><code>SitDown</code> · <code>LieDown</code> · <code>StandUp</code></td><td>Sit Down · Lie Down · Stand Up</td></tr>
+    <tr><td><code>HappyHop</code></td><td>Hop Excitedly</td></tr>
+    <tr><td><code>LookAround</code> · <code>TiltHead</code></td><td>Shake Head · Humming</td></tr>
+    <tr><td><code>ChaseMouse</code> · <code>SitAndFaceMouse</code></td><td>Follow Cursor · Sit and Face Cursor</td></tr>
+    <tr><td><code>SelfTalk</code></td><td>Talk to Herself</td></tr>
+    <tr><td><code>HeadPat</code> · <code>HeadPatSit</code></td><td>Head Pats (good to listen for as an event)</td></tr>
+    <tr><td><code>ClimbIEFace</code> · <code>WindowDive</code></td><td>Climb Up Window · Jump Down from Window</td></tr>
+    <tr><td><code>Fall</code> · <code>Dragged</code> · <code>Thrown</code></td><td>Fall · Being Dragged · Being Thrown (the engine uses these itself. Listen for them rather than ordering them)</td></tr>
+  </table></div>
+  <p>Other characters (from the Workshop) have their own behaviours in their own <code>app\img\&lt;character&gt;\conf\behaviors.xml</code>. Ordering a name that does not exist does nothing at all and leaves one warning line in the log.</p>
+
+  <h2 id="rules">Rules and cautions</h2>
+  <ul>
+    <li><strong>A plugin runs inside the same program as Lumi, with your account's rights.</strong> It can do anything you can. That is exactly how much the user trusts you when they install it. Do not read the user's files carelessly or send them anywhere. In particular, another plugin's <code>app\plugindata\&lt;id&gt;\</code> (for example LUMI Chat's <code>plugindata\lumi.ai\</code> — the AI keys and conversation memory) belongs to the user alone.</li>
+    <li><strong>An exception stops inside your plugin.</strong> If <code>start()</code> throws, only that plugin becomes "could not be loaded" and Lumi still comes up. An exception inside an event function is only logged.</li>
+    <li><strong>The screen (Swing) belongs to the EDT.</strong> Use <code>SwingUtilities.invokeLater(() -&gt; …)</code> when making or changing a window. Touching them directly from event functions and timer threads occasionally draws oddly.</li>
+    <li><strong>You cannot shadow Lumi's own classes.</strong> The Lumi jar always comes first. Putting a class of the same name in your jar still uses Lumi's. If you want to change the app itself, <code>ctx.patch(className, ClassFileTransformer)</code> can rewrite bytecode while it runs (ASM is in Lumi's <code>lib\</code>; other libraries such as ByteBuddy go in your own jar). The Steam gate, the offline token, the feature locks, the plugin loader, the Steam integration, the affection store and the achievement classes are refused.</li>
+    <li><strong>Files the launcher protects.</strong> Through <code>mods\</code> you cannot overwrite Lumi itself (the jar, the jre, lib), the Steam-related files, or the user's settings and record files. The full list is in <code>mods\Mods Guide.txt</code>. Refused files are written to <code>%TEMP%\littlelumi_launch.log</code>.</li>
+    <li><strong>Switching on and off.</strong> The user can switch each mod folder, and each plugin, on and off from the Mods tab. Both switching on and switching off take effect <strong>from the next launch</strong> (nothing is loaded or unloaded while it runs), and a changed row gets "Applies at next launch". Running Lumi with <code>--no-plugins</code> loads nothing (you can put that in the Steam launch options).</li>
+    <li><strong>The order rule is "lower wins".</strong> The Mods tab shows Workshop subscriptions and your own mods in one list, and you reorder with the grip (≡) on the left of a row or the ▲▼ buttons (pressing "Details" unfolds the path, the plugin state and the buttons). They are applied from top to bottom, so <strong>a mod lower down overrides the same file and the same plugin id</strong>. A mod that overlaps nothing says "Shares no file with another mod, so its place in the order changes nothing". The order is saved in <code>mods\order.txt</code>.</li>
+    <li><strong>An update is visible to the user.</strong> When the jar changes, the tab marks it "changed since last run". Please raise the <code>version</code>.</li>
+  </ul>
+
+  <h2 id="share">Sharing it</h2>
+  <h3>As a zip</h3>
+  <p>If you depend on libraries, you do not have to merge them into your jar — you can put them separately in <code>plugins\lib\</code>. Lumi puts the jars in that folder on the class path too.</p>
+  <p>Zip up the whole <code>mods\hello\</code> folder. The person receiving it unpacks it into their own <code>mods\</code>, starts Lumi again, and that is it. You can put a page of notes (<code>readme.txt</code>) in the mod folder as well. Loose files directly under <code>mods\</code> are ignored, so nothing gets messy.</p>
+
+  <h3>On the Steam Workshop</h3>
+  <p>If a Workshop item has a <code>plugins\</code> folder, Lumi recognises it as a "plugin item" and puts it into the subscriber's <code>mods\workshop-&lt;number&gt;\</code> automatically. Once subscribed, it loads from the next launch. The item folder only has to be the same shape as a mod folder.</p>
+<div class="tree">hello-workshop\
+├─ plugins\mynick.hello.jar
+├─ plugins\plugin.json          <span class="c">← nice to have (for the item page). The one inside the jar is the real one</span>
+├─ plugins\lib\*.jar            <span class="c">← libraries you depend on</span>
+└─ img\…, conf\…               <span class="c">← you may carry data along too</span></div>
+  <p>The kinds of file that come through the Workshop are fixed: <code>.png .xml .txt .wav .tsv .properties .json .ttf .otf</code>. To that come <strong>three exceptions decided by place</strong> — <code>.jar</code> and <code>.json</code> directly under <code>plugins\</code>, <code>.jar</code> in <code>plugins\lib\</code>, and <code>.py</code> directly under <code>tools\</code> (helper scripts the app does not run). Those three pass <strong>only in plugin and mod items</strong>; in character (image set) and voice pack items they are dropped even in the right place. Other files (executables and so on) do not reach subscribers. Language packs (<code>conf\language_ko.properties</code>), fonts, island layouts (<code>islands.json</code>) and the LLM provider list (<code>conf\llm_providers.txt</code>) all fall inside this.</p>
+  <p><strong>The easiest way is to upload from inside Lumi.</strong> Tray → Settings → the Mods tab, press <strong>"Upload to Workshop"</strong> on your mod's row, and that folder becomes the item as it is (you only fill in the title, the description and the preview image). Once uploaded, the button on the same row becomes <strong>"Update on Workshop"</strong> and you use that from then on (the item number is written into <code>workshop-upload.txt</code>). Steam has to be running.</p>
+  <p><strong>Run <code>tools\pack_workshop.py</code> once before you upload.</strong> The app leaves out files that do not match the rules <strong>silently</strong>, with no error — which is why "I uploaded it but some files did not go" is something the subscribers find out first. This tool applies the same rules as the app in advance, tells you the item kind (plugin · mod · character · voice pack), lists the files that will be dropped with the reason, and builds an upload folder holding only what matches the rules plus a starting <code>item.vdf</code>.</p>
+<pre><button class="copy">Copy</button><code>python tools\pack_workshop.py C:\LumiPlugins\hello-workshop --check
+python tools\pack_workshop.py C:\LumiPlugins\hello-workshop</code></pre>
+  <p><code>--check</code> only checks and creates nothing. Run it plainly and you get the filtered folder <code>dist\workshop\&lt;name&gt;\</code> and, beside it, <code>&lt;name&gt;-item.vdf</code> (<code>--out</code> changes where).</p>
+  <p>If you would rather upload from the command line without Steam, SteamCMD works too. It is a little fiddly the first time only.</p>
+  <ol>
+    <li>Download <a href="https://developer.valvesoftware.com/wiki/SteamCMD">SteamCMD</a> and unpack it anywhere.</li>
+    <li>Agree once to the <a href="https://steamcommunity.com/sharedfiles/workshoplegalagreement">Workshop terms</a> with your Steam account.</li>
+    <li>Make an <code>item.vdf</code>. If you ran <code>pack_workshop.py</code> above, <code>&lt;name&gt;-item.vdf</code> already exists and you only fill in <code>title</code> and <code>previewfile</code>. Writing it by hand, copy the one below. <code>contentfolder</code> and <code>previewfile</code> are <strong>absolute paths</strong>, and the preview is a 512×512 PNG. For a first upload, set <code>publishedfileid</code> to <code>0</code>.</li>
+  </ol>
+<pre><button class="copy">Copy</button><span class="fn">item.vdf</span><code>"workshopitem"
+{
+    "appid"            "5075020"
+    "publishedfileid"  "0"
+    "contentfolder"    "C:\\LumiPlugins\\hello-workshop"
+    "previewfile"      "C:\\LumiPlugins\\hello-preview.png"
+    "visibility"       "0"
+    "title"            "Hello LUMI plugin"
+    "description"      "Greets you when Lumi appears. A plugin item — subscribe and it loads from the next launch."
+    "changenote"       "First upload"
+}</code></pre>
+<pre><button class="copy">Copy</button><code>steamcmd +login yoursteamlogin +workshop_build_item C:\LumiPlugins\item.vdf +quit</code></pre>
+  <p>Once it is up, SteamCMD tells you the item number. Put that number in <code>publishedfileid</code> and from then on the same command <strong>updates that item</strong>. You can also edit the description on the item page. Please do write "what the plugin does" and "whether it uses the internet" in the item description. That is what users choose by.</p>
+
+  <h2 id="sdk">The Mod SDK</h2>
+  <p>The <strong>Mod SDK</strong> used in <a href="#first">Your first plugin</a> is a single zip. This is what is in it.</p>
+<div class="tree">LittleLUMI-ModSDK-&lt;app version&gt;-&lt;build&gt;\
+├─ lib\                    <span class="c">← compile-only jars (Lumi itself + libraries). They will not run without Steam</span>
+├─ tools\build_plugin.py   <span class="c">← building a plugin (the tool used in your first plugin)</span>
+├─ tools\run_tests.py      <span class="c">← building and running your plugin's test\*.java (PluginTestKit)</span>
+├─ tools\pack_workshop.py  <span class="c">← the check before a Workshop upload + the filtered folder and a starting item.vdf</span>
+├─ docs\API.en.md          <span class="c">← the public API reference (API.md is the Korean one) — the stable/"experimental" marks and "Compatibility policy". CATALOG.en.md = the tables of behaviours, events, hooks and settings keys, CHANGELOG.md = what changed in each app version</span>
+├─ docs\javadoc\ · api-src\ <span class="c">← the javadoc and the sources of the public API</span>
+├─ plugin-guide.en.html    <span class="c">← this document. It sits at the root of the zip</span>
+├─ examples\hello\         <span class="c">← the skeleton of events, a settings card, a tray row and a transformer + test\ — copy from here to start</span>
+└─ examples\plugin-transformer\  <span class="c">← changing one app method with java.lang.classfile (advanced)</span></div>
+  <p><strong>What you need.</strong> JDK 25 and Python 3 (<a href="#prep">What you need</a>). The tools look for <code>javac</code> in the order <code>--javac</code> → <code>JAVAC</code> → <code>JAVA_HOME</code> → PATH (both <code>build_plugin.py</code> and <code>run_tests.py</code>).</p>
+  <p><strong>Where to get it.</strong> On the <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK downloads</a> page pick the release of the same version as the Lumi you run. Under <strong>Assets</strong>, take the ZIP whose name starts with <code>LittleLUMI-ModSDK-</code>. After unpacking, check that <code>lib\Shimeji-ee.jar</code> and <code>sdk.json</code> are there. The SDK and the app carry the same version number (currently SDK/app 1.3.0, API 1). A revision that only repackages the docs or the examples keeps its version and is told apart by the build mark at the end of the file name and the <code>commit</code> in <code>sdk.json</code>. What changed in each app version is in <code>docs\CHANGELOG.md</code>.</p>
+  <p><strong>Compatibility policy.</strong> Entries in the API tables are one of two things: <strong>stable</strong> or <strong>experimental</strong>. An entry with no mark is stable, and within the same <code>api_version</code> such entries are only added to — they do not disappear and they do not change shape. An entry with the "experimental" chip may still change or disappear, and when it does it is written up in <code>docs\CHANGELOG.md</code>. When <code>api_version</code> goes up, plugins built for the version just before still load for one more version. Doors added in a later version are not in an older app even at the same <code>api_version</code>, so write the app version you tested against into <code>app_version</code> in <code>plugin.json</code>. The full text is "Compatibility policy" in <code>docs\API.en.md</code>.</p>
+  <p><strong>The terms in one line.</strong> Use the SDK only for making Lumi plugins and do not redistribute it; publish the mods you make free of charge only; the rights to the Lumi character, artwork and lines belong to STUDIO LUMI — the full text is <code>LICENSE-SDK.txt</code> inside the zip.</p>
+  <p><strong>When it ends.</strong> After <code>stop()</code>, Lumi collects only what you registered through the context — windows you made yourself, worker threads and <code>prefs().onChange</code> listeners you tidy up in <code>stop()</code> yourself. <code>ask()</code> on a released context returns <code>-2</code> immediately on the calling thread, and bad <code>every()</code> arguments (null, a period of 0 or less) still throw afterwards. The detailed contract is "Lifecycle" in <code>docs\API.en.md</code>.</p>
+  <div class="callout"><strong>If you want to change a decision, start with hooks.</strong> Events are "told after it happened", and the <em>decisions</em> inside a feature (whether to stay quiet, which line to pick, how much affection to award) are asked of the <a href="#hooks">hooks</a> first. Only where there is no hook should you reach for a class transformer like <code>examples\plugin-transformer</code> — that is a <strong>last resort</strong>. The shape of the app classes a transformer touches is outside the compatibility policy, so it breaks when the app updates and that method changes. Several plugins live together — the class path is attached in reverse mod order so <strong>a lower mod's transformer registers first</strong>, but <code>ServiceLoader</code>'s order is not a promise, so do not rely on it.</div>
+
+  <h2 id="hooks">Changing decisions with hooks</h2>
+  <p>A hook is a place where Lumi asks the plugins <strong>before deciding</strong>. If an event (<code>ctx.on</code>) is "this just happened", a hook (<code>ctx.hook</code>) is "I am about to do this, is that all right?". The handler receives the value so far as <code>current</code> and returns a new value, or returns <code>null</code> if it has no opinion.</p>
+<pre><code>// If a meeting app is in front, always stay quiet (null = no opinion, the app's decision stands)
+ctx.hook("focus.quiet", (hook, current, c) -&gt; meetingApp.isForeground() ? Boolean.TRUE : null);
+// After 10pm, double the self-talk interval
+ctx.hook("selftalk.interval", (hook, current, c) -&gt; LocalTime.now().getHour() &gt;= 22 ? ((Long) current) * 2 : null);
+// My image set has no HappyHop, so swap in my own dance
+ctx.hook("behavior.force", (hook, current, c) -&gt; "HappyHop".equals(current) &amp;&amp; "Neko".equals(c.get("imageSet")) ? "NekoDance" : null);</code></pre>
+  <p><strong>Five rules.</strong> ① The handler runs right there on the thread Lumi called from — keep it cheap and never wait (over 20ms gets a warning). ② When several plugins answer the same hook they are called <strong>in mod list order, top to bottom, and the lower one wins</strong> (an earlier answer arrives as <code>current</code>). ③ Throwing does not kill the app — only that handler is skipped and it is logged once. A value of the wrong type is ignored too. ④ A promise the user made (an alarm, an errand they pressed themselves, <code>say.txt</code>) cannot be blocked by a plugin through a hook — such places have no hook, or only a "hold" one. What Lumi chooses by herself (self-talk, greetings) can be skipped with <code>""</code>. ⑤ Write <code>"hooks": ["focus.quiet", …]</code> in <code>plugin.json</code> and any hook name the app does not have is reported in the log and on the Mods tab row as "N hook(s) this app does not ask" (it does not block anything from running).</p>
+  <p><strong>The 15 hooks.</strong> <code>focus.quiet</code> (should she stay quiet) · <code>focus.screen_busy</code> (is the screen busy) · <code>text.localized</code> (every bundle string) · <code>sound.effect</code> (the sound effect path, <code>""</code> = silent) · <code>behavior.force</code> (the behaviour name the director orders) · <code>bubble.duration</code> (how long a bubble lives) · <code>selftalk.line</code> (the self-talk line) · <code>selftalk.interval</code> (the interval) · <code>speech.greeting</code> (the click and chatter greeting) · <code>affection.award</code> (affection being banked) · <code>affection.tier</code> (the tier) · <code>place.allowed</code> (where she may be put down) · <code>bongo.key_frame</code> (the key image slot in Bongo mode) · <code>bongo.key_input</code> (supplying frames from your own input — asked every 40 ms while the bongo is showing) · <code>bubble.text</code> (just before the bubble text — replacement only; an empty answer means the original). The places, arguments, defaults and cautions are in the table in the Mod SDK's <code>docs\API.en.md</code> §5, and where Lumi asks each hook plus its ctx keys are in <code>docs\CATALOG.en.md</code> §3.</p>
+
+  <h2 id="fragments">Data mods go in fragments</h2>
+  <p>If your mod adds one behaviour, a few lines or a few strings, <strong>do not ship a whole <code>behaviors.xml</code> or <code>language_ko.properties</code></strong>. When whole files collide with another mod only one survives, and when Lumi updates and that file changes, the mod's copy takes it back to the old file. Put a <strong>fragment</strong> instead — put just "what to add" into a folder whose name is the file name with <code>.d</code> after it, and Lumi merges it over the original at startup.</p>
+<div class="tree">mods\my-dance\
+├─ mod.json                                  <span class="c">← {"name":"My Dance","version":"1.0.0","app_version":"1.3.0"} — a v1.0.0 chip on the Mods tab</span>
+├─ img\Lumi\conf\behaviors.d\dance.xml     <span class="c">← adding one behaviour to Lumi (example below)</span>
+├─ img\Lumi\conf\actions.d\dance.xml       <span class="c">← the action that behaviour uses</span>
+├─ conf\language.d\my-dance_en.properties   <span class="c">← overriding and adding strings (en only). my-dance.properties fills only missing keys, in every language</span>
+└─ conf\self_talk.d\my-dance_en.txt         <span class="c">← a few self-talk lines (appended after the original)</span></div>
+<pre><button class="copy">Copy</button><span class="fn">img\Lumi\conf\behaviors.d\dance.xml</span><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;Mascot xmlns="http://www.group-finity.com/Mascot"&gt;
+  &lt;BehaviorList&gt;
+    &lt;Behavior Name="MyDance" Frequency="10"&gt;
+      &lt;NextBehaviorList Add="false"&gt;&lt;BehaviorReference Name="Fall" Frequency="1"/&gt;&lt;/NextBehaviorList&gt;
+    &lt;/Behavior&gt;
+  &lt;/BehaviorList&gt;
+&lt;/Mascot&gt;</code></pre>
+  <p><strong>The rules.</strong> ① A fragment is complete XML of the same shape as the original (root <code>&lt;Mascot&gt;</code>). What is inside the lists is <strong>appended</strong> to the original, and if the same <code>Name</code> already exists it is <strong>replaced in place</strong>. ② When several mods change the same name, <strong>the lower one in the mod list wins</strong>. ③ Line fragments are appended after the original, so voice pack numbering does not shift. ④ String fragments apply only to the language at the end of the file name (<code>_ko</code> · <code>_ja</code> · <code>_zh</code> · <code>_zh_TW</code> · <code>_en</code>). ⑤ A broken fragment skips only that file and leaves one line in the log. If the merged result fails the engine's validation, Lumi reads it again without the fragments — a character never disappears. ⑥ Fragments do not count towards "overlaps" on the Mods tab.</p>
+  <p><strong>Version marking.</strong> Put <code>version</code> and <code>app_version</code> in the <code>mod.json</code> at the top of the mod folder (<code>plugin.json</code> for a plugin) and the Mods tab row gets a <code>v1.0.0</code> chip, and if it differs from the Lumi you are running it says so with a "made for &lt;that version&gt;" chip (it does not block anything).</p>
+
+  <h2 id="trouble">When it does not work</h2>
+  <div class="tw"><table>
+    <tr><th>Symptom</th><th>The usual cause → the fix</th></tr>
+    <tr><td>It says there is no <code>javac</code></td><td>No JDK, or it is not on the PATH. Reinstall JDK 25 (with the options switched on) and open a new command prompt. You can also tell the SDK tools with <code>--javac &lt;where javac.exe is&gt;</code>.</td></tr>
+    <tr><td>Typing <code>python</code> opens the Store, or "Python was not found"</td><td>Python is not installed. Install Python 3 from python.org (switch on "Add python.exe to PATH") and open a new command prompt.</td></tr>
+    <tr><td>"plugin.json missing: …"</td><td>There is no <code>plugin.json</code> at the top of the folder you gave <code>build_plugin.py</code>. Put it directly under the plugin folder, not inside <code>src\</code>.</td></tr>
+    <tr><td><code>package com.group_finity… does not exist</code></td><td>The Lumi jar was not found for the compile. With the SDK tools, check that you ran it from <code>&lt;SDK folder&gt;</code> and that <code>lib\Shimeji-ee.jar</code> is there; building by hand, check the <code>&lt;LUMI folder&gt;\app\Shimeji-ee.jar</code> path in <code>-cp</code>.</td></tr>
+    <tr><td><code>unmappable character</code></td><td>A file with non-ASCII text was saved in an encoding other than UTF-8. Save it as UTF-8 again in your editor. Check that <code>-encoding UTF-8</code> is in the command too.</td></tr>
+    <tr><td>No card at all on the Mods tab</td><td>Check that the jar is inside <code>mods\&lt;folder&gt;\plugins\</code> and that you restarted Lumi. Look for <code>Plugin loaded:</code> in <code>app\LittleLumiLog0.log.0</code> — if that line is missing, the loader never saw the jar.</td></tr>
+    <tr><td>"could not be loaded" on the card · <code>no plugin.json at the root of the jar</code> in the log</td><td><code>plugin.json</code> did not get into the top of the jar. If you built by hand, check that <code>plugin.json</code> is in the <code>jar</code> command (the SDK tools always include it).</td></tr>
+    <tr><td>"… "id" must match …"</td><td>The id has capitals, spaces or non-ASCII characters in it. Lower case, digits, <code>.</code>, <code>-</code>, <code>_</code> only.</td></tr>
+    <tr><td>"no META-INF/services/… entry"</td><td>The entry point file is missing, or <code>.txt</code> got added to the end of its name. Inside it is one line: the full class name.</td></tr>
+    <tr><td>"start() failed: …"</td><td>An exception in your code. The full stack is in the log file.</td></tr>
+    <tr><td>"needs another plugin"</td><td>An id you listed in <code>dependencies</code> is not loaded.</td></tr>
+    <tr><td>An "off" chip on the row. Changing the check gives "Applies at next launch"</td><td>It is switched off on the tab. Switching on and off both take effect from the next launch — tick it and restart Lumi.</td></tr>
+    <tr><td>No bubble appears</td><td>Calling <code>say</code> before <code>ready</code> means there is no bubble yet. Call it inside <code>ctx.on("ready", …)</code>.</td></tr>
+    <tr><td>You ordered a behaviour and nothing happened</td><td>Either the name has a typo or that character does not have it. Check with <code>ctx.behaviorNames("Lumi")</code> and look at the warning line in the log. If Lumi is mid-fall or being dragged, she does it at the next opening.</td></tr>
+    <tr><td>Double clicks are not caught</td><td>Do not count <code>clickCount</code> yourself — the character starts being dragged the moment you press, and the window moves. Use <code>ctx.on("doubleclick", …)</code>.</td></tr>
+    <tr><td>You want to try it without the app</td><td><code>PluginTestKit</code> (<a href="#api">Testing without the app</a> above). The SDK's <code>tools\run_tests.py</code> builds and runs it for you.</td></tr>
+  </table></div>
+  <p>If you have looked everywhere and still do not know, copy every line containing <code>Plugin</code> out of <code>app\LittleLumiLog0.log.0</code> and post it to the community.</p>
+
+  <h2 id="glossary">Glossary</h2>
+  <dl class="glossary">
+    <dt>JDK / JRE</dt><dd>The Java development tools / the runtime. Building needs the JDK; Lumi runs on the JRE (built into Lumi).</dd>
+    <dt>jar</dt><dd>A zip file holding a Java program. One plugin = one jar.</dd>
+    <dt>class path (<code>-cp</code>)</dt><dd>The list that tells the compiler "the other code this code calls is over here". You write the Lumi jar and <code>lib\*</code> in it.</dd>
+    <dt>package</dt><dd>A class's family name. A file that says <code>package hello;</code> has to be in the <code>src\hello\</code> folder.</dd>
+    <dt>ServiceLoader / META-INF/services</dt><dd>The standard Java way of announcing "this jar has this kind of entry point" through a file name. That is what the entry point file is.</dd>
+    <dt>EDT</dt><dd>The one and only thread on which Swing draws the screen. Code that touches a window has to run here.</dd>
+    <dt>image set</dt><dd>One character. The folder name under <code>app\img\</code> is the name (Lumi's is <code>Lumi</code>).</dd>
+    <dt>overlay</dt><dd>Lumi laying the files in <code>mods\</code> over <code>app\</code> at startup. It is how a mod gets installed.</dd>
+  </dl>
+  <p class="muted">This guide is written for plugin API version 1. When the API version goes up, what is written on this page changes with it.</p>
+</main>
+</div>
+
+<script>
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var btn = pre.querySelector('button.copy');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var code = pre.querySelector('code');
+      var text = code ? code.innerText : '';
+      function done(ok) { btn.textContent = ok ? 'Copied' : 'Failed'; setTimeout(function () { btn.textContent = 'Copy'; }, 1500); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      } else {
+        try {
+          var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+          done(document.execCommand('copy')); document.body.removeChild(ta);
+        } catch (e) { done(false); }
+      }
+    });
+  });
+</script>
