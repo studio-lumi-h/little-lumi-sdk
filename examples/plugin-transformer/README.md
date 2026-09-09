@@ -48,3 +48,13 @@ python tools\build_plugin.py examples\plugin-transformer
 - 바꿀 메서드의 서술자는 `javap -p -cp lib\Shimeji-ee.jar <클래스>` 로 확인한다. 이 예제의 훅은
   `public static` 이어야 한다 — 다른 패키지에서 `invokestatic` 으로 부르므로.
 - `transform()` 은 클래스 로딩 락을 쥔 채 돈다. 그 안에서 앱을 건드리지 말 것.
+
+## 배포 고지 / Distribution notices
+
+예제를 복사할 때 `src/META-INF/little-lumi/`도 함께 보존하세요. SDK 생성 시 들어가는 기존 이용 조건·저작권·면책 고지는 빌드한 JAR에도 자동으로 포함됩니다. 추가한 코드와 외부 의존성의 고지는 별도로 넣으세요.
+
+Keep `src/META-INF/little-lumi/` when copying this example. The existing terms, copyright and disclaimer supplied by the SDK builder are automatically included in the built JAR. Add notices for your own additions and dependencies separately.
+
+창작마당 패커는 전달되지 않는 `LICENSE`, `NOTICE`, `COPYING`, `COPYRIGHT` 계열 파일이 있으면 `--strict` 없이도 실패합니다. 고지 본문을 유지한 `.txt` 파일이나 JAR 내부의 `META-INF/`로 보존하세요.
+
+The Workshop packer fails even without `--strict` if a LICENSE, NOTICE, COPYING or COPYRIGHT file would be dropped. Preserve its text in a `.txt` file or in `META-INF/` inside the JAR.

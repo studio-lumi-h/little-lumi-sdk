@@ -12,19 +12,19 @@ r"""Little LUMI mod SDK — check a mod folder against the Workshop rules and pa
 
 종료 코드는 「이 항목을 올릴 수 있는가」 하나만 답합니다.
 
-  0 — 올릴 수 있습니다. 빠지는 파일이 있어도 0 입니다 — README.md 를 하나 넣어 둔 모드는
+  0 — 올릴 수 있습니다. 고지 외의 파일이 빠지면 경고만 합니다 — README.md 를 하나 넣어 둔 모드는
       멀쩡한 항목이고, 그 파일만 구독자에게 안 갈 뿐입니다. 빠지는 것은 경고로 적어 두니
       의도한 것인지 확인하세요.
   1 — 올릴 수 없습니다. 앱이 이 폴더를 모드로 받지 않거나(캐릭터·보이스팩·알 수 없음),
-      가는 파일의 합이 크기 상한을 넘었습니다.
+      가는 파일의 합이 크기 상한을 넘었거나 라이선스·저작권 고지가 빠집니다.
 
   --strict 를 주면 안 가는 파일도 1 로 칩니다. 「하나도 빠지면 안 된다」를 관문으로 걸 때만.
 
 The app never copies a subscribed item as-is: only the files its rules allow travel, and the rest are
 dropped silently. This tool applies exactly the same rules first, so you learn what would be missing on
 the subscriber's disk before you upload. It also writes an item.vdf template with the content folder
-already filled in. Exit code 0 = this item can be uploaded (dropped files are warnings, not failures),
-1 = it cannot (the kind is refused, or the content is over the size cap). --strict makes dropped files
+already filled in. Exit code 0 = this item can be uploaded (dropped non-notice files are warnings),
+1 = it cannot (the kind is refused, the content is over the size cap, or a legal notice is dropped). --strict makes dropped files
 fail too.
 
 출력은 원본과 서로 포함하지 않는 별도 폴더여야 합니다. 링크·정션 안으로는 들어가지 않습니다.
@@ -235,6 +235,16 @@ def is_allowed(rel: PurePosixPath) -> bool:
     name = rel.name.lower()
     dot = name.rfind('.')
     return dot > 0 and name[dot:] in ALLOWED_SUFFIXES
+
+
+def is_legal_notice(rel: PurePosixPath) -> bool:
+    """Match notice tokens, including plurals and third-party/component prefixes.
+
+    Delimiters keep unrelated words such as licensed-code.md and noticescreen.png
+    from becoming legal notices merely because they contain a substring.
+    """
+    return re.search(r'(?:^|[._ -])(?:licen[cs]es?|notices?|copying|copyrights?)(?:$|[._ -])',
+                     rel.name, re.IGNORECASE) is not None
 
 
 def is_plugin_file(rel: PurePosixPath) -> bool:
@@ -545,8 +555,7 @@ def main():
     print(f'  근거: {why}')
     print()
 
-    # 「올릴 수 없다」는 두 가지뿐입니다 — 앱이 이 종류를 모드로 받지 않거나, 상한을 넘었거나.
-    # 빠지는 파일은 여기 들어오지 않습니다(경고입니다).
+    # Refuse unsupported kinds, oversized content, and missing legal notices (checked below).
     refused = None
     if kind == KIND_VOICE_PACK:
         refused = '보이스팩 항목이라 이 도구로는 못 만듭니다(플러그인·모드 항목 전용).'
@@ -610,6 +619,17 @@ def main():
         refused = refused or '가는 파일의 합이 크기 상한을 넘었습니다.'
         print('  크기 상한을 넘었습니다 — 앱이 통째로 거절합니다. 파일을 줄이거나 항목을 나누세요.')
     print()
+
+    missing_notices = [rel for rel, _, _, _ in dropped if is_legal_notice(rel)]
+    missing_notices.extend(rel for rel in ignored if is_legal_notice(rel))
+    if missing_notices:
+        refused = refused or '라이선스·저작권 고지가 구독자에게 전달되지 않습니다.'
+        print('고지 파일 누락은 --strict 없이도 실패합니다:')
+        for rel in missing_notices:
+            print(f'  {win(rel)}')
+        print('고지 본문을 보존하고 파일명을 .txt로 바꾸거나, 플러그인 src/META-INF/에 넣어 JAR를 다시 빌드하세요.')
+        print('Missing legal notices: preserve the text in .txt files or inside the JAR (src/META-INF/), then retry.')
+        print()
 
     if args.check:
         print('(--check 이라 아무것도 만들지 않았습니다.)')

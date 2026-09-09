@@ -3,10 +3,13 @@
 플러그인이 기대도 되는 표면(`API.md`)이 앱 버전마다 어떻게 바뀌는지 여기에 적습니다 — 더한 것은 「추가」, 기본값만 돌려주는 빈 자리가 된 훅은 「폐기」. 실험 항목(「실험」 칩, `sdk.json` 의 `preview`)의 변경과 폐기도 여기에 적습니다.
 Per app version: what changed in the surface a plugin may rely on (`API.md`) — "Added" for additions, "Deprecated" for a hook that became an empty default-only slot. Changes to and removals of preview items (the "preview" chip, `preview` in `sdk.json`) are listed here too.
 
-## SDK 1.3.0a · 앱 1.3.0 · api_version 1
+## SDK 1.3.0b · 앱 1.3.0 · api_version 1
 
-- **SDK 1.3.0a는 앱 1.3.0용 개정본입니다.** 예제 활성화 안내와 빌드 도구의 안내 문구를 보완했습니다. `sdk_version`은 `1.3.0a`, `app_version`은 `1.3.0`이며 `api_version`은 `1`입니다.
-- **SDK 1.3.0a is a revision for app 1.3.0.** It updates the example activation instructions and build-tool messages. `sdk_version` is `1.3.0a`, `app_version` is `1.3.0`, and `api_version` remains `1`.
+- hqx 대응 소스·빌드 자료·재결합 도구와 Nashorn 15.7 전체 소스·Ant 빌드 자료를 `docs/sources/third-party-sources.zip`에 동봉합니다. / Corresponding hqx sources/build materials/recombination helper and complete Nashorn 15.7 sources/Ant build materials accompany the SDK.
+- 제3자 구성요소의 원래 라이선스가 SDK 제한보다 우선함을 명시하고 앱 JAR 재배포·자산 범위 설명을 정리했습니다. / Clarified original third-party licence precedence, app JAR redistribution and asset scope.
+- libffi·Nashorn 전문·크레딧을 동봉하고 예제의 기존 이용 조건·고지가 빌드 JAR에 포함됩니다. / Included notices and propagated existing example terms into built JARs.
+- 패커는 `THIRD_PARTY_LICENSES.md`, `LICENSES.md`, 구성요소 접두형 등 고지 누락도 기본 실패로 처리합니다. `.txt` 또는 JAR 내부 `META-INF/`에 고지를 보존하세요. / The packer rejects dropped legal notices, including plural and component-prefixed names; preserve notices as `.txt` or within the JAR's `META-INF/`.
+- 앱·의존 JAR 및 모드 API는 변경하지 않습니다. / The app/dependency JARs and mod API are unchanged.
 
 ## SDK 1.3.0 · 앱 1.3.0 · api_version 1 — 첫 공개 / First public release
 
@@ -23,7 +26,7 @@ Per app version: what changed in the surface a plugin may rely on (`API.md`) —
 - `text()`는 같은 이름의 jar가 여럿이어도 자신의 jar에서 언어별 문구를 찾고, `sayTo()`는 지정한 개체 ID를 말풍선 서비스에 전달합니다. / `text()` resolves translations within its own archive even when jar names collide; `sayTo()` preserves the requested mascot ID when dispatching its bubble.
 
 - `API.md` 의 표면 전부가 이 버전에서 시작합니다 / The whole surface in `API.md` starts here.
-- 버전 규칙: SDK 버전은 앱 버전과 같습니다(`sdk.json` 의 `sdk_version` = `app_version`); `api_version` 은 별개의 API 호환 번호이고 `PluginContext.API_VERSION` 도 `1` 입니다; 문서·예제 개정 내용은 배포 안내에서 확인합니다 / Versioning: the SDK version is the app version (`sdk_version` = `app_version` in `sdk.json`); `api_version` is the separate compatibility number and `PluginContext.API_VERSION` is `1`; see the release notes for documentation and example revisions.
+- 버전 규칙: 이번 SDK 개정은 1.3.0b이며 대응 앱 버전은 1.3.0, API 호환 번호는 1입니다. / This SDK revision is 1.3.0b for app 1.3.0, api_version 1.
 - 안정·실험: 공개 표면은 안정과 실험으로 나뉩니다. 안정 항목은 같은 `api_version` 안에서 더해지기만 하고, 실험 항목은 `api_version` 을 올리지 않고 바뀌거나 없어질 수 있으며(이 파일에 적고 한 앱 버전 동안 빈 자리를 남깁니다) 앱 버전 하나를 바뀌지 않고 넘기면 안정으로 올립니다. 1.3.0 의 구분 기준: 자사 플러그인(LUMI Chat·Super Bongo)이나 앱 자체가 실제로 쓰는 문과 그 짝은 안정, 그 밖은 실험 — 목록은 `sdk.json` 의 `preview`, 규칙 전체는 `API.md` §8. 1.3.0 의 로더는 `api_version` 을 읽기만 하고 판단하지 않습니다 / Stable and preview: the public surface is split in two. Stable items only ever gain entries within one `api_version`; preview items may change or disappear without a bump (listed here, an empty slot kept for one app release) and are promoted to stable after surviving one app release unchanged. The 1.3.0 split: doors the first-party plugins (LUMI Chat, Super Bongo) or the app itself use, and their counterparts, are stable; the rest is preview — the list is `preview` in `sdk.json`, the full rules are `API.md` §8. The 1.3.0 loader reads `api_version` but does not act on it.
 - 이벤트 26 토픽 — `ctx.on(topic, handler)`: `ready`·`behavior`·`bubble`·`choice`·`click`·`doubleclick`·`drag`·`throw`·`hover`·`mascot`·`headpat`·`affection`·`achievement`·`focus`·`alarm`·`pomodoro`·`bongo`·`settings`·`app`·`island`·`game`·`chat`·`tts`·`ask`·`settings_open`·`say_file`. 리스너는 플러그인마다 제 스레드(`lumi-plugin-events-<id>`)에서 돌고, `ctx.publish` 로 내는 토픽에는 `<id>.` 이 붙습니다 / 26 event topics — `ctx.on(topic, handler)`: the list above. Listeners run on a thread per plugin (`lumi-plugin-events-<id>`); topics a plugin publishes through `ctx.publish` are prefixed `<id>.`.
 - 훅 15개 — `ctx.hook(id, (hook, current, ctx) -> …)`: `focus.quiet`·`focus.screen_busy`·`text.localized`·`sound.effect`·`behavior.force`·`bubble.duration`·`bubble.text`·`selftalk.line`·`selftalk.interval`·`speech.greeting`·`affection.award`·`affection.tier`·`place.allowed`·`bongo.key_frame`·`bongo.key_input`. 모드 탭 순서로 돌고 아래가 이기며 `null` 은 넘김입니다. 사용자가 건 약속(알람, 사용자가 누른 부탁, `say.txt`)은 훅으로 막을 수 없고, 앱이 스스로 고르는 것(혼잣말·인사)은 `""` 로 건너뛸 수 있습니다 / 15 hooks — `ctx.hook(id, (hook, current, ctx) -> …)`: the list above. Handlers run in Mods-list order, the lower one wins, `null` passes. Promises the user made (alarms, a request the user triggered, `say.txt`) cannot be cancelled through a hook; choices the app makes on its own (self-talk, greeting) may be skipped with `""`.

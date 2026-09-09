@@ -1,0 +1,29 @@
+Little LUMI Model — Credits
+
+This is a modified distribution based on the following projects:
+
+- Shimeji — original work by Yuki Yamada (Group-Finity), zlib/libpng license
+- Shimeji-ee — Shimeji-ee Group, BSD-2-Clause license
+- Shimeji-ee enhancements — Kilkakon (https://kilkakon.com)
+- Shimeji-Desktop — DalekCraft2 (https://github.com/DalekCraft2/Shimeji-Desktop),
+  zlib/libpng, BSD-2-Clause, Kilkakon and component-specific notices
+  (direct upstream of this distribution, v1.0.22; see THIRD_PARTY_LICENSES.txt)
+
+The Little LUMI Model additions are copyright (c) 2026 STUDIO LUMI:
+- Character assets (Lumi/Kkomi artwork, sprites, personas): all rights
+  reserved — licensed solely for use as part of this distribution; any reuse
+  or redistribution outside it requires prior written permission from
+  STUDIO LUMI.
+- Extension code, configuration, and documentation: New BSD license.
+
+Full license texts: see LICENSE.txt
+
+Bundled components:
+- Jua font (assets/Jua-Regular.ttf) — Copyright 2018 The BM JUA Project Authors,
+  SIL Open Font License 1.1 (full text in LICENSE.txt)
+- Eclipse Temurin JRE 25 (jre/) — GPLv2 with Classpath Exception, Eclipse Adoptium
+  (build Temurin-25.0.4+7; corresponding source: https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk-sources_25.0.4_7.tar.gz)
+- lib/ third-party libraries — JNA, FlatLaf, ASM, OSHI, SLF4J, Nashorn,
+  commons-exec, and others — plus the hqx scaling filter compiled into
+  Shimeji-ee.jar: full copyright notices and license texts in
+  THIRD_PARTY_LICENSES.txt.

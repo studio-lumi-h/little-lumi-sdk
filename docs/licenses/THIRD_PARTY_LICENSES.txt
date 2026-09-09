@@ -3,7 +3,7 @@
 ════════════════════════════════════════════════════════════════════
 
 This distribution bundles the third-party components listed below.
-The Shimeji lineage licenses (Shimeji zlib/libpng, Shimeji-ee New BSD,
+The Shimeji lineage licenses (Shimeji zlib/libpng, Shimeji-ee BSD-2-Clause,
 Kilkakon's notice) and the SIL Open Font License 1.1 are in LICENSE.txt.
 All four bundled faces — Jua, Do Hyeon, M PLUS 1p and KTXP_ComRound
 (極影毀片和圓) — are under that one license, so the single copy of its
@@ -159,10 +159,18 @@ Bundled libraries (lib/):
 
 Compiled into Shimeji-ee.jar:
 
-- hqx scaling filter (hqx/ classes) — original hqx algorithm Copyright
-  Maxim Stepin; Java port by Edu García (Arcnor), derived from the
-  hqxSharp port. GNU Lesser General Public License v3 (texts below).
-  Source code: https://github.com/Arcnor/hqx-java
+- hqx scaling filter (hqx/ classes) — Copyright 2003 Maxim Stepin,
+  2010 Cameron Zemek, 2011 Tamme Schichler, 2012 A. Eduardo García.
+  GNU Lesser General Public License version 3 or, at your option, any later
+  version (LGPL/GPL texts below and in the source bundle).
+  Exact corresponding source: Shimeji-Desktop revision
+  dea89528c10c066626a09609f0e742cbe6405a8d, src/main/java/hqx/.
+  The four source files, original headers, build settings and recombination
+  helper are in third-party-sources.zip (SDK: docs/sources/third-party-sources.zip).
+  All four classes were reproduced byte for byte with JDK 25.0.4, --release 25 -g.
+  See the source bundle README for rebuilding and using a modified hqx with
+  the supplied app object code. Modification of the library portion and
+  reverse engineering to debug those modifications are permitted.
 
 Launcher:
 
@@ -245,6 +253,12 @@ publicly available to anyone at the locations below.
     binary  https://repo1.maven.org/maven2/org/openjdk/nashorn/nashorn-core/15.7/nashorn-core-15.7.jar
     source  https://repo1.maven.org/maven2/org/openjdk/nashorn/nashorn-core/15.7/nashorn-core-15.7-sources.jar
     repo    https://github.com/openjdk/nashorn
+    complete source and build materials: third-party-sources.zip
+    (SDK: docs/sources/third-party-sources.zip), nashorn/nashorn-15.7-source.zip.
+    This is the complete upstream release-15.7 repository snapshot at
+    4923f1e70e460d87c0eeb1f5232344487d46108d, including Ant build scripts,
+    nasgen, resources and tests. The bundle accompanies the binary; no separate
+    request is required. See its README for the verified build command.
 
 - Eclipse Temurin JRE 25.0.4+7, in jre/
     source repo    https://github.com/adoptium/jdk25u.git

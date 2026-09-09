@@ -1,6 +1,6 @@
 # Little LUMI Model — Plugin API reference (api_version 1)
 
-This reference describes **SDK 1.3.0a / app 1.3.0, `api_version` 1**. It is the whole surface a plugin may rely on: only what is written here is promised to survive an app update (see the [compatibility policy](#compatibility)). `javadoc\index.html` in this folder carries the signatures and comments of the types below verbatim, and `api-src\` holds those source files. Start with the [walkthrough](../plugin-guide.en.html); look identifiers up in the [catalogue](CATALOG.en.md). [한국어](API.md).
+This reference describes **SDK 1.3.0b / app 1.3.0, `api_version` 1**. It is the whole surface a plugin may rely on: only what is written here is promised to survive an app update (see the [compatibility policy](#compatibility)). `javadoc\index.html` in this folder carries the signatures and comments of the types below verbatim, and `api-src\` holds those source files. Start with the [walkthrough](../plugin-guide.en.html); look identifiers up in the [catalogue](CATALOG.en.md). [한국어](API.md).
 
 [Manifest](#manifest) · [Lifecycle](#lifecycle) · [Methods](#context) · [Events](#events) · [Hooks](#hooks) · [Bytecode](#bytecode) · [Data fragments](#data-mods) · [Compatibility policy](#compatibility) · [Do not](#practices) · [Testing](#testing) · [Catalogue](#catalogue) · [Outside the promise](#alternatives) · [Recipes](#recipes)
 
@@ -351,7 +351,7 @@ A broken fragment is skipped with one warning; if the merged set fails engine va
 - "Additive only" also means a method, hook or topic added in a later app is absent from older apps with the same `api_version`. Declare the app version you tested in `app_version` in `plugin.json`; a running app that differs shows an informational chip in the Mods tab (it blocks nothing).
 - Outside the promise: the shape of core classes a transformer touches, public classes outside `PluginContext` and this document's type table (callable from the class path, free to change per release), the app's own keys in `conf\settings.properties`.
 - (Current build) The 1.3.0 loader reads `api_version` but does not act on it; the refusals and chips above are enforced by the loader from the next app version.
-- **SDK 1.3.0a is a revision for app 1.3.0.** It updates the example activation instructions and build-tool messages. `sdk_version` is `1.3.0a`, `app_version` is `1.3.0`, and `api_version` remains `1`.
+- The SDK version equals the app version (`sdk_version` = `app_version` in `sdk.json`); `api_version` is the separate compatibility number in this document's title. See the release notes for documentation and example revisions.
 
 <a id="practices"></a>
 
