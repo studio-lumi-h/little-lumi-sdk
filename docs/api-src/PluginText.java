@@ -3,6 +3,7 @@ package com.group_finity.mascot.lumi.plugin;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.JarURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -38,7 +39,7 @@ import java.util.function.Supplier;
  */
 public final class PluginText {
     private final String pluginId;
-    private final String jarName;
+    private final Path jarPath;
     private final ClassLoader loader;
     private final Supplier<String> language;
     private final BiFunction<String, String, String> appBundle;
@@ -47,7 +48,7 @@ public final class PluginText {
     PluginText(String pluginId, Path jar, ClassLoader loader, Supplier<String> language,
                BiFunction<String, String, String> appBundle) {
         this.pluginId = pluginId == null ? "" : pluginId;
-        this.jarName = jar == null || jar.getFileName() == null ? null : jar.getFileName().toString();
+        this.jarPath = jar == null ? null : canonical(PluginLoader.runtimeJarFor(jar));
         this.loader = loader == null ? ClassLoader.getSystemClassLoader() : loader;
         this.language = language == null ? () -> "en" : language;
         this.appBundle = appBundle == null ? (k, f) -> f : appBundle;
@@ -147,7 +148,7 @@ public final class PluginText {
                 if (first == null) {
                     first = u;
                 }
-                if (jarName != null && u.toString().contains("/" + jarName + "!")) {
+                if (jarPath != null && belongsToJar(u)) {
                     return u;
                 }
                 if (firstDir == null && "file".equals(u.getProtocol())) {
@@ -158,9 +159,32 @@ public final class PluginText {
             // 먼저: 검사 클래스패스에 다른 플러그인 jar(LUMI Chat)가 같이 실려 있으면 그쪽의
             // plugin_ko.properties 가 먼저 잡혀 예제의 문구가 영어로 나왔다(러너에서 실측).
             // 폴더도 없으면 처음 것 — 한 jar 만 있을 때 그것이 곧 제 것이다.
-            return jarName == null && firstDir != null ? firstDir : first;
+            // A missing translation in our jar must fall through to our next language,
+            // never to another plugin's file with the same resource name.
+            return jarPath != null ? null : firstDir != null ? firstDir : first;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private boolean belongsToJar(URL resource) {
+        try {
+            if (!(resource.openConnection() instanceof JarURLConnection connection)) {
+                return false;
+            }
+            URL archive = connection.getJarFileURL();
+            return "file".equals(archive.getProtocol())
+                    && jarPath.equals(canonical(Path.of(archive.toURI())));
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private static Path canonical(Path path) {
+        try {
+            return path.toRealPath();
+        } catch (java.io.IOException ignored) {
+            return path.toAbsolutePath().normalize();
         }
     }
 

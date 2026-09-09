@@ -512,6 +512,7 @@ public final class PluginTestKit implements AutoCloseable {
         List<String> active = List.of("Lumi");
         List<Rectangle> screens = List.of(new Rectangle(0, 0, 1920, 1080));
         boolean sounds = true;
+        int micCaptures;
 
         record Choice(String owner, String imageSet, String text, List<String> options, long timeoutMs,
                       long maxWaitMs, long offeredAt, IntConsumer onPick) {
@@ -1035,9 +1036,12 @@ public final class PluginTestKit implements AutoCloseable {
         }
 
         @Override
-        public void speak(PcmAudio audio, Runnable onStart, Runnable onEnd) {
+        public synchronized void speak(PcmAudio audio, Runnable onStart, Runnable onEnd) {
             record("speak", audio == null ? 0L : audio.millis());
-            if (audio == null) {
+            if (audio == null || micCaptures > 0) {
+                if (micCaptures > 0) {
+                    record("speakSuppressed");
+                }
                 return;
             }
             speaking = true;
@@ -1054,6 +1058,19 @@ public final class PluginTestKit implements AutoCloseable {
         public void stopSpeaking() {
             record("stopSpeaking");
             speaking = false;
+        }
+
+        @Override
+        public synchronized void beginMicCapture(String owner, MicCaptureLease lease) {
+            record("beginMicCapture", owner);
+            micCaptures++;
+            speaking = false;
+            lease.bind(() -> {
+                synchronized (Recording.this) {
+                    micCaptures--;
+                    record("endMicCapture", owner);
+                }
+            });
         }
 
         @Override

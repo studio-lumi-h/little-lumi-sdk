@@ -633,7 +633,7 @@ ctx.hook("selftalk.line", (hook, current, c) -&gt; ctx.prefs().getBoolean("quiet
   <p>Zip up the whole <code>mods\hello\</code> folder. The person receiving it unpacks it into their own <code>mods\</code>, starts Lumi again, and that is it. You can put a page of notes (<code>readme.txt</code>) in the mod folder as well. Loose files directly under <code>mods\</code> are ignored, so nothing gets messy.</p>
 
   <h3>On the Steam Workshop</h3>
-  <p>If a Workshop item has a <code>plugins\</code> folder, Lumi recognises it as a "plugin item" and puts it into the subscriber's <code>mods\workshop-&lt;number&gt;\</code> automatically. Once subscribed, it loads from the next launch. The item folder only has to be the same shape as a mod folder.</p>
+  <p>If a Workshop item has a <code>plugins\</code> folder, Lumi recognises it as a "plugin item" and puts it into the subscriber's <code>mods\workshop-&lt;number&gt;\</code> automatically. Subscribed code mods are off by default. Enable the checkbox in Settings → Mods and accept the risk notice; code and data then apply on the next app start. Changes to JARs or dependency libraries require consent again. The item folder only has to be the same shape as a mod folder.</p>
 <div class="tree">hello-workshop\
 ├─ plugins\mynick.hello.jar
 ├─ plugins\plugin.json          <span class="c">← nice to have (for the item page). The one inside the jar is the real one</span>

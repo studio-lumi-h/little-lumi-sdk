@@ -632,7 +632,7 @@ ctx.hook("selftalk.line", (hook, current, c) -&gt; ctx.prefs().getBoolean("quiet
   <p><code>mods\hello\</code> 폴더를 통째로 zip으로 묶어 주세요. 받는 사람은 자기 <code>mods\</code>에 풀고 루미를 다시 실행하면 끝입니다. 안내문 한 장(<code>readme.txt</code>)을 모드 폴더에 같이 넣어도 됩니다. <code>mods\</code> 바로 아래의 낱개 파일은 무시되니 지저분해지지 않습니다.</p>
 
   <h3>스팀 창작마당으로</h3>
-  <p>창작마당 항목에 <code>plugins\</code> 폴더가 있으면 루미가 「플러그인 항목」으로 알아보고, 구독한 사람의 <code>mods\workshop-&lt;번호&gt;\</code>에 자동으로 넣어 줍니다. 구독하면 다음 실행부터 바로 실립니다. 항목 폴더는 모드 폴더와 같은 모양이면 됩니다.</p>
+  <p>창작마당 항목에 <code>plugins\</code> 폴더가 있으면 루미가 「플러그인 항목」으로 알아보고, 구독한 사람의 <code>mods\workshop-&lt;번호&gt;\</code>에 자동으로 넣어 줍니다. 구독한 코드 모드는 기본적으로 꺼져 있습니다. 설정의 모드 체크박스를 켜고 위험 안내에 동의하면, 코드와 데이터가 다음 앱 실행부터 적용됩니다. JAR 또는 의존 라이브러리가 바뀌면 다시 동의해야 합니다. 항목 폴더는 모드 폴더와 같은 모양이면 됩니다.</p>
 <div class="tree">hello-workshop\
 ├─ plugins\mynick.hello.jar
 ├─ plugins\plugin.json          <span class="c">← 있으면 좋습니다(항목 페이지 참고용). jar 안의 것이 진짜</span>

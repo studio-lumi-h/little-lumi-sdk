@@ -10,6 +10,7 @@
 | `PluginContext` | 앱이 건네는 문 — 말하기·행동·상태 조회·제어·이벤트·훅·설정·UI 자리·단축키·바이트코드 |
 | `MascotState` | 캐릭터 하나의 지금 상태(id·이미지셋·사각형·발끝·방향·행동, 바탕화면 좌표) — `ctx.mascots()` 가 돌려주는 레코드 |
 | `PcmAudio` | 재생할 소리 한 토막(형식·PCM 바이트·길이 ms) — `ctx.speak()` 가 받는 레코드 |
+| `MicCaptureLease` | 마이크 녹음 동안 앱 음성을 억제하는 손잡이 — `ctx.beginMicCapture()`로 얻고 `close()`로 반환(SDK 1.3.0 추가) |
 | `HotkeyResult` | `ctx.bindHotkey()` 의 답 — `OK` `NONE` `BAD_COMBINATION` `REFUSED` `UNSUPPORTED` |
 | `PluginTheme` | 앱의 옷 — 색·CJK 글꼴·단추/토글/슬라이더 손질·카드 조각 (`ctx.theme()`) |
 | `Json` | 의존성 없는 JSON 읽기·쓰기(`parse` `get` `getString` `write`) — LLM 답장·설정 파일에 |
@@ -18,7 +19,7 @@
 | `LumiTransformer` | 로드 전 클래스 변환기 서비스 |
 | `PluginDescriptor` | 읽힌 `plugin.json` |
 | `PluginPrefs`, `PluginText` | 제 설정 저장소(`ctx.prefs()`)와 제 5개 언어 문구(`ctx.text()`) |
-| `PluginUi.MenuHandle`, `PluginUi.FeatureToggle` | 메뉴 줄·단추의 손잡이와 [적용] 시점의 기능 스위치 |
+| `PluginUi.MenuHandle`, `PluginUi.FeatureToggle` | 메뉴 줄·단추의 손잡이와 즉시 반영되는 기능 스위치 |
 | `ScheduledHandle` · 실험 | 예약 작업의 취소·취소 여부 |
 | `PluginSettingsSchema` | 선언형 설정 파서 — 보통은 `plugin.json` 에 선언만 하면 됩니다 |
 | `PluginTestKit` · 실험 | 가짜 컨텍스트·호출 기록·직접 미는 시계(§10) |
@@ -73,7 +74,7 @@ jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 `id` 뿐입니�
 - `stop()` 뒤 **앱이 거둡니다**: 이 컨텍스트로 건 리스너·훅·전역 단축키·메뉴 줄·기능 스위치·예약 작업은 플러그인이 정리하지 않았어도 로더가 전부 해제합니다. 시작 실패 때도 곧바로 해제하며, 실패한 플러그인의 의존자는 시작하지 않습니다. 실행 중 켜기·끄기는 없습니다(모드 탭의 스위치는 다음 실행부터).
 - **직접 만든 것은 직접 닫습니다**: 창·클라이언트·스트림·작업 스레드는 `stop()` 에서 닫으세요. **`prefs().onChange(...)` 리스너도 컨텍스트가 거두지 않습니다** — 등록 장부에 없으니 리스너를 들고 있다가 `stop()` 에서 `removeOnChange(listener)` 로 푸세요(§13 `QuietPlugin`). 이미 변환한 클래스는 되돌리지 않습니다.
 - 바꾼 **상태도 되돌립니다**: `claimClickGreeting()` 의 점유는 이 플러그인이 아직 쥔 경우에만 풀리고, `summon()` 으로 부르고 아직 `dismiss()` 하지 않은 캐릭터는 보내며, `setCharactersVisible(false)` 로 숨겨 둔 채였으면 다시 보입니다. 뒤의 둘은 **앱이 계속 도는 동안**(시작 실패)에만 하고, 앱 종료 때는 캐릭터에 손대지 않습니다.
-- 그 뒤로 **컨텍스트는 죽은 것**입니다: 늦게 오는 등록(`on`·`hook`·`every`·`after`·`onEdt`·`offEdt`·메뉴 줄·`addSettingsButton`·`addFeatureToggle`·`bindHotkey`·`claimClickGreeting`·`onLoad`·`patch`·`ask`·`summon`·`dismiss`·`moveTo`·`setCharactersVisible`)과 행동 문 전부(`say`·`sayQueued`·`showBusy`·`behave`·`speak`·`mouthFlap`·`heart`·`playSound`·`awardAffection`·`publish`·`setSetting`·`writeAtomic`·`manageWindow`)는 **던지지 않고** 무시됩니다 — 로그에 플러그인마다 한 줄 `<id>: registration after stop() ignored: <what>` 이 남고, 돌아오는 것은 무해한 값입니다(이미 취소된 `ScheduledHandle`, `removed()` 가 참인 `MenuHandle`/`FeatureToggle`, `HotkeyResult.REFUSED`, `summon` 은 -1, `dismiss`/`moveTo`/`onLoad`/`patch` 는 false). `ask` 의 콜백에는 `-2` 가 가는데, 이때만은 정상 경로의 전용 스레드가 아니라 **부른 스레드에서 그 자리에서** 전달됩니다. `mascots()`·`prefs()`·`text()` 같은 읽기는 계속 답합니다. 유일한 예외: `every()`/`after()` 는 `task == null`(그리고 `every` 의 `periodMs <= 0`)을 해제 여부보다 먼저 검사하므로 죽은 컨텍스트에서도 `IllegalArgumentException` 을 던집니다. `stop()` 안에서 제 스레드를 멈추면 이 줄을 볼 일이 없습니다.
+- 그 뒤로 **컨텍스트는 죽은 것**입니다: 늦게 오는 등록(`on`·`hook`·`every`·`after`·`onEdt`·`offEdt`·메뉴 줄·`addSettingsButton`·`addFeatureToggle`·`bindHotkey`·`claimClickGreeting`·`onLoad`·`patch`·`ask`·`summon`·`dismiss`·`moveTo`·`setCharactersVisible`)과 행동 문 전부(`say`·`sayQueued`·`showBusy`·`behave`·`speak`·`mouthFlap`·`heart`·`playSound`·`awardAffection`·`publish`·`setSetting`·`writeAtomic`·`manageWindow`)는 **던지지 않고** 무시됩니다 — 로그에 플러그인마다 한 줄 `<id>: registration after stop() ignored: <what>` 이 남고, 돌아오는 것은 무해한 값입니다(이미 취소된 `ScheduledHandle`, `removed()` 가 참인 `MenuHandle`/`FeatureToggle`, `HotkeyResult.REFUSED`, `summon` 은 -1, `dismiss`/`moveTo`/`onLoad`/`patch` 는 false). `ask` 의 콜백에는 `-2` 가 가는데, 이때만은 정상 경로의 전용 스레드가 아니라 **부른 스레드에서 그 자리에서** 전달됩니다. `mascots()`·`prefs()`·`text()` 같은 읽기는 계속 답합니다. 예외: `beginMicCapture()`는 종료된 컨텍스트에서 `IllegalStateException`을 던집니다. `every()`/`after()` 는 `task == null`(그리고 `every` 의 `periodMs <= 0`)을 해제 여부보다 먼저 검사하므로 죽은 컨텍스트에서도 `IllegalArgumentException` 을 던집니다. `stop()` 안에서 제 스레드를 멈추면 이 줄을 볼 일이 없습니다.
 - 같은 id 가 둘이면 모드 목록의 **아래** 것이 실리고 위 것은 DUPLICATE 로 표시됩니다. `dependencies` 는 시작 순서일 뿐 라이브러리 격리가 아닙니다.
 - `plugins\lib\*.jar`(앱 것 + 켜진 모드 것)는 클래스패스에 오릅니다 — fat jar 는 필요 없습니다. 코어 jar 가 항상 앞이라 코어 클래스는 가릴 수 없습니다.
 
@@ -155,6 +156,7 @@ jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 `id` 뿐입니�
 | `setSpeechVolume(percent)` | **공유** 음성 음량(0–100) — 모든 플러그인과 보이스팩이 같은 손잡이. 사용자가 보는 설정에서 미세요 |
 | `mouthFlap(imageSet, whileSpeaking)`, `stopMouthFlap()` | **입 뻐끔** — `whileSpeaking` 이 참인 동안(1.1초마다 `Talk` 행동을 다시 겁니다) 입을 움직이다 스스로 멎습니다. `speak` 와 짝: `ctx.mouthFlap(set, ctx::isSpeaking)` |
 | `mouthFlapFor(imageSet, ms)` · 실험 | 정한 시간만큼 입 뻐끔 — 소리를 직접 틀지 않는 줄에 |
+| `beginMicCapture()` → `MicCaptureLease` | **EDT 밖에서** 호출. 현재 음성 출력 라인이 실제 닫힐 때까지 기다린 뒤 반환. 보유 중 본체 보이스팩·TTS·미리듣기·다른 플러그인의 새 음성을 버린다. 녹음 장치를 닫은 뒤 lease를 `close()`한다(checked exception 없음). 중첩/여러 플러그인의 lease가 모두 닫혀야 새 음성이 가능하고, 버렸던 음성은 재생되지 않는다. 컨텍스트 종료 때 자기 lease를 자동 반환하며 진행 중 획득도 취소한다. EDT/종료 후/중단된 획득/출력 닫기 실패는 `IllegalStateException`. 다른 앱이나 효과음을 음소거하지 않고 마이크 권한을 부여하지도 않는다 |
 
 ### 3.6 이벤트와 훅
 
@@ -181,7 +183,7 @@ jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 `id` 뿐입니�
 | `addTrayItem(label, action)` → `PluginUi.MenuHandle` | 트레이 메뉴 줄(앱 줄 아래·「종료」 위). `action` 은 EDT. 돌려주는 **손잡이**로 `setLabel`·`setEnabled`·`setChecked(Boolean)`·`remove()`, 읽기 `label()`·`enabled()`·`checked()`·`removed()` — 줄이 안 바뀌면 무시해도 됩니다. 바뀐 것은 다음에 메뉴가 열릴 때 보입니다(메뉴는 열 때마다 새로 짓습니다). 어느 스레드에서든. **이름은 문자열이라 언어가 바뀌어도 스스로 안 바뀝니다** — `settings` 이벤트의 `phase=language` 를 듣고 `setLabel(text(...))` 로 다시 놓으세요(LUMI Chat·Super Bongo 가 그렇게 합니다) |
 | `addTrayToggle(label, initial, onChange)` → `MenuHandle` · 실험 | **토글 줄** — 이름은 그대로, 「켜짐/꺼짐」 상태 칩(앱의 「잠깐 숨기기」 문법). 누르면 스스로 뒤집고 `onChange(새 값)` 을 EDT 에서 부릅니다; `setChecked` 는 칩만 바꾸고 `onChange` 를 부르지 않습니다 |
 | `addSettingsButton(label, action)` → `MenuHandle` | 설정 창 정보 탭의 사용법 단추 가까이에 단추 하나. `action` 은 EDT. 앱은 설정 창을 열 때마다 등록 목록을 다시 읽으므로 손잡이의 이름·활성·제거는 다음에 창을 열 때 반영됩니다 |
-| `addFeatureToggle(label, description, state, onChange, dependsOnFeature)` → `PluginUi.FeatureToggle` | 루미 탭 「기능 켜고 끄기」 카드의 **맨 아래**에 앱 모양의 스위치 줄. 등록이 0개면 줄·여백도 없습니다. 창을 열 때 `state` 로 체크를 채우고, 체크가 바뀌었을 때만 [적용] 때 `onChange(새 값)` 으로 건넵니다. false 를 돌려주면 `state` 로 되돌립니다. `dependsOnFeature`(`bongo` 등)가 꺼지면 회색이 되지만 체크는 보존됩니다. 하네스 `press:feature:<라벨>` |
+| `addFeatureToggle(label, description, state, onChange, dependsOnFeature)` → `PluginUi.FeatureToggle` | 루미 탭 「기능 켜고 끄기」 카드의 **맨 아래**에 앱 모양의 스위치 줄. 등록이 0개면 줄·여백도 없습니다. 창을 열 때 `state` 로 체크를 채우고, 앱 1.3.0부터 체크가 바뀌는 즉시 `onChange(새 값)` 으로 건넵니다. false 를 돌려주면 `state` 로 되돌립니다. `dependsOnFeature`(`bongo` 등)가 꺼지면 회색이 되지만 체크는 보존됩니다. 하네스 `press:feature:<라벨>` |
 | `addCharacterMenuItem(label, forImageSet, action)` → `MenuHandle` | 캐릭터 우클릭 메뉴 줄. `forImageSet` 이 캐릭터마다 보일지 정합니다(null = 모두), `action(imageSet, mascotId)`. 손잡이는 트레이 줄과 같습니다 |
 | `addCharacterMenuToggle(label, forImageSet, initial, onChange)` → `MenuHandle` · 실험 | 캐릭터 메뉴의 토글 줄. 토글 상태는 줄 하나에 하나(캐릭터마다가 아님). `onChange(새 값)` 은 EDT |
 | `claimClickGreeting()` | 클릭 인사를 이 플러그인이 맡는다고 알립니다(앱의 클릭 인사가 조용해집니다) |
@@ -363,6 +365,10 @@ app         {phase=exit}
 <a id="testing"></a>
 
 ## 10. 테스트 킷 — `PluginTestKit`
+
+SDK 1.3.0의 `beginMicCapture()`도 가짜 백엔드에서 검사할 수 있습니다. `beginMicCapture`/`endMicCapture` 호출이 소유자 id와 함께 기록되고, lease 보유 중 `speak`는 `speakSuppressed`를 기록하며 재생 콜백을 호출하지 않습니다. `kit.close()`는 중첩 lease를 모두 반환합니다. 실제 오디오 장치는 열지 않습니다.
+
+`api_version`은 호환 가능한 추가이므로 1을 유지합니다. 이 메서드가 없는 이전 앱도 지원하는 플러그인은 시작 시 메서드 존재를 확인하고 음성 입력만 비활성화해야 합니다. `app_version`은 표시용이며 최소 앱 버전을 강제하지 않습니다. SDK 1.3.0으로 컴파일했다는 사실만으로 이전 앱에 새 메서드가 생기지는 않습니다.
 
 `lib\Shimeji-ee.jar` 는 게이트 때문에 앱을 띄울 수 없지만, 플러그인의 **단위 검사**는 앱 없이 됩니다. `PluginTestKit` 이 주는 `PluginContext` 는 문마다 이 킷으로 이어져 있어 — 플러그인이 한 일은 **기록**되고, 읽는 값은 **가짜**에서 오고, 이벤트·훅·시계는 검사가 직접 밉니다. 엔진·창·스팀은 하나도 안 뜹니다. `tools\run_tests.py <플러그인 폴더>` 가 `test\*.java` 를 굽고 돌립니다(예 `examples\hello\test\HelloPluginTest.java`; 프레임워크 없이 `main` 하나).
 

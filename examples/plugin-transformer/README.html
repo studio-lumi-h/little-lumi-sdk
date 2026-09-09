@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>예제 — 플러그인 변환기: 본체 클래스의 메서드 하나만 로드 직전에 바꾸기</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;font-size:18px;line-height:1.8;color:#243349;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:32px 24px 72px}header{border-bottom:1px solid #ccd8e6;margin-bottom:24px;padding-bottom:18px}.kicker{font-size:14px;color:#536c89}h1{font-size:clamp(28px,4vw,38px);line-height:1.3;word-break:keep-all;margin:14px 0}h2{font-size:26px;line-height:1.4;margin:38px 0 14px}h3{font-size:22px;line-height:1.5;margin-top:28px}h4,h5,h6{font-size:20px}p{margin:12px 0}a{color:#175baa;text-underline-offset:3px;overflow-wrap:anywhere}nav{display:flex;gap:10px 20px;flex-wrap:wrap}article{background:white;border:1px solid #d2deea;border-radius:14px;padding:26px;min-width:0;overflow-wrap:anywhere}ul,ol{padding-left:28px}li{margin:8px 0}code{font-family:ui-monospace,Consolas,monospace;font-size:1rem;white-space:normal;overflow-wrap:anywhere}p code,li code,td code{background:#edf2f8;border-radius:4px;padding:1px 3px}.codebox{border:1px solid #c8d7e8;border-radius:10px;overflow:hidden;margin:20px 0;background:#f5f8fc}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #d7e2ee}.codebar span{font-size:14px;color:#526783}button{font:inherit;font-size:16px;border:0;border-radius:6px;background:#175baa;color:#fff;padding:7px 14px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d68c19;outline-offset:3px}pre{margin:0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65;font-size:18px}pre code{white-space:pre-wrap;font-size:18px;background:none}table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:18px;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #d1dce8;overflow-wrap:anywhere}th{background:#eaf1fa}blockquote{margin:18px 0;padding:6px 18px;border-left:4px solid #87a8cc;background:#f2f6fc}.copy-status{display:block;min-height:1.4em;font-size:15px;color:#3b644b}details{margin:16px 0}summary{cursor:pointer;color:#175baa}.contents{font-size:16px}.contents ol{columns:2}footer{margin-top:28px;color:#5c7088;font-size:14px}.doclist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;padding:0}.doclist li{background:white;border:1px solid #d2deea;border-radius:9px;padding:14px;margin:0}
+@media(max-width:720px){main{padding:22px 14px 50px}article{padding:17px}h2{font-size:24px}.contents ol{columns:1}.doclist{grid-template-columns:1fr}table,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border:1px solid #d1dce8;border-radius:8px;margin:12px 0;padding:5px}td{border:0;padding:7px}td:before{content:attr(data-label);display:block;font-size:15px;color:#526783;font-weight:700}.codebar{flex-wrap:wrap}pre{padding:13px}}
+@media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
+</style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="../../index.html">SDK 문서 / Documents</a><a href="../../README.html">한국어</a><a href="../../README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#%EA%B5%BD%EA%B8%B0">굽기</a></li><li><a href="#%EC%84%A4%EC%B9%98%ED%99%95%EC%9D%B8">설치·확인</a></li><li><a href="#%EC%96%B4%EB%94%94%EA%B9%8C%EC%A7%80-%EB%90%98%EB%82%98">어디까지 되나</a></li><li><a href="#%EC%A7%81%EC%A0%91-%EB%A7%8C%EB%93%A4-%EB%95%8C">직접 만들 때</a></li></ol></details><article><h1 id="예제-플러그인-변환기-본체-클래스의-메서드-하나만-로드-직전에-바꾸기">예제 — 플러그인 변환기: 본체 클래스의 메서드 하나만 로드 직전에 바꾸기</h1>
+<p>본체 jar 의 <code>FocusDirector.setManual(boolean)</code> 을 <strong>로드 직전에</strong> 고쳐 쓴다. JDK 25 표준 <code>java.lang.classfile</code> API 만 쓰므로 라이브러리가 필요 없다.</p>
+<p>무엇이 바뀌나:</p>
+<ol start="1">
+<li>메서드 맨 앞에 <code>FocusPatch.onSetManual(enabled)</code> 호출이 끼어든다 — 로그에 <code>MOD TRANSFORMER HIT: FocusDirector.setManual(true) rewritten by …</code> 가 남는다.</li>
+<li>집중 모드를 켤 때 루미가 하는 말이 <code>FocusPatch.ENGAGED_LINE</code> 으로 바뀐다 (번들 키 <code>FocusModeEngaged</code> → 없는 키, 대체 문구 상수 → 우리 문구; 둘 다 <code>ldc</code> 상수 교체).</li>
+</ol>
+<h2 id="굽기">굽기</h2>
+<div class="codebox"><div class="codebar"><span>Text / 문안</span><button type="button" data-copy="code-1">Copy / 복사</button></div><pre><code id="code-1">python tools\build_plugin.py examples\plugin-transformer
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>→ <code>dist\lumi.sdk.example.transformer\plugins\lumi.sdk.example.transformer.jar</code></p>
+<h2 id="설치확인">설치·확인</h2>
+<ol start="1">
+<li><code>dist\lumi.sdk.example.transformer\</code> 폴더를 게임의 <code>mods\sdk-example\</code> 로 복사하고 앱을 다시 켠다.</li>
+<li>설정 → 모드 탭에 플러그인 칩이 붙은 줄이 생긴다. 로그(<code>LittleLumiLog0.log.0</code>)에 <code>Plugin loaded: lumi.sdk.example.transformer 1.0.0 (lumi.sdk.example.transformer.jar) sha256=…</code> 와 <code>focus transformer applied=true</code>.</li>
+<li>트레이 메뉴의 「SDK example: toggle focus (patched greeting)」를 누르면 루미가 바뀐 문구를 말하고 로그에 <code>MOD TRANSFORMER HIT</code> 가 찍힌다.</li>
+<li>손 안 대고 확인하려면(검증 하네스): 앱을 켜기 전에 빈 파일 <code>plugindata\lumi.sdk.example.transformer\selftest.txt</code> 를 만들어 둔다. 준비되면 플러그인이 집중 모드를 스스로 켰다 끄고 <code>selftest done: patched method ran 2 time(s)</code> 를 남긴다.</li>
+</ol>
+<h2 id="어디까지-되나">어디까지 되나</h2>
+<ul>
+<li>대상 클래스가 <strong>아직 로드되지 않았으면</strong> 무엇이든 바꿀 수 있다(메서드·필드 추가 포함). 이미 로드된 뒤라면 <code>PluginContext.patch()</code> 로 다시 변환하되 JVM 제한(메서드 본문만) 안에서다.</li>
+<li>보호 목록 일곱(<code>SteamGate</code>·<code>OfflineToken</code>·<code>Features</code>·<code>lumi.plugin.*</code>·<code>lumi.steam.*</code>·<code>AffectionStore</code>· <code>Achievements</code>)은 건네지지 않는다 — 그 클래스에는 <code>wants()</code> 조차 불리지 않는다. 그 밖의 본체 클래스는 전부 열려 있다.</li>
+<li>던지는 변환기는 로그만 남기고 클래스는 원본 그대로 로드된다.</li>
+<li>같은 클래스를 여러 플러그인이 건드리면 이어 적용된다 — <strong>겹쳐 쓸 수 있다</strong>. 모드 목록에서 <strong>아래 모드가 먼저</strong> 등록된다(로더가 플러그인 jar 를 역순으로 클래스패스에 붙인다). 다만 <code>ServiceLoader</code> 순서는 계약이 아니니 <strong>적용 순서에 기대지 말 것</strong>.</li>
+<li>그래도 <strong>마지막 수단</strong>이다. 앱 업데이트로 그 메서드가 바뀌면 깨진다. 먼저 이벤트·공개 API와 <a href="../../docs/API.html"><code>docs/API.md</code></a>의 판정 훅을 사용하고, 필요한 기능이 없는 경우에만 변환기를 사용한다.</li>
+</ul>
+<h2 id="직접-만들-때">직접 만들 때</h2>
+<ul>
+<li><code>wants()</code> 는 모든 클래스마다 불리니 문자열 비교 하나로 끝내라.</li>
+<li>바꿀 메서드의 서술자는 <code>javap -p -cp lib\Shimeji-ee.jar &lt;클래스&gt;</code> 로 확인한다. 이 예제의 훅은 <code>public static</code> 이어야 한다 — 다른 패키지에서 <code>invokestatic</code> 으로 부르므로.</li>
+<li><code>transform()</code> 은 클래스 로딩 락을 쥔 채 돈다. 그 안에서 앱을 건드리지 말 것.</li>
+</ul></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const code=document.getElementById(button.dataset.copy);let copied=false;
+ try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){
+  const field=document.createElement('textarea');field.value=code.textContent;
+  field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.focus();field.select();
+  try{copied=document.execCommand('copy')}catch(error){}field.remove();
+ }
+ const status=button.closest('.codebox').querySelector('.copy-status');
+ status.textContent=copied?'Copied / 복사 완료':'Select the text to copy / 문안을 선택해 복사해 주세요';
+}));
+</script></body></html>

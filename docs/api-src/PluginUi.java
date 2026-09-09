@@ -217,7 +217,7 @@ public final class PluginUi {
 
     /**
      * A plugin-owned switch in the Lumi tab's 「기능 켜고 끄기」 card. The app asks
-     * {@code state} whenever a settings window opens and calls {@code onChange} only on Apply.
+     * {@code state} whenever a settings window opens and calls {@code onChange} when the user changes the switch.
      * Returning false rejects the proposed value, so the checkbox goes back to {@code state}.
      * A dependency such as {@code bongo} only disables the row; it never clears its check.
      */

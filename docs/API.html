@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Little LUMI Model — 플러그인 API 참조 (api_version 1)</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;font-size:18px;line-height:1.8;color:#243349;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:32px 24px 72px}header{border-bottom:1px solid #ccd8e6;margin-bottom:24px;padding-bottom:18px}.kicker{font-size:14px;color:#536c89}h1{font-size:clamp(28px,4vw,38px);line-height:1.3;word-break:keep-all;margin:14px 0}h2{font-size:26px;line-height:1.4;margin:38px 0 14px}h3{font-size:22px;line-height:1.5;margin-top:28px}h4,h5,h6{font-size:20px}p{margin:12px 0}a{color:#175baa;text-underline-offset:3px;overflow-wrap:anywhere}nav{display:flex;gap:10px 20px;flex-wrap:wrap}article{background:white;border:1px solid #d2deea;border-radius:14px;padding:26px;min-width:0;overflow-wrap:anywhere}ul,ol{padding-left:28px}li{margin:8px 0}code{font-family:ui-monospace,Consolas,monospace;font-size:1rem;white-space:normal;overflow-wrap:anywhere}p code,li code,td code{background:#edf2f8;border-radius:4px;padding:1px 3px}.codebox{border:1px solid #c8d7e8;border-radius:10px;overflow:hidden;margin:20px 0;background:#f5f8fc}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #d7e2ee}.codebar span{font-size:14px;color:#526783}button{font:inherit;font-size:16px;border:0;border-radius:6px;background:#175baa;color:#fff;padding:7px 14px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d68c19;outline-offset:3px}pre{margin:0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65;font-size:18px}pre code{white-space:pre-wrap;font-size:18px;background:none}table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:18px;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #d1dce8;overflow-wrap:anywhere}th{background:#eaf1fa}blockquote{margin:18px 0;padding:6px 18px;border-left:4px solid #87a8cc;background:#f2f6fc}.copy-status{display:block;min-height:1.4em;font-size:15px;color:#3b644b}details{margin:16px 0}summary{cursor:pointer;color:#175baa}.contents{font-size:16px}.contents ol{columns:2}footer{margin-top:28px;color:#5c7088;font-size:14px}.doclist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;padding:0}.doclist li{background:white;border:1px solid #d2deea;border-radius:9px;padding:14px;margin:0}
+@media(max-width:720px){main{padding:22px 14px 50px}article{padding:17px}h2{font-size:24px}.contents ol{columns:1}.doclist{grid-template-columns:1fr}table,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border:1px solid #d1dce8;border-radius:8px;margin:12px 0;padding:5px}td{border:0;padding:7px}td:before{content:attr(data-label);display:block;font-size:15px;color:#526783;font-weight:700}.codebar{flex-wrap:wrap}pre{padding:13px}}
+@media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
+</style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="../index.html">SDK 문서 / Documents</a><a href="../README.html">한국어</a><a href="../README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#1-pluginjson">1. plugin.json</a></li><li><a href="#2-%EC%83%9D%EB%AA%85%EC%A3%BC%EA%B8%B0">2. 생명주기</a></li><li><a href="#3-plugincontext">3. PluginContext</a></li><li><a href="#4-%EC%9D%B4%EB%B2%A4%ED%8A%B8-ctxontopic-map--">4. 이벤트 — ctx.on(topic, map -&gt; …)</a></li><li><a href="#5-%ED%9B%85-ctxhookid-hook-current-ctx--">5. 훅 — ctx.hook(id, (hook, current, ctx) -&gt; …)</a></li><li><a href="#6-%EB%B0%94%EC%9D%B4%ED%8A%B8%EC%BD%94%EB%93%9C-%EB%A7%88%EC%A7%80%EB%A7%89-%EC%88%98%EB%8B%A8">6. 바이트코드 — 마지막 수단</a></li><li><a href="#7-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A1%B0%EA%B0%81-%EC%BD%94%EB%93%9C-%EC%97%86%EB%8A%94-%EB%AA%A8%EB%93%9C">7. 데이터 조각 (코드 없는 모드)</a></li><li><a href="#8-%ED%98%B8%ED%99%98-%EC%A0%95%EC%B1%85">8. 호환 정책</a></li><li><a href="#9-%ED%95%98%EC%A7%80-%EB%A7%90-%EA%B2%83">9. 하지 말 것</a></li><li><a href="#10-%ED%85%8C%EC%8A%A4%ED%8A%B8-%ED%82%B7-plugintestkit">10. 테스트 킷 — PluginTestKit</a></li><li><a href="#11-%EC%B9%B4%ED%83%88%EB%A1%9C%EA%B7%B8-catalogmd">11. 카탈로그 — CATALOG.md</a></li><li><a href="#12-%EC%95%BD%EC%86%8D-%EB%B0%96%EC%9D%98-%EC%9D%BC%EC%9D%84-%ED%95%98%EB%8A%94-%EB%B2%95">12. 약속 밖의 일을 하는 법</a></li><li><a href="#13-%EC%9E%90%EC%A3%BC-%EC%93%B0%EB%8A%94-%EC%BD%94%EB%93%9C">13. 자주 쓰는 코드</a></li></ol></details><article><h1 id="little-lumi-model-플러그인-api-참조-api_version-1">Little LUMI Model — 플러그인 API 참조 (api_version 1)</h1>
+<p><strong>SDK/앱 1.3.0, <code>api_version</code> 1</strong> 기준 참조입니다. 이 문서는 플러그인이 기대도 되는 표면 전부이고, 여기 적힌 것만이 앱 업데이트를 건너 살아남는다고 약속합니다(<a href="#compatibility">호환 정책</a>). 같은 폴더의 <code>javadoc\index.html</code> 은 아래 타입의 시그니처·주석을 그대로 옮긴 것이고, <code>api-src\</code> 는 그 소스 파일들입니다. 처음이면 <a href="../plugin-guide.html">첫걸음 안내</a>부터 따라 하고, 이름을 찾을 때는 <a href="CATALOG.html">카탈로그</a>를 쓰세요. <a href="API.en.html">English</a>.</p>
+<p><a href="#manifest">매니페스트</a> · <a href="#lifecycle">생명주기</a> · <a href="#context">메서드</a> · <a href="#events">이벤트</a> · <a href="#hooks">훅</a> · <a href="#bytecode">바이트코드</a> · <a href="#data-mods">데이터 조각</a> · <a href="#compatibility">호환 정책</a> · <a href="#practices">하지 말 것</a> · <a href="#testing">테스트</a> · <a href="#catalogue">카탈로그</a> · <a href="#alternatives">약속 밖</a> · <a href="#recipes">자주 쓰는 코드</a></p>
+<table><thead><tr><th>타입 (<code>com.group_finity.mascot.lumi.plugin</code>)</th><th>역할</th></tr></thead><tbody>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>LumiPlugin</code></td><td data-label="역할">진입점 인터페이스 — <code>start(PluginContext)</code> / <code>stop()</code></td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginContext</code></td><td data-label="역할">앱이 건네는 문 — 말하기·행동·상태 조회·제어·이벤트·훅·설정·UI 자리·단축키·바이트코드</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>MascotState</code></td><td data-label="역할">캐릭터 하나의 지금 상태(id·이미지셋·사각형·발끝·방향·행동, 바탕화면 좌표) — <code>ctx.mascots()</code> 가 돌려주는 레코드</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PcmAudio</code></td><td data-label="역할">재생할 소리 한 토막(형식·PCM 바이트·길이 ms) — <code>ctx.speak()</code> 가 받는 레코드</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>MicCaptureLease</code></td><td data-label="역할">마이크 녹음 동안 앱 음성을 억제하는 손잡이 — <code>ctx.beginMicCapture()</code>로 얻고 <code>close()</code>로 반환(SDK 1.3.0 추가)</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>HotkeyResult</code></td><td data-label="역할"><code>ctx.bindHotkey()</code> 의 답 — <code>OK</code> <code>NONE</code> <code>BAD_COMBINATION</code> <code>REFUSED</code> <code>UNSUPPORTED</code></td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginTheme</code></td><td data-label="역할">앱의 옷 — 색·CJK 글꼴·단추/토글/슬라이더 손질·카드 조각 (<code>ctx.theme()</code>)</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>Json</code></td><td data-label="역할">의존성 없는 JSON 읽기·쓰기(<code>parse</code> <code>get</code> <code>getString</code> <code>write</code>) — LLM 답장·설정 파일에</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginEvents</code></td><td data-label="역할">「일어난 뒤 알림」 버스(토픽·페이로드 표는 §4)</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginHooks</code></td><td data-label="역할">「정하기 전 질문」(훅 규약·카탈로그는 §5), <code>PluginHooks.Handler</code></td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>LumiTransformer</code></td><td data-label="역할">로드 전 클래스 변환기 서비스</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginDescriptor</code></td><td data-label="역할">읽힌 <code>plugin.json</code></td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginPrefs</code>, <code>PluginText</code></td><td data-label="역할">제 설정 저장소(<code>ctx.prefs()</code>)와 제 5개 언어 문구(<code>ctx.text()</code>)</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginUi.MenuHandle</code>, <code>PluginUi.FeatureToggle</code></td><td data-label="역할">메뉴 줄·단추의 손잡이와 즉시 반영되는 기능 스위치</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>ScheduledHandle</code> · 실험</td><td data-label="역할">예약 작업의 취소·취소 여부</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginSettingsSchema</code></td><td data-label="역할">선언형 설정 파서 — 보통은 <code>plugin.json</code> 에 선언만 하면 됩니다</td></tr>
+<tr><td data-label="타입 (com.group_finity.mascot.lumi.plugin)"><code>PluginTestKit</code> · 실험</td><td data-label="역할">가짜 컨텍스트·호출 기록·직접 미는 시계(§10)</td></tr>
+</tbody></table>
+<a id="manifest"></a>
+<h2 id="1-pluginjson">1. plugin.json</h2>
+<p>jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 <code>id</code> 뿐입니다. <code>name</code> 이 없거나 비면 id 가 대신 보이니, 배포할 때는 알아볼 이름을 적으세요.</p>
+<table><thead><tr><th>키</th><th>형</th><th>뜻</th></tr></thead><tbody>
+<tr><td data-label="키"><code>id</code></td><td data-label="형">문자열</td><td data-label="뜻"><code>[a-z0-9._-]</code> 1..64(첫 글자는 영문 소문자·숫자). <code>plugindata\&lt;id&gt;\</code> 폴더 이름, 로그 이름, 단축키 접두</td></tr>
+<tr><td data-label="키"><code>name</code></td><td data-label="형">문자열</td><td data-label="뜻">모드 탭에 보이는 이름. 없으면 <code>id</code></td></tr>
+<tr><td data-label="키"><code>version</code></td><td data-label="형">문자열</td><td data-label="뜻">모드 탭 「v…」 칩</td></tr>
+<tr><td data-label="키"><code>author</code>, <code>description</code></td><td data-label="형">문자열</td><td data-label="뜻">표시용</td></tr>
+<tr><td data-label="키"><code>dependencies</code></td><td data-label="형">배열</td><td data-label="뜻">먼저 실려야 하는 플러그인 id. 없으면 이 플러그인은 건너뜁니다</td></tr>
+<tr><td data-label="키"><code>api_version</code></td><td data-label="형">정수</td><td data-label="뜻">이 문서의 호환 번호(§8). 생략하면 <code>1</code></td></tr>
+<tr><td data-label="키"><code>app_version</code></td><td data-label="형">문자열</td><td data-label="뜻">검증한 앱 버전. 실행 중인 앱과 다르면 모드 탭에 「N용」 칩(안내일 뿐 막지 않습니다)</td></tr>
+<tr><td data-label="키"><code>affects_character</code></td><td data-label="형">불리언</td><td data-label="뜻">행동·대사를 바꿉니다(칩)</td></tr>
+<tr><td data-label="키"><code>network</code></td><td data-label="형">불리언</td><td data-label="뜻">인터넷을 씁니다(칩; 강제 아님)</td></tr>
+<tr><td data-label="키"><code>hooks</code></td><td data-label="형">배열</td><td data-label="뜻">답하는 훅 id. 이 앱에 없는 id 는 모드 탭에 표시만 하고 막지 않습니다</td></tr>
+<tr><td data-label="키"><code>settings</code></td><td data-label="형">배열</td><td data-label="뜻"><strong>선언형 설정</strong>. 모드 탭이 그 플러그인 줄의 「자세히」 안에 앱 테마·앱 언어로 그려 주고, 값은 <code>ctx.prefs()</code>(<code>plugindata\&lt;id&gt;\settings.properties</code>)에 <strong>바꾸는 즉시</strong> 저장합니다(저장 실패는 §3.7). 항목: <code>key</code>(필수) · <code>type</code> = <code>bool</code> <code>int</code> <code>string</code> <code>choice</code> <code>hotkey</code> · <code>label</code>/<code>hint</code> = 문자열 하나 또는 <code>{&quot;ko&quot;:…,&quot;en&quot;:…,&quot;ja&quot;:…,&quot;zh&quot;:…,&quot;zh_TW&quot;:…}</code>(정확한 언어 → 언어 → <code>en</code> → 첫 값; 번체는 <code>zh</code> 로 새지 않습니다) · <code>default</code> · <code>min</code>/<code>max</code>/<code>step</code>(int) · <code>options</code>(choice: <code>[{&quot;value&quot;,&quot;label&quot;}]</code> 또는 문자열). 틀린 항목은 로그에 남기고 건너뛰며 실행은 막지 않습니다. 기본값은 <code>start()</code> 전에 <strong>저장소에 없는 열쇠에만</strong> 심어집니다 — 사용자가 바꾼 값은 덮지 않습니다</td></tr>
+</tbody></table>
+<div class="codebox"><div class="codebar"><span>json</span><button type="button" data-copy="code-1">Copy / 복사</button></div><pre><code id="code-1">{
+  &quot;id&quot;: &quot;my.first.lumi&quot;,
+  &quot;name&quot;: &quot;My first LUMI plugin&quot;,
+  &quot;api_version&quot;: 1,
+  &quot;app_version&quot;: &quot;1.3.0&quot;,
+  &quot;settings&quot;: [
+  { &quot;key&quot;: &quot;greet&quot;,  &quot;type&quot;: &quot;bool&quot;,   &quot;default&quot;: true, &quot;label&quot;: { &quot;ko&quot;: &quot;인사하기&quot;, &quot;en&quot;: &quot;Greet&quot; } },
+  { &quot;key&quot;: &quot;volume&quot;, &quot;type&quot;: &quot;int&quot;,    &quot;default&quot;: 50, &quot;min&quot;: 0, &quot;max&quot;: 100, &quot;step&quot;: 5, &quot;label&quot;: &quot;Volume&quot; },
+  { &quot;key&quot;: &quot;mood&quot;,   &quot;type&quot;: &quot;choice&quot;, &quot;default&quot;: &quot;calm&quot;, &quot;label&quot;: { &quot;ko&quot;: &quot;말투&quot;, &quot;en&quot;: &quot;Mood&quot; },
+    &quot;options&quot;: [ { &quot;value&quot;: &quot;calm&quot;, &quot;label&quot;: { &quot;ko&quot;: &quot;차분&quot;, &quot;en&quot;: &quot;Calm&quot; } }, { &quot;value&quot;: &quot;wild&quot;, &quot;label&quot;: &quot;Wild&quot; } ] },
+  { &quot;key&quot;: &quot;toggle&quot;, &quot;type&quot;: &quot;hotkey&quot;, &quot;default&quot;: &quot;Ctrl+Alt+L&quot;, &quot;label&quot;: &quot;Toggle key&quot; }
+  ]
+}
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>플러그인 쪽: <code>ctx.prefs().getBoolean(&quot;greet&quot;, true)</code>, <code>ctx.prefs().onChange((key, value) -&gt; …)</code>. <code>hotkey</code> 칸은 조합 글자만 저장합니다 — 실제 등록은 <code>onChange</code> 를 받아 <code>bindHotkey</code> 로 하세요(다른 프로그램이 쥐고 있는지는 그때 압니다).</p>
+<p>진입 클래스는 <code>META-INF\services\com.group_finity.mascot.lumi.plugin.LumiPlugin</code> 에 적습니다(<code>ServiceLoader</code>). 변환기는 <code>…LumiTransformer</code> 서비스 파일에 적습니다.</p>
+<a id="lifecycle"></a>
+<h2 id="2-생명주기">2. 생명주기</h2>
+<ul>
+<li><code>start(ctx)</code> — 내장 기능이 뜬 뒤, 엔진(마스코트)이 실리기 <strong>전</strong>에 한 번 불립니다. 여기서 <code>on</code>/<code>hook</code>/<code>addTrayItem</code>/<code>onLoad</code> 를 겁니다. 이때 캐릭터 상태는 비어 있을 수 있으니 엔진이 필요한 일은 <code>ready</code> 에서 하세요. 던지면 그 플러그인만 실패로 표시됩니다.</li>
+<li><code>ready</code> 이벤트 — 엔진이 뜨고 모든 플러그인의 <code>start</code> 가 끝난 뒤 한 번, 앱이 냅니다. <code>PluginTestKit</code> 은 대신 내 주지 않습니다(§10).</li>
+<li><code>stop()</code> — 앱 종료 때 불립니다(기본 구현은 빈 것). <code>start()</code> 가 던진 경우에도 부분 시작을 정리하려고 곧바로 불리므로, 아직 초기화하지 못한 필드가 있어도 견디게 작성하세요. 플러그인과 한 jar 안의 서비스 구현들은 실제 시작의 역순으로 멈춥니다.</li>
+<li><code>stop()</code> 뒤 <strong>앱이 거둡니다</strong>: 이 컨텍스트로 건 리스너·훅·전역 단축키·메뉴 줄·기능 스위치·예약 작업은 플러그인이 정리하지 않았어도 로더가 전부 해제합니다. 시작 실패 때도 곧바로 해제하며, 실패한 플러그인의 의존자는 시작하지 않습니다. 실행 중 켜기·끄기는 없습니다(모드 탭의 스위치는 다음 실행부터).</li>
+<li><strong>직접 만든 것은 직접 닫습니다</strong>: 창·클라이언트·스트림·작업 스레드는 <code>stop()</code> 에서 닫으세요. <strong><code>prefs().onChange(...)</code> 리스너도 컨텍스트가 거두지 않습니다</strong> — 등록 장부에 없으니 리스너를 들고 있다가 <code>stop()</code> 에서 <code>removeOnChange(listener)</code> 로 푸세요(§13 <code>QuietPlugin</code>). 이미 변환한 클래스는 되돌리지 않습니다.</li>
+<li>바꾼 <strong>상태도 되돌립니다</strong>: <code>claimClickGreeting()</code> 의 점유는 이 플러그인이 아직 쥔 경우에만 풀리고, <code>summon()</code> 으로 부르고 아직 <code>dismiss()</code> 하지 않은 캐릭터는 보내며, <code>setCharactersVisible(false)</code> 로 숨겨 둔 채였으면 다시 보입니다. 뒤의 둘은 <strong>앱이 계속 도는 동안</strong>(시작 실패)에만 하고, 앱 종료 때는 캐릭터에 손대지 않습니다.</li>
+<li>그 뒤로 <strong>컨텍스트는 죽은 것</strong>입니다: 늦게 오는 등록(<code>on</code>·<code>hook</code>·<code>every</code>·<code>after</code>·<code>onEdt</code>·<code>offEdt</code>·메뉴 줄·<code>addSettingsButton</code>·<code>addFeatureToggle</code>·<code>bindHotkey</code>·<code>claimClickGreeting</code>·<code>onLoad</code>·<code>patch</code>·<code>ask</code>·<code>summon</code>·<code>dismiss</code>·<code>moveTo</code>·<code>setCharactersVisible</code>)과 행동 문 전부(<code>say</code>·<code>sayQueued</code>·<code>showBusy</code>·<code>behave</code>·<code>speak</code>·<code>mouthFlap</code>·<code>heart</code>·<code>playSound</code>·<code>awardAffection</code>·<code>publish</code>·<code>setSetting</code>·<code>writeAtomic</code>·<code>manageWindow</code>)는 <strong>던지지 않고</strong> 무시됩니다 — 로그에 플러그인마다 한 줄 <code>&lt;id&gt;: registration after stop() ignored: &lt;what&gt;</code> 이 남고, 돌아오는 것은 무해한 값입니다(이미 취소된 <code>ScheduledHandle</code>, <code>removed()</code> 가 참인 <code>MenuHandle</code>/<code>FeatureToggle</code>, <code>HotkeyResult.REFUSED</code>, <code>summon</code> 은 -1, <code>dismiss</code>/<code>moveTo</code>/<code>onLoad</code>/<code>patch</code> 는 false). <code>ask</code> 의 콜백에는 <code>-2</code> 가 가는데, 이때만은 정상 경로의 전용 스레드가 아니라 <strong>부른 스레드에서 그 자리에서</strong> 전달됩니다. <code>mascots()</code>·<code>prefs()</code>·<code>text()</code> 같은 읽기는 계속 답합니다. 예외: <code>beginMicCapture()</code>는 종료된 컨텍스트에서 <code>IllegalStateException</code>을 던집니다. <code>every()</code>/<code>after()</code> 는 <code>task == null</code>(그리고 <code>every</code> 의 <code>periodMs &lt;= 0</code>)을 해제 여부보다 먼저 검사하므로 죽은 컨텍스트에서도 <code>IllegalArgumentException</code> 을 던집니다. <code>stop()</code> 안에서 제 스레드를 멈추면 이 줄을 볼 일이 없습니다.</li>
+<li>같은 id 가 둘이면 모드 목록의 <strong>아래</strong> 것이 실리고 위 것은 DUPLICATE 로 표시됩니다. <code>dependencies</code> 는 시작 순서일 뿐 라이브러리 격리가 아닙니다.</li>
+<li><code>plugins\lib\*.jar</code>(앱 것 + 켜진 모드 것)는 클래스패스에 오릅니다 — fat jar 는 필요 없습니다. 코어 jar 가 항상 앞이라 코어 클래스는 가릴 수 없습니다.</li>
+</ul>
+<a id="context"></a>
+<h2 id="3-plugincontext">3. PluginContext</h2>
+<p>이름 뒤의 「· 실험」 칩은 §8 의 <strong>실험</strong> 항목입니다 — <code>api_version</code> 을 올리지 않고 바뀌거나 없어질 수 있습니다. 표시가 없는 항목은 <strong>안정</strong>입니다. 같은 목록이 <code>sdk.json</code> 의 <code>preview</code> 에 있습니다.</p>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>id()</code>, <code>descriptor()</code>, <code>log()</code></td><td data-label="하는 일">자기 id·<code>plugin.json</code>·로거(앱 로그 파일에 <code>plugin.&lt;id&gt;</code> 로 남습니다)</td></tr>
+<tr><td data-label="메서드"><code>dataDir()</code></td><td data-label="하는 일"><code>plugindata\&lt;id&gt;\</code> — 키·기억 같은 제 데이터는 여기에. 제 창에서 스스로 지웁니다</td></tr>
+</tbody></table>
+<h3 id="31-말풍선과-선택지">3.1 말풍선과 선택지</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>say(text, ms)</code>, <code>sayFor(imageSet, text, ms)</code></td><td data-label="하는 일">말풍선. <code>ms &lt;= 0</code> = 기본 길이</td></tr>
+<tr><td data-label="메서드"><code>hideBubble()</code>, <code>showBusy(imageSet)</code></td><td data-label="하는 일">말풍선 내리기 · 「···」 생각 중 표시(최대 90초, 다음 말이 덮습니다)</td></tr>
+<tr><td data-label="메서드"><code>sayTo(mascotId, imageSet, text, ms)</code>, <code>showBusyFor(mascotId, imageSet)</code></td><td data-label="하는 일"><strong>그 아이 하나</strong>에게 — 같은 셋의 루미가 둘일 때 <code>sayFor</code> 는 첫째에게 갑니다. <code>mascotId</code> 는 <code>MascotState.id</code>(<code>click</code>·<code>doubleclick</code> 이벤트의 <code>mascotId</code>); 그 아이가 사라졌으면 셋의 첫째로 물러납니다</td></tr>
+<tr><td data-label="메서드"><code>sayQueued(text, ms)</code>, <code>sayQueuedFor(imageSet, text, ms)</code> · 실험</td><td data-label="하는 일"><strong>큐</strong>: 지금 말이 내려간 뒤(틈 250 ms) 차례로 뜹니다 — 순서 있는 안내용. <code>say</code> 는 즉시 덮되 큐는 남깁니다. 상한 20 줄(넘치면 가장 오래된 줄이 빠집니다). 줄마다 <code>bubble.text</code>·<code>bubble.duration</code> 훅과 <code>bubble</code> 이벤트가 그대로 지나갑니다. 선택지가 떠 있는 동안 큐는 기다립니다</td></tr>
+<tr><td data-label="메서드"><code>clearQueue()</code>, <code>queueLength()</code> · 실험</td><td data-label="하는 일">이 플러그인의 대기 줄 지우기(떠 있는 말은 <code>hideBubble</code>; 줄에서 <strong>기다리는</strong> 선택지도 <code>-2</code> 로 빠집니다) · 전체 대기 줄 수</td></tr>
+<tr><td data-label="메서드"><code>ask(text, options, timeoutMs, onPick)</code>, <code>ask(text, options, timeoutMs, maxWaitMs, onPick)</code></td><td data-label="하는 일"><strong>선택지 말풍선</strong>: 물음 + 단추 2~4개(더 주면 잘립니다). <code>onPick</code> 은 <strong>한 번</strong>, EDT 아닌 전용 스레드에서 불립니다: 보기 번호(0부터) · <code>-1</code> = 떴는데 <strong>사람이 답하지 않았다</strong>(시간 초과·Esc·캐릭터 사라짐) · <code>-2</code> = <strong>앱이 치웠다</strong>, 사람에게 닿지 않은 채(이 플러그인의 새 <code>ask</code> 가 뜬 것이든 기다리는 것이든 대체함 · <code>clearQueue()</code> · 줄에서 <code>maxWaitMs</code> 를 넘겨 기다림 · 줄이 참). <strong>시계 둘</strong>: <code>timeoutMs</code> 는 말풍선이 <strong>뜬 순간부터</strong>(줄에서 기다린 시간은 세지 않습니다), <code>maxWaitMs</code> 는 <code>ask</code> 를 부른 순간부터(4-인자 꼴은 <code>DEFAULT_ASK_WAIT_MS</code> = 30 초; <code>&lt;= 0</code> 도 그 값). 한 번에 하나만 뜨고 나머지는 <strong>줄을 섭니다</strong>: 다른 플러그인의 <code>ask</code> 는 차례를 기다리고 뜬 것이 닫히면 다음이 뜹니다; 한 플러그인은 줄에 자리 하나 — 제 새 <code>ask</code> 는 제 옛 표(뜬 것이든 기다리는 것이든)를 대체하고(<code>-2</code>), 남의 표는 밀어내지 않습니다. 물음도 <code>bubble.text</code>(<code>source=choice</code>)를 지납니다. 뜰 때 <code>bubble</code>(<code>kind=choice</code>), 답할 때 <code>choice</code> 이벤트가 납니다. <code>timeoutMs &lt;= 0</code> = 사람이 고를 때까지. 뜰 때 자판 초점을 뺏지 않습니다(Esc 는 한 번 누른 뒤부터). 해제된 컨텍스트(§2)의 <code>ask</code> 만은 예외로 <code>onPick(-2)</code> 를 <strong>부른 스레드에서 즉시</strong> 부릅니다. §13 예</td></tr>
+<tr><td data-label="메서드"><code>askFor(imageSet, text, options, timeoutMs, onPick)</code>, <code>askFor(imageSet, …, maxWaitMs, onPick)</code> · 실험</td><td data-label="하는 일">같은 규칙으로 그 셋의 첫째에게 묻습니다</td></tr>
+</tbody></table>
+<h3 id="32-행동">3.2 행동</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>behave(name)</code>, <code>behaveFor(imageSet, name)</code></td><td data-label="하는 일">행동 이름으로 강제(<code>behave.txt</code> 와 같음). 모르는 이름은 경고만 남깁니다</td></tr>
+<tr><td data-label="메서드"><code>currentBehavior()</code>, <code>currentBehavior(imageSet)</code></td><td data-label="하는 일">지금 행동 이름</td></tr>
+<tr><td data-label="메서드"><code>behaviorNames(imageSet)</code> → <code>Set&lt;String&gt;</code> · 실험</td><td data-label="하는 일">그 셋의 <code>behaviors.xml</code> 이 아는 행동 이름 전부(<code>behave</code> 가 받는 이름). 안 실린 셋은 빈 집합. 메뉴 자동 생성용</td></tr>
+</tbody></table>
+<h3 id="33-상태-조회">3.3 상태 조회</h3>
+<p>전부 읽기입니다. 엔진이 뜨기 전에는 빈 값·기본값을 돌려주고 예외를 던지지 않습니다.</p>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>mascots()</code> → <code>List&lt;MascotState&gt;</code></td><td data-label="하는 일">지금 떠 있는 캐릭터 전부(소품 제외). <code>MascotState</code> = <code>id</code>·<code>imageSet</code>·<code>bounds</code>·<code>anchor</code>(발끝)·<code>lookRight</code>·<code>behavior</code> — <strong>바탕화면 좌표</strong>(Swing 창을 놓는 그 공간), 그 순간의 사본</td></tr>
+<tr><td data-label="메서드"><code>mascotsIncludingProps()</code> · 실험</td><td data-label="하는 일"><code>mascots()</code> 에 소품(선물 때의 크레딧 아이템 등)까지</td></tr>
+<tr><td data-label="메서드"><code>mascot(imageSet)</code>, <code>mascotById(id)</code></td><td data-label="하는 일">하나 집기 — 그 셋의 첫째 · 그 id(<code>click</code>/<code>mascot</code> 이벤트의 <code>mascotId</code> 와 같은 값). 없으면 <code>null</code></td></tr>
+<tr><td data-label="메서드"><code>mascotAt(point)</code> · 실험</td><td data-label="하는 일">그 바탕화면 점을 그림이 덮고 있는 아이. 없으면 <code>null</code></td></tr>
+<tr><td data-label="메서드"><code>affectionTier()</code>, <code>affectionProgressPercent()</code>, <code>affectionPointsUntilNextTier()</code>, <code>daysTogether()</code> · 실험</td><td data-label="하는 일">호감도 단계(1~6)·단계 안 진행률(%)·다음 단계까지 점수·함께한 날(누적)</td></tr>
+<tr><td data-label="메서드"><code>affectionTodayRemaining(source)</code> · 실험</td><td data-label="하는 일">그 적립원이 오늘 더 벌 수 있는 점수. 앱 적립원은 <code>pat</code> <code>throwRecover</code> <code>climb</code> <code>social</code> <code>pomodoro</code> <code>alarm</code>; <code>null</code>/빈 값 = <strong>이 플러그인 제 몫</strong>(<code>awardAffection</code>)</td></tr>
+<tr><td data-label="메서드"><code>focusActive()</code>, <code>focusSources()</code>, <code>screenBusy()</code> · 실험</td><td data-label="하는 일">집중 모드 켜짐 여부 · 어느 길로(<code>manual</code>,<code>pomodoro</code>,<code>auto</code> 쉼표 나열; 없으면 <code>&quot;&quot;</code>) · 전체화면·회의가 앞에 있는가</td></tr>
+<tr><td data-label="메서드"><code>bubbleVisible()</code>, <code>charactersHidden()</code></td><td data-label="하는 일">말풍선이 떠 있는가 · 캐릭터가 숨어 있는가(보스키·수동·자동 숨김)</td></tr>
+<tr><td data-label="메서드"><code>featureEnabled(id)</code></td><td data-label="하는 일">설정 창의 기능 스위치 — <code>bongo</code>·<code>broadcast</code>·<code>island</code>·<code>game</code>·<code>focus.auto</code>(CATALOG §7). 안 켰거나 모르는 id 면 거짓. 읽기만 — 스위치는 사용자의 것입니다</td></tr>
+<tr><td data-label="메서드"><code>language()</code></td><td data-label="하는 일">앱 UI 언어 — <code>ko</code> <code>en</code> <code>ja</code> <code>zh-CN</code> <code>zh-TW</code> 가운데 하나. 제 번들은 이것으로 고릅니다. <code>start()</code> 시점부터 사용자가 고른 언어(설정 파일의 <code>Language</code>)를 돌려주고, 첫 실행이면 OS 언어에서 고른 값입니다</td></tr>
+<tr><td data-label="메서드"><code>installedImageSets()</code>, <code>activeImageSets()</code> · 실험</td><td data-label="하는 일"><code>img\</code> 에 설치된 캐릭터 폴더(소품 제외, 이름순) · 지금 켜진 셋(<code>ActiveShimeji</code>, 소품 포함)</td></tr>
+<tr><td data-label="메서드"><code>screens()</code> → <code>List&lt;Rectangle&gt;</code> · 실험</td><td data-label="하는 일">모니터 사각형들, <code>MascotState.bounds</code> 와 같은 좌표</td></tr>
+<tr><td data-label="메서드"><code>quietNow()</code></td><td data-label="하는 일"><strong>지금은 조용히 할 때인가</strong> — 숨김·전체화면 앱이 앞·집중 모드에 <code>focus.quiet</code> 훅의 답까지. 앱의 혼잣말·인사·축하가 전부 이 하나를 묻습니다; 스스로 말을 거는 플러그인도 이것을 물으세요</td></tr>
+<tr><td data-label="메서드"><code>foregroundScreen()</code> → <code>Rectangle</code> 또는 null</td><td data-label="하는 일"><strong>앞 창이 놓인 모니터</strong>의 AWT 경계(<code>Robot</code> 좌표). 앞 창이 없거나 모니터에 안 걸치면 null. <code>screens()</code> 로는 모릅니다 — 어느 창에서 일하는지는 앱만 압니다</td></tr>
+<tr><td data-label="메서드"><code>isCharacter(imageSet)</code></td><td data-label="하는 일">소품(크레딧 아이템 등)이 아닌 캐릭터인가 — 캐릭터 메뉴 줄의 <code>forImageSet</code> 에 그대로 넣을 수 있습니다</td></tr>
+<tr><td data-label="메서드"><code>persona(imageSet)</code> → <code>String</code>, <code>personaFile(imageSet)</code> → <code>Path</code></td><td data-label="하는 일">캐릭터의 <strong>페르소나 글</strong>(정체성·말투·금기) — <code>img\&lt;Set&gt;\persona.txt</code>, 루미는 앱의 예비 사본으로 물러납니다. 없으면 빈 글(대역은 직접 쓰세요). 출력 형식 규칙은 없습니다 — 읽는 쪽이 제 것을 덧붙입니다. 파일 자리는 설정 창이 편집하게 하려는 것입니다</td></tr>
+</tbody></table>
+<h3 id="34-캐릭터-제어">3.4 캐릭터 제어</h3>
+<p>전부 앱이 이미 하는 일의 문입니다 — 새 규칙은 없습니다.</p>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>summon(imageSet)</code> → int · 실험</td><td data-label="하는 일">하나 더 부르기(트레이의 그것, 이로치 뽑기 포함). <strong>켜진 셋만</strong>; 아니면 -1. 태어난 아이의 id 를 돌려줍니다</td></tr>
+<tr><td data-label="메서드"><code>dismiss(mascotId)</code> → boolean · 실험</td><td data-label="하는 일">그 아이 보내기(우클릭 「보내기」, 소리 없이). id 가 없으면 false</td></tr>
+<tr><td data-label="메서드"><code>moveTo(mascotId, x, y)</code> → boolean · 실험</td><td data-label="하는 일">발끝을 바탕화면 좌표로 순간이동. 먼저 <code>Fall</code> 로 갈아 끼우고 옮기므로 아래 바닥에 내려앉습니다. 못 갈아 끼우면 false(아무것도 안 움직임, 다음 틱에 다시)</td></tr>
+<tr><td data-label="메서드"><code>setCharactersVisible(boolean)</code> · 실험</td><td data-label="하는 일">전부 숨기기/되돌리기 — 보스키의 그 스위치(뒤의 보스키·자동 숨김과 그대로 맞물립니다). EDT</td></tr>
+<tr><td data-label="메서드"><code>awardAffection(source, points)</code> → int · 실험</td><td data-label="하는 일">호감도 직접 적립(선물·퀘스트). 앱과 <strong>같은 문</strong>을 지납니다: <code>affection.award</code> 훅이 먼저 보고, <strong>플러그인 하나당 하루 2점</strong> 상한(<code>source</code> 를 여럿 지어도 하나로 묶임), 절대 빼지 않습니다. 돌려주는 값 = 실제로 적립된 점수</td></tr>
+<tr><td data-label="메서드"><code>heart(imageSet)</code> · 실험</td><td data-label="하는 일">쓰다듬기 하트를 그 아이 머리 위에</td></tr>
+<tr><td data-label="메서드"><code>playSound(path)</code> → boolean · 실험</td><td data-label="하는 일">효과음 한 번(앱 플레이어 — 사용자 음량·하나씩 끈 목록·<code>sound.effect</code> 훅을 다 지납니다). 경로는 저장소 뿌리 기준(<code>img/Lumi/sound/jump.wav</code>) 또는 모드 폴더 안 파일. 소리가 꺼져 있으면 false</td></tr>
+</tbody></table>
+<h3 id="35-목소리">3.5 목소리</h3>
+<p>앱의 음성 줄 하나를 모두가 나눠 씁니다.</p>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>speak(PcmAudio, onStart, onEnd)</code>, <code>stopSpeaking()</code>, <code>isSpeaking()</code></td><td data-label="하는 일">PCM 재생. 새 <code>speak</code> 는 앞 것을 끊고(보이스팩과 겹치지 않게), 음량은 공유 손잡이(<code>setSpeechVolume</code>)를 따르고, <code>tts</code> 이벤트가 앞뒤로 납니다. <code>onStart</code>/<code>onEnd</code> 는 재생기 스레드</td></tr>
+<tr><td data-label="메서드"><code>setSpeechVolume(percent)</code></td><td data-label="하는 일"><strong>공유</strong> 음성 음량(0–100) — 모든 플러그인과 보이스팩이 같은 손잡이. 사용자가 보는 설정에서 미세요</td></tr>
+<tr><td data-label="메서드"><code>mouthFlap(imageSet, whileSpeaking)</code>, <code>stopMouthFlap()</code></td><td data-label="하는 일"><strong>입 뻐끔</strong> — <code>whileSpeaking</code> 이 참인 동안(1.1초마다 <code>Talk</code> 행동을 다시 겁니다) 입을 움직이다 스스로 멎습니다. <code>speak</code> 와 짝: <code>ctx.mouthFlap(set, ctx::isSpeaking)</code></td></tr>
+<tr><td data-label="메서드"><code>mouthFlapFor(imageSet, ms)</code> · 실험</td><td data-label="하는 일">정한 시간만큼 입 뻐끔 — 소리를 직접 틀지 않는 줄에</td></tr>
+<tr><td data-label="메서드"><code>beginMicCapture()</code> → <code>MicCaptureLease</code></td><td data-label="하는 일"><strong>EDT 밖에서</strong> 호출. 현재 음성 출력 라인이 실제 닫힐 때까지 기다린 뒤 반환. 보유 중 본체 보이스팩·TTS·미리듣기·다른 플러그인의 새 음성을 버린다. 녹음 장치를 닫은 뒤 lease를 <code>close()</code>한다(checked exception 없음). 중첩/여러 플러그인의 lease가 모두 닫혀야 새 음성이 가능하고, 버렸던 음성은 재생되지 않는다. 컨텍스트 종료 때 자기 lease를 자동 반환하며 진행 중 획득도 취소한다. EDT/종료 후/중단된 획득/출력 닫기 실패는 <code>IllegalStateException</code>. 다른 앱이나 효과음을 음소거하지 않고 마이크 권한을 부여하지도 않는다</td></tr>
+</tbody></table>
+<h3 id="36-이벤트와-훅">3.6 이벤트와 훅</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>publish(topic, k, v, …)</code></td><td data-label="하는 일"><strong>플러그인끼리</strong> 이벤트. 토픽은 <code>&lt;id&gt;.&lt;topic&gt;</code> 으로 강제되어(이미 붙어 있으면 그대로) 앱 토픽을 가장할 수 없습니다. payload 에 <code>from</code>=내 id 가 붙습니다. 받는 쪽은 <code>on(&quot;&lt;그 id&gt;.&lt;topic&gt;&quot;, …)</code></td></tr>
+<tr><td data-label="메서드"><code>on(topic, listener)</code>, <code>off(...)</code></td><td data-label="하는 일">이벤트(§4). 리스너는 <strong>이 플러그인 전용 스레드</strong>(<code>lumi-plugin-events-&lt;id&gt;</code>)에서 차례로 돕니다 — 느린 플러그인이 남의 이벤트를 늦추지 않습니다. 던지면 로그만 남고 다음 이벤트는 옵니다</td></tr>
+<tr><td data-label="메서드"><code>hook(id, handler)</code>, <code>unhook(...)</code></td><td data-label="하는 일">훅(§5). 핸들러는 <strong>부른 스레드에서 그 자리</strong>에서 돕니다</td></tr>
+</tbody></table>
+<h3 id="37-설정문구파일">3.7 설정·문구·파일</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>prefs()</code> → <code>PluginPrefs</code></td><td data-label="하는 일"><strong>제 설정 저장소</strong> — <code>plugindata\&lt;id&gt;\settings.properties</code>(UTF-8 평문 — 비밀은 넣지 마세요, 그건 <code>writeAtomic(…, true)</code>). <code>get</code>·<code>getInt</code>·<code>getLong</code>·<code>getBoolean(key, 기본)</code>, <code>set(key, 문자열/int/long/boolean)</code>(같은 값이면 무시, 바뀌면 그 자리에서 동기 저장 — 저장 실패는 WARNING 로그로 남고 던지지 않습니다; 원자적 이동이 안 되는 파일 시스템에서는 일반 교체), <code>remove</code>, <code>keys()</code>, <code>has</code>, <code>onChange((key, value) -&gt; …)</code>(값이 실제로 바뀐 뒤, <strong>모든 플러그인이 나눠 쓰는 알림 스레드 하나</strong>(<code>lumi-plugin-prefs</code>, EDT 밖)에서 차례로; 지운 열쇠는 <code>null</code>), <code>removeOnChange(listener)</code>, <code>reload()</code>. <strong><code>onChange</code> 리스너는 컨텍스트가 거두지 않습니다</strong> — <code>stop()</code> 에서 직접 푸세요(§2). <code>plugin.json</code> <code>settings</code> 카드의 값도 여기에 삽니다</td></tr>
+<tr><td data-label="메서드"><code>setting(key, fallback)</code>, <code>setSetting(key, value)</code></td><td data-label="하는 일">앱의 <code>conf\settings.properties</code>. <strong>읽기</strong>용 — 앱 키는 앱 것이라 바꾸지 마세요(설정 창의 다음 [적용]이 덮을 수 있습니다). 제 상태는 <code>prefs()</code> 에. <code>setSetting</code> 을 꼭 써야 하면 키에 제 id 를 접두로 붙이세요</td></tr>
+<tr><td data-label="메서드"><code>localized(key, fallback)</code></td><td data-label="하는 일">앱의 5개 언어 번들. 제 문구는 제 번들에 두세요</td></tr>
+<tr><td data-label="메서드"><code>text(key, fallback)</code>, <code>text(key, fallback, args…)</code> → String · <code>text()</code> → <code>PluginText</code></td><td data-label="하는 일"><strong>제 5개 언어 문구</strong>: jar 뿌리의 <code>plugin_ko.properties</code> <code>plugin_en</code> <code>plugin_ja</code> <code>plugin_zh</code> <code>plugin_zh_TW</code> + 기본 <code>plugin.properties</code>(UTF-8). <code>language()</code> 로 고르고 <code>정확한 언어 → en → 기본 파일 → 앱 번들 → fallback</code> 순(zh-TW 는 zh 로 떨어지지 않습니다). <code>args</code> 가 있으면 <code>MessageFormat</code>(<code>{0}</code>)</td></tr>
+<tr><td data-label="메서드"><code>writeAtomic(path, bytes 또는 String, ownerOnly)</code></td><td data-label="하는 일">같은 폴더의 임시 파일에 쓴 뒤 원자적 이동으로 바꿔 넣습니다(원자적 이동이 안 되는 파일 시스템에서는 일반 교체). 쓰기·이동 실패는 <code>IOException</code>. <code>ownerOnly</code> 면 이 윈도우 계정과 SYSTEM 만 읽게 ACL 을 <strong>임시 파일에 걸고 나서</strong> 이름을 바꿉니다; ACL 을 못 걸면(윈도우 밖·FAT·거부하는 공유) FINE 로그 한 줄만 남기고 파일은 그대로 씁니다 — 암호화가 아닙니다. 경로는 <code>dataDir</code> 밖이어도 됩니다. API 키·개인적인 것은 이것으로</td></tr>
+</tbody></table>
+<h3 id="38-메뉴와-설정-ui">3.8 메뉴와 설정 UI</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>addTrayItem(label, action)</code> → <code>PluginUi.MenuHandle</code></td><td data-label="하는 일">트레이 메뉴 줄(앱 줄 아래·「종료」 위). <code>action</code> 은 EDT. 돌려주는 <strong>손잡이</strong>로 <code>setLabel</code>·<code>setEnabled</code>·<code>setChecked(Boolean)</code>·<code>remove()</code>, 읽기 <code>label()</code>·<code>enabled()</code>·<code>checked()</code>·<code>removed()</code> — 줄이 안 바뀌면 무시해도 됩니다. 바뀐 것은 다음에 메뉴가 열릴 때 보입니다(메뉴는 열 때마다 새로 짓습니다). 어느 스레드에서든. <strong>이름은 문자열이라 언어가 바뀌어도 스스로 안 바뀝니다</strong> — <code>settings</code> 이벤트의 <code>phase=language</code> 를 듣고 <code>setLabel(text(...))</code> 로 다시 놓으세요(LUMI Chat·Super Bongo 가 그렇게 합니다)</td></tr>
+<tr><td data-label="메서드"><code>addTrayToggle(label, initial, onChange)</code> → <code>MenuHandle</code> · 실험</td><td data-label="하는 일"><strong>토글 줄</strong> — 이름은 그대로, 「켜짐/꺼짐」 상태 칩(앱의 「잠깐 숨기기」 문법). 누르면 스스로 뒤집고 <code>onChange(새 값)</code> 을 EDT 에서 부릅니다; <code>setChecked</code> 는 칩만 바꾸고 <code>onChange</code> 를 부르지 않습니다</td></tr>
+<tr><td data-label="메서드"><code>addSettingsButton(label, action)</code> → <code>MenuHandle</code></td><td data-label="하는 일">설정 창 정보 탭의 사용법 단추 가까이에 단추 하나. <code>action</code> 은 EDT. 앱은 설정 창을 열 때마다 등록 목록을 다시 읽으므로 손잡이의 이름·활성·제거는 다음에 창을 열 때 반영됩니다</td></tr>
+<tr><td data-label="메서드"><code>addFeatureToggle(label, description, state, onChange, dependsOnFeature)</code> → <code>PluginUi.FeatureToggle</code></td><td data-label="하는 일">루미 탭 「기능 켜고 끄기」 카드의 <strong>맨 아래</strong>에 앱 모양의 스위치 줄. 등록이 0개면 줄·여백도 없습니다. 창을 열 때 <code>state</code> 로 체크를 채우고, 앱 1.3.0부터 체크가 바뀌는 즉시 <code>onChange(새 값)</code> 으로 건넵니다. false 를 돌려주면 <code>state</code> 로 되돌립니다. <code>dependsOnFeature</code>(<code>bongo</code> 등)가 꺼지면 회색이 되지만 체크는 보존됩니다. 하네스 <code>press:feature:&lt;라벨&gt;</code></td></tr>
+<tr><td data-label="메서드"><code>addCharacterMenuItem(label, forImageSet, action)</code> → <code>MenuHandle</code></td><td data-label="하는 일">캐릭터 우클릭 메뉴 줄. <code>forImageSet</code> 이 캐릭터마다 보일지 정합니다(null = 모두), <code>action(imageSet, mascotId)</code>. 손잡이는 트레이 줄과 같습니다</td></tr>
+<tr><td data-label="메서드"><code>addCharacterMenuToggle(label, forImageSet, initial, onChange)</code> → <code>MenuHandle</code> · 실험</td><td data-label="하는 일">캐릭터 메뉴의 토글 줄. 토글 상태는 줄 하나에 하나(캐릭터마다가 아님). <code>onChange(새 값)</code> 은 EDT</td></tr>
+<tr><td data-label="메서드"><code>claimClickGreeting()</code></td><td data-label="하는 일">클릭 인사를 이 플러그인이 맡는다고 알립니다(앱의 클릭 인사가 조용해집니다)</td></tr>
+</tbody></table>
+<h3 id="39-창의-옷">3.9 창의 옷</h3>
+<p>플러그인 창을 앱처럼 보이게 합니다.</p>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>theme()</code> → <code>PluginTheme</code></td><td data-label="하는 일">색(<code>tone(다크값)</code>·<code>inkSoft</code>·<code>inkFaint</code>·<code>line</code>·<code>cardBackground</code>·<code>danger</code>·<code>success</code>·<code>dark()</code>), CJK 글꼴 <code>font(text, size)</code>, 걸어 두는 손질(<code>colour</code>·<code>dress</code>·<code>style</code>·<code>button(kind)</code>·<code>toggle</code>·<code>slider</code>·<code>describe</code>), 조각(<code>sectionTitle</code>·<code>hairline</code>·<code>row</code>·<code>card</code>·<code>gapRow</code>·<code>hintHtml</code>·<code>cardGap</code>). 색은 <strong>다크 시안 값</strong>으로 말하면 지금 테마로 옮겨 주고, 테마가 갈리면 걸어 둔 손질이 다시 돕니다. 전부 EDT. <code>style(component, 문자열)</code> 의 문자열은 룩앤필(FlatLaf)의 것이라 앱의 옷이 바뀌면 이 호출만 빈 일이 될 수 있습니다 — 되도록 뜻이 있는 메서드(<code>colour</code>·<code>button</code>·<code>card</code> …)를 쓰세요</td></tr>
+<tr><td data-label="메서드"><code>appIcon()</code> → Image</td><td data-label="하는 일">앱 아이콘 — 주인 없는 대화상자의 제목줄에</td></tr>
+<tr><td data-label="메서드"><code>manageWindow(window, key)</code></td><td data-label="하는 일">사용자가 마지막에 둔 자리에 창을 놓고(처음엔 활성 모니터 가운데, 화면 밖은 안 됨) 닫을 때 기억합니다. 크기를 정한 뒤, 열 때마다 불러도 됩니다(멱등)</td></tr>
+</tbody></table>
+<h3 id="310-단축키">3.10 단축키</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>bindHotkey(name, &quot;Win+Ctrl+Alt+Shift+키&quot;, action)</code> → <code>HotkeyResult</code></td><td data-label="하는 일"><strong>전역</strong> 단축키 — 다른 프로그램이 앞에 있어도 듣습니다. 수식 키 하나 이상 필수. 빈 조합 = 해제. 플러그인 id 는 <strong>등록 이름</strong>에만 붙습니다 — 이름은 서로 안 부딪히지만 실제 키 조합은 다른 프로그램·플러그인과 부딪힐 수 있습니다(그때 <code>REFUSED</code>). 답은 <strong>왜</strong> 안 됐는지입니다: <code>OK</code>·<code>NONE</code>·<code>BAD_COMBINATION</code>·<code>REFUSED</code>(다른 프로그램이 쥐고 있음)·<code>UNSUPPORTED</code> — 설정 창이 사용자의 말로 옮깁니다. <code>action</code> 은 EDT</td></tr>
+<tr><td data-label="메서드"><code>unbindHotkey(name)</code></td><td data-label="하는 일">해제</td></tr>
+<tr><td data-label="메서드"><code>normalizeHotkey(s)</code>, <code>hotkeyFromKeyEvent(keyCode, modifiersEx)</code></td><td data-label="하는 일">조합 글자의 정본 꼴(<code>Ctrl+Shift+L</code>), 아니면 null · 단축키 칸에서 눌린 키를 조합 글자로(맨 키·수식 키만이면 null)</td></tr>
+</tbody></table>
+<h3 id="311-예약-작업과-바이트코드">3.11 예약 작업과 바이트코드</h3>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>every(initialMs, periodMs, task)</code>, <code>after(ms, task)</code> → <code>ScheduledHandle</code> · 실험</td><td data-label="하는 일"><strong>스케줄러</strong>: <strong>이 플러그인의 타이머 스레드</strong>(<code>lumi-plugin-timer-&lt;id&gt;</code>, 데몬, EDT 아님)에서 주기/한 번 실행. 플러그인마다 이벤트 스레드 하나·타이머 스레드 하나 — 느린 작업은 제 플러그인의 다음 작업만 늦추고 남의 것은 안 밀립니다. 던지는 실행은 로그만 남고 주기는 계속됩니다. <code>cancel()</code>·<code>isCancelled()</code>; 종료 때 남은 것은 앱이 끊고 스레드도 내립니다. <code>task == null</code> 은 둘 다, <code>periodMs &lt;= 0</code> 은 <code>every()</code> 만 <code>IllegalArgumentException</code> — 해제 여부와 무관하게(<code>after(ms, …)</code> 의 <code>ms</code> 는 0 이하도 받습니다)</td></tr>
+<tr><td data-label="메서드"><code>onEdt(task)</code>, <code>offEdt(task)</code> · 실험</td><td data-label="하는 일">Swing 이벤트 스레드에서(창·메뉴를 만질 때 — 절대 오래 잡지 마세요) · 이 플러그인의 이벤트 스레드에서(리스너와 같은 줄, EDT 밖)</td></tr>
+<tr><td data-label="메서드"><code>onLoad(prefix, LumiTransformer)</code> → boolean</td><td data-label="하는 일">아직 안 실린 클래스(엔진·마스코트)를 로드 시점에 자유롭게 고칩니다(§6)</td></tr>
+<tr><td data-label="메서드"><code>patch(className, ClassFileTransformer)</code> → boolean</td><td data-label="하는 일">이미 실린 클래스 하나를 재변환합니다(메서드 본문만 — JVM 규칙)(§6)</td></tr>
+</tbody></table>
+<a id="events"></a>
+<h2 id="4-이벤트-ctxontopic-map--">4. 이벤트 — <code>ctx.on(topic, map -&gt; …)</code></h2>
+<p>값은 따로 적지 않으면 문자열입니다. 리스너는 발행 스레드가 아니라 그 플러그인 전용 데몬 스레드에서 차례로 돕니다 — 발행 쪽(EDT·엔진 잠금 안)을 막을 수 없습니다. 던지면 로그 뒤 건너뜁니다. 「· 실험」 칩은 §3 첫머리와 같은 뜻입니다.</p>
+<table><thead><tr><th>토픽</th><th>언제</th><th>키</th></tr></thead><tbody>
+<tr><td data-label="토픽"><code>ready</code></td><td data-label="언제">엔진이 뜨고 플러그인들이 시작된 뒤</td><td data-label="키">없음</td></tr>
+<tr><td data-label="토픽"><code>behavior</code></td><td data-label="언제">마스코트의 행동이 바뀜</td><td data-label="키"><code>imageSet</code>, <code>name</code>, <code>mascotId</code>(Integer)</td></tr>
+<tr><td data-label="토픽"><code>bubble</code></td><td data-label="언제">말풍선이 뜸</td><td data-label="키"><code>imageSet</code>, <code>mascotId</code>(Integer; 셋으로 지정했으면 0), <code>text</code>(<code>bubble.text</code> 훅을 지난 뒤 실제로 뜬 글자), <code>ms</code>(Long; <code>bubble.duration</code> 뒤의 최종 수명), <code>kind</code>(<code>say</code> = 보통 줄 · <code>private</code> = 알람·부탁처럼 방송 화면에서 빼는 줄 · <code>choice</code> = 선택지 말풍선이 열림, 그때 <code>ms</code> 는 제한 시간). <strong><code>kind=choice</code> 에는 <code>mascotId</code> 가 없습니다</strong>(<code>imageSet</code>·<code>text</code>·<code>ms</code>·<code>kind</code> 만). 「···」 생각 중 표시는 이벤트를 내지 않습니다</td></tr>
+<tr><td data-label="토픽"><code>choice</code> · 실험</td><td data-label="언제">선택지 말풍선에 답이 남</td><td data-label="키"><code>imageSet</code>, <code>mascotId</code>(Integer), <code>index</code>(Integer, 0부터 · <code>-1</code> = 떴는데 답 없음(시간 초과·Esc·캐릭터 사라짐) · <code>-2</code> = 앱이 치움(같은 플러그인이 대체·<code>clearQueue</code>·줄 대기 초과·줄 참)), <code>option</code>(고른 글자, 음수면 <code>&quot;&quot;</code>), <code>from</code>(물은 플러그인 id)</td></tr>
+<tr><td data-label="토픽"><code>click</code></td><td data-label="언제">캐릭터 위에서 마우스 단추가 눌림</td><td data-label="키"><code>imageSet</code>, <code>mascotId</code>(Integer), <code>button</code>(<code>left</code>/<code>right</code>/<code>middle</code>), <code>x</code>, <code>y</code>(Integer, 화면 좌표)</td></tr>
+<tr><td data-label="토픽"><code>mascot</code></td><td data-label="언제">캐릭터가 나타나거나 사라짐</td><td data-label="키"><code>imageSet</code>, <code>mascotId</code>(Integer), <code>event</code>(<code>added</code>/<code>removed</code>)</td></tr>
+<tr><td data-label="토픽"><code>headpat</code></td><td data-label="언제">쓰다듬기 시작</td><td data-label="키"><code>behavior</code></td></tr>
+<tr><td data-label="토픽"><code>affection</code></td><td data-label="언제">보이는 호감도 단계가 바뀜</td><td data-label="키"><code>tier</code>(Integer), <code>previous</code>(Integer), <code>points</code>(Integer)</td></tr>
+<tr><td data-label="토픽"><code>achievement</code></td><td data-label="언제">스팀 도전과제 해금</td><td data-label="키"><code>id</code></td></tr>
+<tr><td data-label="토픽"><code>focus</code></td><td data-label="언제">집중 모드 켜짐/풀림</td><td data-label="키"><code>active</code>(Boolean)</td></tr>
+<tr><td data-label="토픽"><code>chat</code></td><td data-label="언제">AI 채팅 오감(LUMI Chat 플러그인이 발행합니다 — 그 플러그인이 없으면 오지 않습니다)</td><td data-label="키"><code>phase</code>(<code>ask</code>/<code>reply</code>), <code>imageSet</code>, <code>text</code>. 다른 플러그인의 <code>ctx.publish(&quot;chat&quot;, …)</code> 은 <code>&lt;그 id&gt;.chat</code> 으로 나가므로 앱 토픽 <code>chat</code> 을 가장할 수 없습니다</td></tr>
+<tr><td data-label="토픽"><code>tts</code></td><td data-label="언제">음성 재생 시작/끝</td><td data-label="키"><code>phase</code>(<code>start</code>/<code>end</code>)</td></tr>
+<tr><td data-label="토픽"><code>settings</code></td><td data-label="언제">설정 창 [적용], 또는 언어 변경</td><td data-label="키"><code>phase</code>(<code>apply</code>), <code>changed</code>(지난 [적용] 이후 앱이 <code>LumiSettings</code> 로 적은 키를 쉼표로 — 스톡 엔진 키는 안 실립니다) / <code>phase</code>(<code>language</code>), <code>language</code>(BCP-47)</td></tr>
+<tr><td data-label="토픽"><code>ask</code></td><td data-label="언제"><code>speech\ask.txt</code> 가 쓰임</td><td data-label="키"><code>text</code></td></tr>
+<tr><td data-label="토픽"><code>settings_open</code></td><td data-label="언제"><code>speech\settings_open.txt</code> 가 쓰임</td><td data-label="키">없음</td></tr>
+<tr><td data-label="토픽"><code>say_file</code></td><td data-label="언제"><code>speech\say.txt</code> 줄이 표시됨</td><td data-label="키"><code>text</code></td></tr>
+<tr><td data-label="토픽"><code>drag</code> · 실험</td><td data-label="언제">사용자가 캐릭터를 집어 올림·놓음(<code>Dragged</code> 시작·끝)</td><td data-label="키"><code>phase</code>(<code>start</code>/<code>end</code>), <code>imageSet</code>, <code>mascotId</code>(Integer), <code>x</code>, <code>y</code>(Integer, 앵커의 화면 좌표)</td></tr>
+<tr><td data-label="토픽"><code>throw</code> · 실험</td><td data-label="언제">놓으며 던져짐(<code>Thrown</code> 시작) · 그 비행이 끝남(다음 행동 시작)</td><td data-label="키"><code>phase</code>(<code>thrown</code>/<code>landed</code>), <code>imageSet</code>, <code>mascotId</code>(Integer), <code>x</code>, <code>y</code>(Integer), <code>next</code>(항상 실립니다 — <code>landed</code> 면 비행 뒤 행동 이름, <code>thrown</code> 이면 <code>&quot;&quot;</code>)</td></tr>
+<tr><td data-label="토픽"><code>hover</code> · 실험</td><td data-label="언제">포인터가 캐릭터 창에 들어옴·나감</td><td data-label="키"><code>phase</code>(<code>enter</code>/<code>exit</code>), <code>imageSet</code>, <code>mascotId</code>(Integer)</td></tr>
+<tr><td data-label="토픽"><code>doubleclick</code> · 실험</td><td data-label="언제">같은 캐릭터 위 왼쪽 누름 둘이 600 ms 안에, 가로·세로 각각 90 px 안에서(반지름이 아니라 180×180 상자입니다. AWT clickCount 는 믿을 수 없습니다 — 누르는 순간 들기가 창을 옮깁니다)</td><td data-label="키"><code>imageSet</code>, <code>mascotId</code>(Integer), <code>x</code>, <code>y</code>(Integer). 그 둘은 <code>click</code> 도 각각 냅니다</td></tr>
+<tr><td data-label="토픽"><code>alarm</code> · 실험</td><td data-label="언제">알림이 실제로 전달됨</td><td data-label="키"><code>kind</code>(<code>hourly</code>/<code>alarm</code>), <code>time</code>(<code>HH:mm</code>), <code>late</code>(Boolean — 화면이 바빠 미뤄졌다 나온 알람)</td></tr>
+<tr><td data-label="토픽"><code>pomodoro</code> · 실험</td><td data-label="언제">집중/휴식 주기가 움직임</td><td data-label="키"><code>phase</code>(<code>focus</code>/<code>break</code>/<code>stopped</code>), <code>minutes</code>(Integer, 시작하는 국면의 길이; stop 은 0), <code>round</code>(Integer, 켠 뒤 시작한 집중 국면 수)</td></tr>
+<tr><td data-label="토픽"><code>bongo</code> · 실험</td><td data-label="언제">봉고 모드가 타건·클릭을 그림</td><td data-label="키"><code>kind</code>(<code>keyboard</code>/<code>left_click</code>/<code>right_click</code>), <code>frame</code>(Integer, 그린 손 자리), <code>look</code>(<code>bongo</code>/<code>small</code>). <strong>키 코드·글자는 절대 없습니다</strong>(코어는 키를 읽지 않습니다)</td></tr>
+<tr><td data-label="토픽"><code>app</code> · 실험</td><td data-label="언제">앱이 제 종료 문으로 내려감</td><td data-label="키"><code>phase</code>(<code>exit</code>). 플러그인 <code>stop()</code> 보다 앞이고, 짧은 상한을 두고 전달을 기다린 뒤 내려갑니다</td></tr>
+<tr><td data-label="토픽"><code>island</code> · 실험</td><td data-label="언제">정원(섬) 프로세스 시작·정지 요청, 사진 요청 응답</td><td data-label="키"><code>phase</code>(<code>start</code>/<code>stop</code>/<code>photo</code>), <code>request</code>(photo 만)</td></tr>
+<tr><td data-label="토픽"><code>game</code> · 실험</td><td data-label="언제">장치 게임 판이 열림·달리기 시작·닫힘</td><td data-label="키"><code>phase</code>(<code>start</code>/<code>run</code>/<code>stop</code>)</td></tr>
+</tbody></table>
+<p><code>mascotId</code> 는 실행 중에만 뜻이 있는 번호입니다(같은 캐릭터 = 같은 번호). <code>imageSet</code> 은 <code>img\&lt;폴더&gt;</code> 이름입니다. 위치 틱 이벤트는 없습니다 — 위치는 <code>ctx.mascots()</code> 를 폴링하세요. 없는 것: 절전·복귀, 모니터 구성 변경(앱이 듣지 않습니다).</p>
+<p>페이로드 예(값은 <code>Map&lt;String,Object&gt;</code> 의 실제 형):</p>
+<div class="codebox"><div class="codebar"><span>Text / 문안</span><button type="button" data-copy="code-2">Copy / 복사</button></div><pre><code id="code-2">click       {imageSet=Lumi, mascotId=1867750575, button=left, x=1420, y=866}
+doubleclick {imageSet=Lumi, mascotId=1867750575, x=1422, y=864}
+drag        {phase=start, imageSet=Lumi, mascotId=1867750575, x=1420, y=902}
+throw       {phase=landed, imageSet=Lumi, mascotId=1867750575, x=1610, y=1040, next=Fall}
+behavior    {imageSet=Lumi, name=SitDown, mascotId=1867750575}
+bubble      {imageSet=Lumi, mascotId=0, text=안녕하세요, 루미예요!, ms=4000, kind=say}
+bubble      {imageSet=Lumi, text=가위바위보!, ms=8000, kind=choice}
+choice      {imageSet=Lumi, mascotId=1867750575, index=1, option=바위, from=my.rps}
+affection   {tier=3, previous=2, points=1240}
+alarm       {kind=alarm, time=14:55, late=true}
+pomodoro    {phase=break, minutes=5, round=2}
+bongo       {kind=keyboard, frame=3, look=bongo}
+settings    {phase=apply, changed=lumi.selftalk.frequency}
+settings    {phase=language, language=ja}
+app         {phase=exit}
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<a id="hooks"></a>
+<h2 id="5-훅-ctxhookid-hook-current-ctx--">5. 훅 — <code>ctx.hook(id, (hook, current, ctx) -&gt; …)</code></h2>
+<p>코어가 <strong>정하기 전에</strong> 묻습니다. 핸들러는 지금까지의 값 <code>current</code> 를 받아 새 값을 돌려주거나 <code>null</code>(통과)을 돌려줍니다.</p>
+<p>규약:</p>
+<ul>
+<li><strong>동기</strong> — 부른 스레드에서 그 자리에서 돕니다. EDT·타이머·엔진 틱 위일 수 있으니 값싸게, 절대 블록하지 마세요. 20 ms 를 넘기면 훅+플러그인당 한 번 경고합니다.</li>
+<li><strong>순서</strong> — 모드 탭 순서로 위→아래, <strong>아래가 이깁니다</strong>. 앞선 답을 존중하고 싶으면 <code>current</code> 를 보고 스스로 AND 하세요.</li>
+<li><strong>형</strong> — 기본값과 같은 형이어야 합니다(숫자는 <code>Number</code>). 아니면 통과 + 한 번 경고. 숫자 훅은 코어가 범위를 고정합니다(표의 clamp).</li>
+<li><strong>예외</strong> — 전부 잡습니다. 그 핸들러만 건너뛰고 체인은 계속됩니다. 아무도 답하지 않으면 기본값입니다. 등록된 핸들러가 없는 훅은 ctx Map 도 만들지 않고 기본값을 즉시 돌려줍니다.</li>
+<li><strong>빈 문자열</strong> — 뜻은 훅마다 다릅니다(표의 「반환·기본」): <code>selftalk.line</code>·<code>speech.greeting</code> 은 <code>&quot;&quot;</code> = 건너뜀, <code>bubble.text</code> 는 공백뿐인 답·null = 원문 그대로.</li>
+<li><strong>사용자 약속</strong> — 사용자가 건 약속(알람, 사용자가 누른 부탁, <code>say.txt</code>)은 훅으로는 막을 수 없습니다 — 그런 자리에는 취소 훅이 없고 미루기 훅만 있습니다. 앱이 스스로 고르는 것(혼잣말·인사)은 <code>&quot;&quot;</code> 로 건너뛸 수 있습니다.</li>
+<li><code>ctx</code> 는 불변 Map 이고 null 은 <code>&quot;&quot;</code> 입니다. 캐릭터가 있는 자리는 <code>mascotId</code>(Integer)·<code>imageSet</code>(String). 마스코트 객체는 넘기지 않습니다.</li>
+</ul>
+<p>카탈로그 (15):</p>
+<table><thead><tr><th>훅</th><th>묻는 자리</th><th>ctx</th><th>반환·기본</th><th>주의</th></tr></thead><tbody>
+<tr><td data-label="훅"><code>focus.quiet</code></td><td data-label="묻는 자리">시보·축하·혼잣말·인사·온보딩이 「조용히 할까」를 묻는 한 자리</td><td data-label="ctx"><code>hidden</code>, <code>fullscreenAhead</code>, <code>focusActive</code></td><td data-label="반환·기본">boolean, 기본 = 화면이 바쁨 OR 집중 중</td><td data-label="주의">false 고정 = 화면 공유 중 말풍선. 초당 여러 번 → 상수 시간</td></tr>
+<tr><td data-label="훅"><code>focus.screen_busy</code></td><td data-label="묻는 자리">알람 보류·포모도로·집중 인사가 「화면이 바쁜가」</td><td data-label="ctx"><code>hidden</code>, <code>fullscreenAhead</code></td><td data-label="반환·기본">boolean, 기본 = 숨김 OR 전체 화면 앞</td><td data-label="주의">true 고정 = 보류 알람이 영영 안 나옵니다</td></tr>
+<tr><td data-label="훅"><code>text.localized</code></td><td data-label="묻는 자리">번들 글자 전부가 지나는 문(인사·시보·알람·단계 이름·메뉴 글자)</td><td data-label="ctx"><code>key</code>, <code>language</code>, <code>fallback</code></td><td data-label="반환·기본">String, 기본 = 번들 값. <code>&quot;&quot;</code> 도 그대로</td><td data-label="주의">자주 불립니다 — 무거우면 UI 가 느려집니다. 인사는 <code>speech.greeting</code></td></tr>
+<tr><td data-label="훅"><code>sound.effect</code></td><td data-label="묻는 자리">효과음 경로, 재생 앞</td><td data-label="ctx"><code>path</code>, <code>caller</code></td><td data-label="반환·기본">String 경로; <code>&quot;&quot;</code> = 무음. 기본 = <code>path</code></td><td data-label="주의">음량·끈 소리 목록은 훅 뒤에 그대로 적용됩니다. 전체 음소거는 훅보다 <strong>앞</strong>이라 사용자가 소리를 꺼 두었으면 훅으로 되살릴 수 없습니다</td></tr>
+<tr><td data-label="훅"><code>behavior.force</code></td><td data-label="묻는 자리">감독자·플러그인의 <code>behave</code> 가 이름으로 강제하는 문 전부</td><td data-label="ctx"><code>name</code>, <code>caller</code>, <code>mascotId</code>(없으면 -1), <code>imageSet</code></td><td data-label="반환·기본">String; <code>&quot;&quot;</code> = 걸지 않음. 기본 = <code>name</code></td><td data-label="주의">엔진의 자율 선택은 묻지 않습니다. 알람·정각 알림의 밀기는 사용자 약속 — <code>&quot;&quot;</code> 도 원래 이름으로 걸립니다</td></tr>
+<tr><td data-label="훅"><code>bubble.duration</code></td><td data-label="묻는 자리">말풍선 수명 계산 뒤</td><td data-label="ctx"><code>text</code>, <code>requested</code>(0=자동), <code>source</code>(<code>say</code>/<code>private</code>/<code>selftalk</code>), <code>voiceMs</code>, <code>mascotId</code>, <code>imageSet</code></td><td data-label="반환·기본">long ms, 기본 = 계산값. clamp 500..120000</td><td data-label="주의">즉시 <code>say</code> 는 긴 값도 다음 말이 덮습니다(큐 줄은 그 뒤에 뜹니다)</td></tr>
+<tr><td data-label="훅"><code>selftalk.line</code></td><td data-label="묻는 자리">혼잣말 대사가 골라진 뒤</td><td data-label="ctx"><code>candidate</code>, <code>onGardenFloor</code>, <code>gardenPhase</code>, <code>tier</code>, <code>offered</code>, <code>mascotId</code>, <code>imageSet</code></td><td data-label="반환·기본">String; <code>&quot;&quot;</code> = 이번 차례 건너뜀</td><td data-label="주의"><code>offered=true</code>(해금 알림·친구 소식)를 삼키면 그 알림이 사라집니다</td></tr>
+<tr><td data-label="훅"><code>selftalk.interval</code></td><td data-label="묻는 자리">다음 혼잣말까지</td><td data-label="ctx"><code>baseMs</code>, <code>frequency</code>(0-3), <code>minSec</code>, <code>maxSec</code></td><td data-label="반환·기본">long ms, 기본 = 계산값. clamp 3000..3600000</td><td data-label="주의"></td></tr>
+<tr><td data-label="훅"><code>speech.greeting</code></td><td data-label="묻는 자리">클릭·수다 인사</td><td data-label="ctx"><code>pool</code>(List), <code>last</code>, <code>trigger</code>(<code>click</code>/<code>chatter</code>), <code>imageSet</code></td><td data-label="반환·기본">String; <code>&quot;&quot;</code> = 인사 없음. 기본 = 풀에서 무작위</td><td data-label="주의">풀이 비어도 묻습니다 — 인사말 없는 캐릭터에 인사를 주는 길</td></tr>
+<tr><td data-label="훅"><code>affection.award</code></td><td data-label="묻는 자리">호감도 적립원 전부가 지나는 한 자리</td><td data-label="ctx"><code>source</code>, <code>points</code>, <code>dailyCap</code>, <code>cooldownSeconds</code>, <code>todayPoints</code></td><td data-label="반환·기본">int; 0 = 이번 건 안 줌(쿨다운도 안 겁니다). 기본 = <code>points</code>. clamp 0..1000000</td><td data-label="주의">음수 → 0(절대 빼지 않습니다). 일일 상한은 그대로</td></tr>
+<tr><td data-label="훅"><code>affection.tier</code></td><td data-label="묻는 자리">점수 → 단계</td><td data-label="ctx"><code>points</code></td><td data-label="반환·기본">int 1..6, 기본 = 표</td><td data-label="주의">내려가는 값은 무시됩니다(올릴 때만)</td></tr>
+<tr><td data-label="훅"><code>place.allowed</code></td><td data-label="묻는 자리">감독자가 캐릭터를 옮겨 놓기 전에 「여기 놓아도 되는가」</td><td data-label="ctx"><code>x</code>, <code>y</code>, <code>confinement</code>(int[4] 또는 <code>&quot;&quot;</code>), <code>mover</code></td><td data-label="반환·기본">boolean, 기본 = 울타리 안</td><td data-label="주의">100 ms 타이머에서도 불립니다 → 값싸야 합니다. false 고정이면 테더가 되돌리지 못합니다</td></tr>
+<tr><td data-label="훅"><code>bongo.key_frame</code></td><td data-label="묻는 자리">봉고 모드에서 키 그림 자리를 고른 직후</td><td data-label="ctx"><code>frames</code>, <code>cycle</code>(코어가 고른 자리), <code>look</code>(<code>bongo</code>/<code>small</code>)</td><td data-label="반환·기본">int 자리, 기본 = 돌아가며. clamp -1..frames-1</td><td data-label="주의">ctx 에 키 코드·글자는 없습니다(코어는 키를 읽지 않습니다). 매 타건, EDT</td></tr>
+<tr><td data-label="훅"><code>bongo.key_input</code></td><td data-label="묻는 자리">봉고가 보이는 동안 40 ms 마다, 마우스 추정과 독립</td><td data-label="ctx"><code>frames</code>, <code>look</code></td><td data-label="반환·기본">한 번 소비할 그림 자리; -1 = 플러그인이 입력을 맡되 이번엔 없음, -2/null = 코어 추정 사용. 기본 -2, clamp -2..frames-1</td><td data-label="주의">입력 폴러 스레드: 기다리지 마세요. 확인한 키를 한 번만 소비하세요. 키 내용은 코어에도 공용 이벤트 버스에도 가지 않습니다</td></tr>
+<tr><td data-label="훅"><code>bubble.text</code> · 실험</td><td data-label="묻는 자리">말풍선 글자가 오르기 직전의 한 문 — <code>say</code>·<code>sayFor</code>·<code>sayPrivate</code>·<code>say.txt</code>·인사·다른 플러그인의 <code>say</code>, 그리고 혼잣말·선택지 물음</td><td data-label="ctx"><code>text</code>, <code>source</code>(<code>say</code>/<code>private</code>/<code>selftalk</code>/<code>choice</code>), <code>mascotId</code>, <code>imageSet</code></td><td data-label="반환·기본">String, 기본 = 원문. <strong><code>&quot;&quot;</code>·공백뿐인 답·null = 원문 그대로(치환만, 삼키기 없음)</strong></td><td data-label="주의">이 문에는 알람·<code>say.txt</code> 같은 사용자 약속이 섞여 지나므로 건너뛰기가 없습니다 — 앱이 고른 줄을 빼려면 <code>selftalk.line</code>/<code>speech.greeting</code>. <code>bubble</code> 이벤트의 <code>text</code> 는 훅을 지난 뒤의 글자입니다</td></tr>
+</tbody></table>
+<a id="bytecode"></a>
+<h2 id="6-바이트코드-마지막-수단">6. 바이트코드 — 마지막 수단</h2>
+<p>훅·이벤트로 되는 것은 그쪽으로 하세요. 앱 업데이트로 그 메서드가 바뀌면 깨지는 것은 변환기뿐입니다(§8 약속 밖).</p>
+<table><thead><tr><th>길</th><th>언제 등록</th><th>할 수 있는 것</th></tr></thead><tbody>
+<tr><td data-label="길"><code>LumiTransformer</code> 서비스</td><td data-label="언제 등록">게이트 직후, 앱이 실리기 전(<code>attach</code>)</td><td data-label="할 수 있는 것">그 뒤 실리는 <strong>모든</strong> 클래스를 통째로(메서드·필드 추가 포함)</td></tr>
+<tr><td data-label="길"><code>ctx.onLoad(prefix, t)</code></td><td data-label="언제 등록"><code>start()</code> 에서</td><td data-label="할 수 있는 것">아직 안 실린 클래스(엔진·마스코트는 <code>start</code> 뒤에 실립니다)를 같은 자유도로</td></tr>
+<tr><td data-label="길"><code>ctx.patch(className, t)</code></td><td data-label="언제 등록">언제든</td><td data-label="할 수 있는 것">이미 실린 클래스 하나를 재변환 — JVM 규칙상 메서드 본문만</td></tr>
+</tbody></table>
+<ul>
+<li>보호 목록은 아예 건네지지 않습니다: <code>lumi.SteamGate</code>, <code>lumi.OfflineToken</code>, <code>lumi.Features</code>, <code>lumi.plugin.*</code>, <code>lumi.steam.*</code>, <code>lumi.AffectionStore</code>, <code>lumi.Achievements</code>(호감도 저장소와 도전과제 — 스팀 도전과제 부정 방지. 점수를 주려면 <code>awardAffection</code>).</li>
+<li>던지는 변환기는 로그 뒤 원본 그대로 실립니다. 여러 플러그인이 같은 클래스를 건드리면 이어서 적용되는데, 플러그인 jar 이 모드 목록의 역순으로 클래스패스에 붙으므로 <strong>아래 모드가 먼저</strong> 등록되고 먼저 돕니다. 다만 이 차례는 <code>ServiceLoader</code> 가 정하는 것이라 계약이 아닙니다 — 순서에 기대는 변환기는 쓰지 마세요.</li>
+<li>꺼진 플러그인의 변환기는 등록되지 않습니다. <code>-Dlumi.plugins=off</code>(런처 <code>--no-plugins</code>)면 전부 꺼집니다.</li>
+<li>JDK 25 의 <code>java.lang.classfile</code> 로 충분합니다 — <code>examples\plugin-transformer</code>.</li>
+</ul>
+<a id="data-mods"></a>
+<h2 id="7-데이터-조각-코드-없는-모드">7. 데이터 조각 (코드 없는 모드)</h2>
+<p>같은 모드 폴더에 통째 파일 대신 <strong>덧붙이는 조각</strong>을 둘 수 있습니다. 메모리에서 합쳐지고 아래 모드가 이깁니다.</p>
+<table><thead><tr><th>자리</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="자리"><code>img\&lt;셋&gt;\conf\actions.d\*.xml</code>, <code>behaviors.d\*.xml</code></td><td data-label="하는 일">액션·행동 덧붙이기. 같은 <code>Name</code> 은 그 자리에서 교체됩니다. 전역 <code>conf\actions.d\</code>·<code>behaviors.d\</code> 는 원본을 전역 <code>conf\</code> 에서 읽는 셋에만</td></tr>
+<tr><td data-label="자리"><code>conf\language.d\&lt;이름&gt;_&lt;locale&gt;.properties</code></td><td data-label="하는 일">그 로케일의 키 덮기. 접미 없는 파일은 빠진 키만</td></tr>
+<tr><td data-label="자리"><code>conf\self_talk.d\</code>, <code>conf\meet_dialogues.d\&lt;이름&gt;_&lt;lang&gt;.txt</code></td><td data-label="하는 일">혼잣말·만남 대사를 원본 뒤에 덧붙임</td></tr>
+<tr><td data-label="자리"><code>mod.json</code> <code>{&quot;name&quot;,&quot;version&quot;,&quot;app_version&quot;}</code></td><td data-label="하는 일">모드 탭 칩(플러그인이 없는 모드용)</td></tr>
+</tbody></table>
+<p>깨진 조각은 경고 한 줄로 건너뛰고, 합친 결과가 엔진 검증에 걸리면 조각 없이 다시 읽습니다. 자세한 규칙은 <a href="../plugin-guide.html">첫걸음 안내</a>의 「데이터 조각」에 있습니다.</p>
+<a id="compatibility"></a>
+<h2 id="8-호환-정책">8. 호환 정책</h2>
+<ul>
+<li>플러그인 API 의 공개 표면은 <strong>안정</strong>과 <strong>실험</strong> 둘로 나뉩니다. 표시가 없는 항목은 안정입니다. 실험 항목은 표에 「실험」 칩으로 표시되고 <code>sdk.json</code> 의 <code>preview</code> 에 같은 목록이 있습니다.</li>
+<li><strong>안정 항목은 같은 <code>api_version</code> 안에서 더해지기만 합니다.</strong> 없어지지 않고 형이 바뀌지 않습니다. 결정 자리가 앱에서 사라진 훅은 기본값만 돌려주는 빈 자리로 남고 표에 폐기로 표시됩니다. 이벤트에는 키가 더해질 수 있고 빠지지 않습니다 — 모르는 키는 무시하세요.</li>
+<li><strong>실험 항목은 <code>api_version</code> 을 올리지 않고 바뀌거나 없어질 수 있습니다.</strong> 그때는 <a href="CHANGELOG.html"><code>CHANGELOG.md</code></a> 에 적고, 없앤 자리는 한 앱 버전 동안 빈 자리로 남깁니다. 실험 항목이 앱 버전 하나를 바뀌지 않고 넘기면 안정으로 올립니다. 1.3.0 의 구분 기준: 자사 플러그인(LUMI Chat·Super Bongo)이나 앱 자체가 실제로 쓰는 문과 그 짝은 안정, 그 밖은 실험입니다.</li>
+<li><strong><code>api_version</code> 은 안정 항목을 없애거나 모양을 바꿔야만 할 때 오릅니다.</strong> 그때 이행 목록을 <a href="CHANGELOG.html"><code>CHANGELOG.md</code></a> 에 적고, <strong>직전 버전(N-1)을 위해 쓰인 플러그인은 한 버전 더 실립니다</strong>(없앤 훅은 빈 자리, 없앤 메서드는 위임 껍데기로). 두 버전 전 플러그인은 실리지 않고 업데이트 안내를 받습니다. 앱보다 새 <code>api_version</code> 을 적은 플러그인도 실리지 않습니다.</li>
+<li>「더해지기만 한다」는 뒤집으면 나중 앱 버전에서 더해진 메서드·훅·토픽이 같은 <code>api_version</code> 의 옛 앱에는 없다는 뜻입니다. 검증한 앱 버전을 <code>plugin.json</code> 의 <code>app_version</code> 에 적으세요. 실행 중인 앱과 다르면 모드 탭에 「N용」 칩이 붙습니다(안내일 뿐 막지 않습니다).</li>
+<li>약속 밖: 변환기가 건드리는 코어 클래스의 모양, <code>PluginContext</code> 와 이 문서의 타입 표 밖의 공개 클래스(클래스패스에 있어 부를 수는 있지만 버전마다 바뀔 수 있습니다), <code>conf\settings.properties</code> 의 앱 키.</li>
+<li>(현재 버전 사실) 1.3.0 의 로더는 <code>api_version</code> 을 읽기만 하고 판단하지 않습니다. 위의 거부·칩은 다음 앱 버전부터 로더가 집행합니다.</li>
+<li>SDK 버전은 앱 버전과 같습니다(<code>sdk.json</code> 의 <code>sdk_version</code> = <code>app_version</code>). <code>api_version</code> 은 별개의 호환 번호로 이 문서 제목에 적혀 있습니다. 문서·예제만 바뀐 개정본은 버전을 유지하고 파일 이름과 <code>sdk.json</code> 의 <code>commit</code> 으로 구분합니다.</li>
+</ul>
+<a id="practices"></a>
+<h2 id="9-하지-말-것">9. 하지 말 것</h2>
+<ul>
+<li>이벤트 리스너에서 EDT 를 기다리지 마세요(발행 쪽이 EDT 일 수 있습니다 — <code>SwingUtilities.invokeLater</code> 나 <code>onEdt</code> 로).</li>
+<li>훅 핸들러에서 파일·네트워크·잠금을 잡지 마세요.</li>
+<li>사용자 데이터를 <code>plugindata\&lt;id&gt;\</code> 밖에 두지 마세요. 개인정보를 다루면 창작마당 설명에 밝히세요.</li>
+<li><code>conf\settings.properties</code> 의 앱 키를 바꾸지 마세요(제 접두 키만).</li>
+</ul>
+<a id="testing"></a>
+<h2 id="10-테스트-킷-plugintestkit">10. 테스트 킷 — <code>PluginTestKit</code></h2>
+<p>SDK 1.3.0의 <code>beginMicCapture()</code>도 가짜 백엔드에서 검사할 수 있습니다. <code>beginMicCapture</code>/<code>endMicCapture</code> 호출이 소유자 id와 함께 기록되고, lease 보유 중 <code>speak</code>는 <code>speakSuppressed</code>를 기록하며 재생 콜백을 호출하지 않습니다. <code>kit.close()</code>는 중첩 lease를 모두 반환합니다. 실제 오디오 장치는 열지 않습니다.</p>
+<p><code>api_version</code>은 호환 가능한 추가이므로 1을 유지합니다. 이 메서드가 없는 이전 앱도 지원하는 플러그인은 시작 시 메서드 존재를 확인하고 음성 입력만 비활성화해야 합니다. <code>app_version</code>은 표시용이며 최소 앱 버전을 강제하지 않습니다. SDK 1.3.0으로 컴파일했다는 사실만으로 이전 앱에 새 메서드가 생기지는 않습니다.</p>
+<p><code>lib\Shimeji-ee.jar</code> 는 게이트 때문에 앱을 띄울 수 없지만, 플러그인의 <strong>단위 검사</strong>는 앱 없이 됩니다. <code>PluginTestKit</code> 이 주는 <code>PluginContext</code> 는 문마다 이 킷으로 이어져 있어 — 플러그인이 한 일은 <strong>기록</strong>되고, 읽는 값은 <strong>가짜</strong>에서 오고, 이벤트·훅·시계는 검사가 직접 밉니다. 엔진·창·스팀은 하나도 안 뜹니다. <code>tools\run_tests.py &lt;플러그인 폴더&gt;</code> 가 <code>test\*.java</code> 를 굽고 돌립니다(예 <code>examples\hello\test\HelloPluginTest.java</code>; 프레임워크 없이 <code>main</code> 하나).</p>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-3">Copy / 복사</button></div><pre><code id="code-3">import com.group_finity.mascot.lumi.plugin.PluginTestKit;
+import hello.HelloPlugin;
+import java.nio.file.Path;
+
+public final class HelloSmokeTest {
+    public static void main(String[] args) throws Exception {
+        Path manifest = Path.of(System.getProperty(&quot;plugin.dir&quot;), &quot;plugin.json&quot;);
+        HelloPlugin plugin = new HelloPlugin();
+        try (PluginTestKit kit = PluginTestKit.start(manifest)) {
+            try {
+                plugin.start(kit.context());
+                kit.publish(&quot;ready&quot;);
+                if (kit.calls(&quot;say&quot;).size() != 1) {
+                    throw new AssertionError(&quot;Expected one startup greeting&quot;);
+                }
+                Object line = kit.ask(&quot;speech.greeting&quot;, &quot;hi&quot;);
+                if (!&quot;[hello] hi&quot;.equals(line)) {
+                    throw new AssertionError(&quot;Greeting hook failed: &quot; + line);
+                }
+                kit.tick(60_000);
+            } finally {
+                plugin.stop();
+            }
+        }
+    }
+}
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>손대지 않은 hello 예제의 사본에 <code>test\HelloSmokeTest.java</code> 로 두고 <code>python tools\run_tests.py &lt;폴더&gt;</code> 로 돌리세요. 러너는 <code>test\</code> 바로 아래의 <code>*.java</code> 만 찾고 클래스마다 JVM 을 따로 띄우며(<code>-Dplugin.dir=&lt;플러그인 폴더&gt;</code>), <strong><code>-ea</code> 를 주지 않으므로 <code>assert</code> 문은 무효입니다</strong> — 실패는 위처럼 <code>AssertionError</code> 를 직접 던지세요. 킷은 플러그인을 만들어 주지도, <code>ready</code> 를 내 주지도, <code>stop()</code> 을 대신 불러 주지도 않습니다 — 셋 다 검사가 합니다.</p>
+<table><thead><tr><th>메서드</th><th>하는 일</th></tr></thead><tbody>
+<tr><td data-label="메서드"><code>start(pluginId)</code> · <code>start(Path pluginJson)</code> · <code>start(PluginDescriptor)</code></td><td data-label="하는 일">킷 하나 = 플러그인 하나. <code>plugin.json</code> 을 주면 <code>&quot;settings&quot;</code> 기본값이 <code>prefs()</code> 에 심어집니다</td></tr>
+<tr><td data-label="메서드"><code>context()</code>, <code>descriptor()</code>, <code>dataDir()</code></td><td data-label="하는 일">건넬 컨텍스트 · 매니페스트 · 임시 폴더(<code>prefs()</code> 도 여기, <code>close()</code> 가 지웁니다)</td></tr>
+<tr><td data-label="메서드"><code>calls()</code>, <code>calls(name)</code>, <code>lastCall(name)</code>, <code>clearCalls()</code></td><td data-label="하는 일">기록: <code>say</code>·<code>sayQueued</code>·<code>ask</code>·<code>behave</code>·<code>behaveFor</code>·<code>summon</code>·<code>dismiss</code>·<code>moveTo</code>·<code>heart</code>·<code>playSound</code>·<code>awardAffection</code>·<code>setCharactersVisible</code>·<code>hideBubble</code>·<code>publish</code>·<code>addTrayItem</code>·<code>addTrayToggle</code>·<code>addSettingsButton</code>·<code>addCharacterMenuItem</code>·<code>addCharacterMenuToggle</code>·<code>addFeatureToggle</code>·<code>bindHotkey</code>·<code>every</code>·<code>after</code>… — <code>Call.name</code> + <code>args</code>. <code>lastCall</code> 은 이름이 필수입니다(무인자 꼴은 없습니다)</td></tr>
+<tr><td data-label="메서드"><code>queued()</code>, <code>menuRows()</code>, <code>featureToggles()</code>, <code>hotkeys()</code>, <code>choiceOpen()</code>, <code>choiceOptions()</code></td><td data-label="하는 일">큐에 남은 줄 · 붙인 메뉴 줄(손잡이 살아 있음) · 붙인 기능 스위치 · 등록한 단축키 · 열린 선택지</td></tr>
+<tr><td data-label="메서드"><code>mascots(…)</code>, <code>affection(tier, %, untilNext, days)</code>, <code>affectionRemaining(n)</code>, <code>focus(active, sources)</code>, <code>screenBusy</code>, <code>bubbleVisible</code>, <code>charactersHidden</code>, <code>language(code)</code>, <code>behaviorNames(Set&lt;String&gt;)</code>, <code>currentBehavior(name)</code>, <code>installedImageSets</code>, <code>activeImageSets</code>, <code>screens</code>, <code>setting(key, value)</code>, <code>appText(key, value)</code>, <code>soundsEnabled</code></td><td data-label="하는 일">플러그인이 <strong>읽는</strong> 값의 가짜. 기본: 캐릭터 없음·1단계·오늘 몫 2점·<code>ko</code>·<code>Lumi</code> 하나·1920×1080·소리 켜짐</td></tr>
+<tr><td data-label="메서드"><code>feature(id, on)</code></td><td data-label="하는 일"><code>featureEnabled(id)</code> 의 답(기본 전부 꺼짐)</td></tr>
+<tr><td data-label="메서드"><code>publish(topic, k, v, …)</code></td><td data-label="하는 일">리스너에게 <strong>동기</strong> 배달(던지는 리스너는 건너뜁니다 — 앱 규칙)</td></tr>
+<tr><td data-label="메서드"><code>ask(hook, default, k, v, …)</code></td><td data-label="하는 일">훅 핸들러를 앱 규칙대로 돌려 답을 줍니다(null 통과·형 불일치 통과·던지면 건너뜀)</td></tr>
+<tr><td data-label="메서드"><code>answerChoice(index)</code>, <code>choicesWaiting()</code></td><td data-label="하는 일">열린 선택지를 그 번호(또는 -1)로 닫고 콜백을 부른 뒤 줄의 다음 것을 엽니다(앱과 같은 줄서기 — 같은 플러그인의 새 <code>ask</code> 는 옛 표를 <code>-2</code> 로 대체, <code>tick()</code> 이 <code>maxWaitMs</code> 를 넘긴 것을 <code>-2</code> 로 뺍니다) · 기다리는 선택지 수</td></tr>
+<tr><td data-label="메서드"><code>tick(ms)</code>, <code>now()</code></td><td data-label="하는 일">가짜 시계 — 기한이 온 <code>every</code>/<code>after</code> 를 차례로 돌립니다(주기는 맞는 횟수만큼)</td></tr>
+<tr><td data-label="메서드"><code>textLoader(ClassLoader)</code></td><td data-label="하는 일"><code>text()</code> 가 <code>plugin_&lt;lang&gt;.properties</code> 를 찾을 로더(기본 = 검사의 로더)</td></tr>
+<tr><td data-label="메서드"><code>quiet(b)</code>, <code>foregroundScreen(rect)</code>, <code>persona(set, text)</code>, <code>speaking(b)</code></td><td data-label="하는 일">가짜값 — <code>quietNow</code>·<code>foregroundScreen</code>·<code>persona</code>·<code>isSpeaking</code> 의 답</td></tr>
+<tr><td data-label="메서드"><code>speechVolume()</code>, <code>mouthFlapping()</code></td><td data-label="하는 일">마지막 <code>setSpeechVolume</code> · 지금 입을 움직이는 셋(없으면 null). <code>speak</code> 는 기록판에서 즉시 끝납니다(<code>onStart</code>·<code>onEnd</code> 가 그 자리에서 돕니다)</td></tr>
+<tr><td data-label="메서드"><code>close()</code></td><td data-label="하는 일">컨텍스트로 등록한 것을 거두고 임시 폴더를 지웁니다(두 번 안전; <code>try-with-resources</code>). 플러그인의 <code>stop()</code> 은 부르지 않습니다 — <code>prefs().onChange</code> 리스너도 앱에서처럼 남습니다</td></tr>
+<tr><td data-label="메서드"><code>PluginTestKit.realContext(pluginId)</code></td><td data-label="하는 일"><strong>제품 백엔드</strong>의 컨텍스트 — 앱 창 없이 앱의 진짜 상태(집중 모드·말풍선·호감도 저장소)에 대고 플러그인 클래스를 돌리는 통합 검사용. 기록도 해제도 없습니다. 단위 검사는 <code>start()</code></td></tr>
+<tr><td data-label="메서드">(알아 둘 것)</td><td data-label="하는 일">킷은 제 jar 를 모르므로 <code>plugin_ko.properties</code> 를 <strong>클래스 폴더</strong>(검사 중인 플러그인)에서 먼저 찾고, 없으면 첫 jar 의 것을 집습니다(제품에서는 jar 이름으로 제 것을 고릅니다). 검사 중인 플러그인도 jar 로 실었다면 <code>textLoader(...)</code> 로 로더를 지정하세요</td></tr>
+</tbody></table>
+<p>킷 안에서는 리스너·훅·예약 작업·<code>onEdt</code>/<code>offEdt</code> 가 <strong>부른 스레드에서 그 자리</strong>에서 돕니다 — 검사가 결정적입니다. 예외는 <code>prefs()</code> 입니다: 진짜 저장소(임시 폴더)라 <code>onChange</code> 알림은 앱에서처럼 <strong>비동기</strong>로 옵니다. <code>patch</code>/<code>onLoad</code> 는 흉내 내지 않습니다(계측 없음 → <code>false</code>).</p>
+<a id="catalogue"></a>
+<h2 id="11-카탈로그-catalogmd">11. 카탈로그 — <a href="CATALOG.html"><code>CATALOG.md</code></a></h2>
+<p>행동 이름(한글·빈도·숨김), 이벤트 토픽과 키, 훅마다 묻는 자리·기본값·ctx 키, <code>MascotState</code> 필드, 읽어도 되는 앱 설정 키, <code>settings</code> 의 <code>type</code> 값, 기능 스위치 id — 전부 SDK 를 구울 때 앱 소스에서 자동 생성합니다. 손으로 고치지 않으며, 소스와 어긋난 사본으로는 SDK 가 구워지지 않습니다.</p>
+<a id="alternatives"></a>
+<h2 id="12-약속-밖의-일을-하는-법">12. 약속 밖의 일을 하는 법</h2>
+<p>약속(§3~§5)에 없는 것은 <strong>앱 클래스를 부르지 말고</strong> 아래처럼 하세요. 앱 클래스는 클래스패스에 있어 부를 수는 있지만 버전마다 바뀝니다(§8).</p>
+<table><thead><tr><th>하고 싶은 것</th><th>하는 법</th></tr></thead><tbody>
+<tr><td data-label="하고 싶은 것">JSON 읽고 쓰기</td><td data-label="하는 법"><code>Json</code> (§3 표). 더 필요하면 제 라이브러리를 <code>plugins\lib\</code> 에</td></tr>
+<tr><td data-label="하고 싶은 것">앱과 같은 옷의 창</td><td data-label="하는 법"><code>ctx.theme()</code> 만 씁니다 — FlatLaf 스타일 문자열은 <code>theme().style(component, &quot;background:#131F33; …&quot;)</code> 처럼 다크값으로. 그 밖의 룩(앱의 <code>settings</code> 패키지)은 약속 밖</td></tr>
+<tr><td data-label="하고 싶은 것">창 자리 기억</td><td data-label="하는 법"><code>ctx.manageWindow(window, &quot;settings&quot;)</code></td></tr>
+<tr><td data-label="하고 싶은 것">비밀을 파일에</td><td data-label="하는 법"><code>ctx.writeAtomic(path, bytes, true)</code> — <code>prefs()</code> 는 평범한 설정용(평문), 키는 <code>ownerOnly</code> 로. ACL 은 최선의 노력이지 암호화가 아닙니다(§3.7)</td></tr>
+<tr><td data-label="하고 싶은 것">더블클릭 감지</td><td data-label="하는 법"><code>ctx.on(&quot;doubleclick&quot;, …)</code> — 전역 AWT 리스너를 걸지 마세요. 앱이 제 통과 창(하트·음표) 위의 누름까지 <code>click</code> 으로 넘겨 줍니다</td></tr>
+<tr><td data-label="하고 싶은 것">캐릭터 옆에 창 띄우기</td><td data-label="하는 법"><code>ctx.mascotById(id)</code> 가 null 이 아닌지 본 뒤 <code>anchor()</code>(발끝, 바탕화면 좌표) 아래에; 화면은 <code>screens()</code></td></tr>
+<tr><td data-label="하고 싶은 것">지금 화면에 있는 캐릭터의 셋 목록</td><td data-label="하는 법"><code>ctx.mascots()</code> 에서 <code>imageSet()</code> 을 순서대로 중복 없이 — 켜진 셋(<code>activeImageSets</code>)과 다릅니다(켜졌어도 아직 안 태어났을 수 있습니다)</td></tr>
+<tr><td data-label="하고 싶은 것">소리 내기</td><td data-label="하는 법">효과음은 <code>playSound(path)</code>, 목소리(TTS·미리 구운 파일)는 PCM 으로 풀어 <code>speak(PcmAudio, onStart, onEnd)</code> — mp3 는 <code>javax.sound</code> 가 못 읽으니 wav/PCM 으로 받으세요</td></tr>
+<tr><td data-label="하고 싶은 것">입 움직이기</td><td data-label="하는 법"><code>mouthFlap(set, ctx::isSpeaking)</code> — <code>behave(&quot;Talk&quot;)</code> 를 손으로 반복하지 마세요</td></tr>
+<tr><td data-label="하고 싶은 것">마우스 커서·다른 프로그램의 창 만지기</td><td data-label="하는 법">앱이 하지 않는 일이라 문이 없습니다. JNA 로 직접 합니다(약속 밖, <code>plugins\lib\</code> 에 jna 를 넣지 마세요 — 앱의 것을 씁니다)</td></tr>
+<tr><td data-label="하고 싶은 것">페르소나 편집</td><td data-label="하는 법"><code>personaFile(set)</code> 에 <code>writeAtomic</code> — 파일 규약은 앱 것입니다</td></tr>
+</tbody></table>
+<a id="recipes"></a>
+<h2 id="13-자주-쓰는-코드">13. 자주 쓰는 코드</h2>
+<h3 id="최소-진입-클래스">최소 진입 클래스</h3>
+<p><code>src\myplugin\MyPlugin.java</code> 로 두고 <code>src\META-INF\services\com.group_finity.mascot.lumi.plugin.LumiPlugin</code> 에 <code>myplugin.MyPlugin</code> 을 적습니다. 매니페스트는 §1 의 것을 그대로 쓰되 최소 구성에서는 <code>settings</code> 배열을 빼도 됩니다. 빌드는 <a href="../README.html">README 의 명령</a>으로 합니다. hello 예제의 진입 클래스를 이것으로 바꾸면 그 검사도 새 동작에 맞게 바꿔야 합니다.</p>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-4">Copy / 복사</button></div><pre><code id="code-4">package myplugin;
+
+import com.group_finity.mascot.lumi.plugin.LumiPlugin;
+import com.group_finity.mascot.lumi.plugin.PluginContext;
+
+public final class MyPlugin implements LumiPlugin {
+    @Override
+    public void start(PluginContext ctx) {
+        ctx.on(&quot;ready&quot;, event -&gt; {
+            if (!ctx.quietNow()) {
+                ctx.say(ctx.text(&quot;greeting&quot;, &quot;Hello from my plugin!&quot;), 4000);
+            }
+        });
+    }
+}
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p><code>ready</code> 로 엔진이 뜨기를 기다리고, 먼저 말을 거는 인사는 <code>quietNow()</code> 로 지금 조용히 할 때인지 묻습니다. 번역은 <code>src\plugin_ko.properties</code>·<code>src\plugin_en.properties</code> 에 <code>greeting=…</code> 으로 적습니다 — jar 에서는 뿌리에 놓입니다.</p>
+<p>아래 짧은 예들은 <code>start(PluginContext ctx)</code> 안에 넣는 코드입니다.</p>
+<h3 id="클릭한-캐릭터에게-답하기">클릭한 캐릭터에게 답하기</h3>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-5">Copy / 복사</button></div><pre><code id="code-5">ctx.on(&quot;click&quot;, event -&gt; {
+    if (!&quot;left&quot;.equals(event.get(&quot;button&quot;))) return;
+    if (!(event.get(&quot;mascotId&quot;) instanceof Integer id)) return;
+    if (!(event.get(&quot;imageSet&quot;) instanceof String set)) return;
+    if (ctx.mascotById(id) == null) return;
+    ctx.sayTo(id, set, ctx.text(&quot;clicked&quot;, &quot;Hello!&quot;), 3000);
+});
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>더블클릭도 <code>click</code> 을 두 번 냅니다 — 더블클릭에 반응하려면 <code>doubleclick</code> 을 들으세요. 앱의 클릭 인사도 함께 나올 수 있습니다; <code>claimClickGreeting()</code> 은 앱의 클릭 인사를 통째로 맡을 때만 쓰세요. 조회와 표시 사이에 그 아이가 사라지면 <code>sayTo</code> 는 같은 셋의 첫째에게 갑니다.</p>
+<h3 id="선택지-띄우기">선택지 띄우기</h3>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-6">Copy / 복사</button></div><pre><code id="code-6">ctx.ask(&quot;Take a short break?&quot;, java.util.List.of(&quot;Yes&quot;, &quot;Later&quot;),
+        10_000, 30_000, index -&gt; {
+            if (index &lt; 0) return;
+            if (index == 0) ctx.sayQueued(&quot;Enjoy your break!&quot;, 3000);
+        });
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p><code>10_000</code> 은 <strong>뜬 뒤</strong> 답을 기다리는 시간, <code>30_000</code> 은 줄에서 기다려 줄 시간입니다. <code>-1</code> 은 떴는데 답이 없었다, <code>-2</code> 는 앱이 치웠다(이미 뜬 물음도 제 새 <code>ask</code> 가 대체합니다)는 뜻이고 — 둘 다 보기 번호가 아닙니다. 정상 콜백은 EDT 밖이니 Swing 을 만지려면 <code>onEdt</code> 로 보내세요. 배포할 때는 물음과 보기도 <code>text()</code> 로 옮기세요.</p>
+<h3 id="인사-고치기">인사 고치기</h3>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-7">Copy / 복사</button></div><pre><code id="code-7">ctx.hook(&quot;speech.greeting&quot;, (hook, current, args) -&gt; {
+    if (!&quot;Lumi&quot;.equals(args.get(&quot;imageSet&quot;))) return null;
+    if (!(current instanceof String line) || line.isBlank()) return null;
+    return &quot;[my plugin] &quot; + line;
+});
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>매니페스트에도 <code>&quot;hooks&quot;: [&quot;speech.greeting&quot;]</code> 을 적습니다. <code>null</code> 은 앞선 핸들러의 답을 그대로 둡니다. <code>bubble.text</code> 핸들러 안에서 <code>ctx.say()</code> 를, <code>focus.quiet</code> 핸들러 안에서 <code>ctx.quietNow()</code> 를 부르면 같은 훅에 다시 들어가니 하지 마세요.</p>
+<h3 id="전역-단축키-걸기">전역 단축키 걸기</h3>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-8">Copy / 복사</button></div><pre><code id="code-8">com.group_finity.mascot.lumi.plugin.HotkeyResult result =
+        ctx.bindHotkey(&quot;greet&quot;, &quot;Ctrl+Alt+L&quot;, () -&gt; ctx.say(&quot;Hello!&quot;, 3000));
+if (result != com.group_finity.mascot.lumi.plugin.HotkeyResult.OK) {
+    ctx.log().warning(&quot;Hotkey registration: &quot; + result);
+}
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>등록 이름은 플러그인마다 따로지만 실제 키 조합은 다른 프로그램·플러그인과 부딪힐 수 있습니다. 선언형 <code>hotkey</code> 설정은 글자만 저장하니 처음 값을 걸고 값이 바뀌면 다시 거세요. 손으로 풀 때는 <code>unbindHotkey(&quot;greet&quot;)</code> 입니다.</p>
+<h3 id="자주-불리는-훅에서-설정을-캐시하기">자주 불리는 훅에서 설정을 캐시하기</h3>
+<p>별도 진입 클래스 <code>src\myplugin\QuietPlugin.java</code> 로 두고, 쓸 때는 서비스 파일에 <code>myplugin.QuietPlugin</code> 을 적습니다. 매니페스트에는 <code>&quot;hooks&quot;: [&quot;focus.quiet&quot;]</code> 을, <code>settings</code> 배열에는 <code>{&quot;key&quot;:&quot;quiet&quot;,&quot;type&quot;:&quot;bool&quot;,&quot;default&quot;:false,&quot;label&quot;:&quot;Keep quiet&quot;}</code> 을 더합니다.</p>
+<div class="codebox"><div class="codebar"><span>java</span><button type="button" data-copy="code-9">Copy / 복사</button></div><pre><code id="code-9">package myplugin;
+
+import com.group_finity.mascot.lumi.plugin.LumiPlugin;
+import com.group_finity.mascot.lumi.plugin.PluginContext;
+import com.group_finity.mascot.lumi.plugin.PluginPrefs;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
+
+public final class QuietPlugin implements LumiPlugin {
+    private final AtomicBoolean quiet = new AtomicBoolean();
+    private PluginPrefs prefs;
+    private BiConsumer&lt;String, String&gt; changed;
+
+    @Override
+    public void start(PluginContext ctx) {
+        prefs = ctx.prefs();
+        changed = (key, value) -&gt; {
+            if (&quot;quiet&quot;.equals(key)) quiet.set(Boolean.parseBoolean(value));
+        };
+        prefs.onChange(changed);
+        quiet.set(prefs.getBoolean(&quot;quiet&quot;, false));
+        ctx.hook(&quot;focus.quiet&quot;, (hook, current, args) -&gt;
+                quiet.get() ? Boolean.TRUE : null);
+    }
+
+    @Override
+    public void stop() {
+        if (prefs != null &amp;&amp; changed != null) prefs.removeOnChange(changed);
+    }
+}
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>훅은 원자적 캐시 값만 읽습니다 — 파일도, 설정 저장도, 저장소 잠금도 없습니다. 설정 변경 알림은 비동기라 바꾼 직후 잠깐 옛 값이 쓰일 수 있습니다. 리스너는 정상 종료든 시작 실패든 <code>stop()</code> 에서 직접 풉니다(§2).</p>
+<h3 id="작업-스레드-고르기">작업 스레드 고르기</h3>
+<table><thead><tr><th>작업</th><th>어디서</th></tr></thead><tbody>
+<tr><td data-label="작업">Swing 창·위젯</td><td data-label="어디서"><code>ctx.onEdt(...)</code> — 콜백은 짧게</td></tr>
+<tr><td data-label="작업">이벤트 처리·짧은 배경 작업</td><td data-label="어디서"><code>ctx.on(...)</code> / <code>ctx.offEdt(...)</code> — 둘은 이 플러그인의 이벤트 스레드를 나눠 씁니다</td></tr>
+<tr><td data-label="작업">주기·지연 작업</td><td data-label="어디서"><code>ctx.every(initialMs, periodMs, ...)</code> / <code>ctx.after(ms, ...)</code> — 이 플러그인의 타이머 스레드</td></tr>
+<tr><td data-label="작업">훅 판정</td><td data-label="어디서">부른 스레드 — 캐시 값으로 즉시 답합니다</td></tr>
+<tr><td data-label="작업">긴 네트워크 작업</td><td data-label="어디서">시간 제한과 종료 처리를 갖춘 제 작업 스레드 — 훅·EDT·이벤트 줄을 막지 않습니다</td></tr>
+</tbody></table></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const code=document.getElementById(button.dataset.copy);let copied=false;
+ try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){
+  const field=document.createElement('textarea');field.value=code.textContent;
+  field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.focus();field.select();
+  try{copied=document.execCommand('copy')}catch(error){}field.remove();
+ }
+ const status=button.closest('.codebox').querySelector('.copy-status');
+ status.textContent=copied?'Copied / 복사 완료':'Select the text to copy / 문안을 선택해 복사해 주세요';
+}));
+</script></body></html>

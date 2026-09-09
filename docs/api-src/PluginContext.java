@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  *       {@link #addCharacterMenuItem} (a row in a character's
  *       menu), {@link #addTrayToggle} / {@link #addCharacterMenuToggle} (a row with a 켜짐/꺼짐 chip);
  *       {@link #addSettingsButton} (a button on the settings window's Information tab);
- *       {@link #addFeatureToggle} (an Apply-time switch at the bottom of the Lumi tab's
+ *       {@link #addFeatureToggle} (an immediately applied switch at the bottom of the Lumi tab's
  *       「기능 켜고 끄기」 card). Menu rows and settings buttons give back a
  *       {@link PluginUi.MenuHandle} to relabel,
  *       check, disable or remove the row. The 「모드」 tab draws the declarative settings
@@ -136,6 +136,7 @@ public final class PluginContext {
     private final List<PluginUi.MenuHandle> rows = new ArrayList<>();
     private final List<PluginUi.FeatureToggle> featureToggles = new ArrayList<>();
     private final List<ScheduledHandle> tasks = new ArrayList<>();
+    private final List<MicCaptureLease> micCaptures = new ArrayList<>();
     /**
      * {@link #releaseAll} 이 지나갔다 — 이 모니터 아래에서만 읽고 쓴다. 등록 문마다 {@link #refused}
      * 로 먼저 묻고, 백엔드에 건 뒤 {@link #ledger} 로 다시 묻는다: 그 사이에 거둠이 지나갔으면
@@ -826,8 +827,8 @@ public final class PluginContext {
     }
 
     /**
-     * Adds an Apply-time switch at the bottom of the Lumi tab's 「기능 켜고 끄기」 card.
-     * The window reads {@code state} when it opens. On Apply it calls {@code onChange}
+     * Adds an immediately applied switch at the bottom of the Lumi tab's 「기능 켜고 끄기」 card.
+     * The window reads {@code state} when it opens. It calls {@code onChange} as the user edits the switch
      * only when the value changed; false rejects the change and restores the checkbox from
      * {@code state}. When {@code dependsOnFeature} (for example {@code bongo}) is off the
      * row is disabled without clearing its check.
@@ -1065,6 +1066,7 @@ public final class PluginContext {
         List<PluginUi.MenuHandle> rws;
         List<PluginUi.FeatureToggle> tgs;
         List<ScheduledHandle> tks;
+        List<MicCaptureLease> captures;
         boolean claim;
         boolean showAgain;
         List<Integer> ids;
@@ -1087,12 +1089,18 @@ public final class PluginContext {
             featureToggles.clear();
             tks = List.copyOf(tasks);
             tasks.clear();
+            captures = List.copyOf(micCaptures);
+            micCaptures.clear();
             claim = clickGreetingClaimed;
             clickGreetingClaimed = false;
             showAgain = Boolean.FALSE.equals(charactersVisibleLast);
             charactersVisibleLast = null;
             ids = List.copyOf(summoned);
             summoned.clear();
+        }
+        // Close microphone holds outside this monitor, including acquisitions still in flight.
+        for (MicCaptureLease lease : captures) {
+            quietly(lease::close);
         }
         // 거두는 중의 예외는 다음 항목을 막지 않는다
         for (Subscription s : subs) {
@@ -1143,7 +1151,8 @@ public final class PluginContext {
     /** 검사용 — 아직 거두지 않은 등록 수(리스너+훅+단축키+줄+작업). */
     synchronized int registeredCount() {
         return subscriptions.size() + hooks.size() + hotkeys.size() + rows.size()
-                + featureToggles.size() + tasks.size();
+                + featureToggles.size() + tasks.size()
+                + (int) micCaptures.stream().filter(lease -> !lease.isClosed()).count();
     }
 
     // ── LUMI Chat 을 약속 API 위로 옮기며 뚫은 자리 ────────────────────────────
@@ -1211,13 +1220,54 @@ public final class PluginContext {
      * Plays PCM audio through the app's voice line — one line for everyone, so a new call cuts
      * whatever was still speaking and voice never overlaps with a voice pack. The volume is the
      * shared voice volume ({@link #setSpeechVolume}). {@code onStart}/{@code onEnd} run on the
-     * player thread; the {@code tts} event fires around it.
+     * player thread; the {@code tts} event fires around it. Calls suppressed by a microphone
+     * lease or made after this context's shutdown are discarded without playback callbacks.
      */
-    public void speak(PcmAudio audio, Runnable onStart, Runnable onEnd) {
+    public synchronized void speak(PcmAudio audio, Runnable onStart, Runnable onEnd) {
         if (refused("speak")) {
             return;
         }
         backend.speak(audio, onStart, onEnd);
+    }
+
+    /**
+     * Stops current LUMI voice output and waits until its audio line has closed, then keeps all
+     * new voice output (voice packs, previews and every plugin) suppressed until the returned
+     * lease closes. Suppressed or previously queued voices are discarded, never replayed.
+     * Acquire <b>off the EDT</b>, before opening the microphone; close the microphone before
+     * closing this lease. Nested leases are independent and this context releases its own on
+     * shutdown, including acquisitions still waiting for playback to stop.
+     *
+     * @throws IllegalStateException on the EDT, after plugin shutdown, if interrupted, or if
+     *         the output line cannot be closed. An unsuccessful call must not start recording.
+     */
+    public MicCaptureLease beginMicCapture() {
+        if (javax.swing.SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("Microphone capture must begin off the EDT");
+        }
+        MicCaptureLease lease = new MicCaptureLease();
+        synchronized (this) {
+            if (released) {
+                throw new IllegalStateException("Plugin context has been released");
+            }
+            micCaptures.removeIf(MicCaptureLease::isClosed);
+            micCaptures.add(lease);
+        }
+        try {
+            backend.beginMicCapture(descriptor.id, lease);
+            synchronized (this) {
+                if (released || lease.isClosed()) {
+                    throw new IllegalStateException("Microphone capture was cancelled during shutdown");
+                }
+            }
+            return lease;
+        } catch (RuntimeException | Error e) {
+            lease.close();
+            synchronized (this) {
+                micCaptures.remove(lease);
+            }
+            throw e;
+        }
     }
 
     /** Cuts the current voice line. */

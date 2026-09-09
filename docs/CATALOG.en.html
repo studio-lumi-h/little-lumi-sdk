@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Little LUMI Model — plugin catalogue</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;font-size:18px;line-height:1.8;color:#243349;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:32px 24px 72px}header{border-bottom:1px solid #ccd8e6;margin-bottom:24px;padding-bottom:18px}.kicker{font-size:14px;color:#536c89}h1{font-size:clamp(28px,4vw,38px);line-height:1.3;word-break:keep-all;margin:14px 0}h2{font-size:26px;line-height:1.4;margin:38px 0 14px}h3{font-size:22px;line-height:1.5;margin-top:28px}h4,h5,h6{font-size:20px}p{margin:12px 0}a{color:#175baa;text-underline-offset:3px;overflow-wrap:anywhere}nav{display:flex;gap:10px 20px;flex-wrap:wrap}article{background:white;border:1px solid #d2deea;border-radius:14px;padding:26px;min-width:0;overflow-wrap:anywhere}ul,ol{padding-left:28px}li{margin:8px 0}code{font-family:ui-monospace,Consolas,monospace;font-size:1rem;white-space:normal;overflow-wrap:anywhere}p code,li code,td code{background:#edf2f8;border-radius:4px;padding:1px 3px}.codebox{border:1px solid #c8d7e8;border-radius:10px;overflow:hidden;margin:20px 0;background:#f5f8fc}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #d7e2ee}.codebar span{font-size:14px;color:#526783}button{font:inherit;font-size:16px;border:0;border-radius:6px;background:#175baa;color:#fff;padding:7px 14px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d68c19;outline-offset:3px}pre{margin:0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65;font-size:18px}pre code{white-space:pre-wrap;font-size:18px;background:none}table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:18px;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #d1dce8;overflow-wrap:anywhere}th{background:#eaf1fa}blockquote{margin:18px 0;padding:6px 18px;border-left:4px solid #87a8cc;background:#f2f6fc}.copy-status{display:block;min-height:1.4em;font-size:15px;color:#3b644b}details{margin:16px 0}summary{cursor:pointer;color:#175baa}.contents{font-size:16px}.contents ol{columns:2}footer{margin-top:28px;color:#5c7088;font-size:14px}.doclist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;padding:0}.doclist li{background:white;border:1px solid #d2deea;border-radius:9px;padding:14px;margin:0}
+@media(max-width:720px){main{padding:22px 14px 50px}article{padding:17px}h2{font-size:24px}.contents ol{columns:1}.doclist{grid-template-columns:1fr}table,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border:1px solid #d1dce8;border-radius:8px;margin:12px 0;padding:5px}td{border:0;padding:7px}td:before{content:attr(data-label);display:block;font-size:15px;color:#526783;font-weight:700}.codebar{flex-wrap:wrap}pre{padding:13px}}
+@media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
+</style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="../index.html">SDK 문서 / Documents</a><a href="../README.html">한국어</a><a href="../README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#1-behaviour-names-ctxbehavename-ctxbehaviornamesimageset">1. Behaviour names — ctx.behave(name) · ctx.behaviorNames(imageSet)</a></li><li><a href="#2-event-topics-and-payloads-ctxontopic-event--">2. Event topics and payloads — ctx.on(topic, event -&gt; …)</a></li><li><a href="#3-hooks-and-ctx-keys-ctxhookid-hook-current-ctx--">3. Hooks and ctx keys — ctx.hook(id, (hook, current, ctx) -&gt; …)</a></li><li><a href="#4-mascotstate-the-element-of-ctxmascots">4. MascotState — the element of ctx.mascots()</a></li><li><a href="#5-app-setting-keys-ctxsettingkey-fallback-read-only">5. App setting keys — ctx.setting(key, fallback) (read only)</a></li><li><a href="#6-type-of-a-pluginjson-settings-entry">6. type of a plugin.json &quot;settings&quot; entry</a></li><li><a href="#7-feature-switch-ids-ctxfeatureenabledid">7. Feature switch ids — ctx.featureEnabled(id)</a></li></ol></details><article><h1 id="little-lumi-model-plugin-catalogue">Little LUMI Model — plugin catalogue</h1>
+<p>Lookup tables of names and values for <strong>SDK/app 1.3.0, API 1</strong>. Generated from the sources by the build — never hand-edited (the SDK build refuses a stale copy). Rules and examples live in <a href="API.en.html">API.en.md</a>; this file is names and values only. <a href="CATALOG.html">한국어</a> · <a href="../README.en.html">Getting started</a>.</p>
+<p><a href="#behaviours">Behaviours</a> · <a href="#events">Events</a> · <a href="#hooks">Hooks</a> · <a href="#mascot-state">Mascot state</a> · <a href="#app-settings">App settings</a> · <a href="#setting-types">Setting types</a> · <a href="#feature-ids">Feature IDs</a></p>
+<p>For what a running character can do, query <code>ctx.behaviorNames(imageSet)</code>. Keep plugin options in <code>ctx.prefs()</code>, and prefer a public getter over an app setting key.</p>
+<a id="behaviours"></a>
+<h2 id="1-behaviour-names-ctxbehavename-ctxbehaviornamesimageset">1. Behaviour names — <code>ctx.behave(name)</code> · <code>ctx.behaviorNames(imageSet)</code></h2>
+<p>Every <code>&lt;Behavior Name&gt;</code> of <code>img\Lumi\conf\behaviors.xml</code>, with the Korean display names from <code>행동목록.txt</code>. Other image sets follow their own <code>behaviors.xml</code>, so at run time <code>ctx.behaviorNames(imageSet)</code> is the truth. The 150 donation jumps <code>JumpDono_x&lt;0..9&gt;_y&lt;0..14&gt;</code> are generated per coordinate and folded into one row.</p>
+<p><strong>hidden</strong> (<code>Hidden=&quot;true&quot;</code>) only hides the behaviour from the character menu. Whether it is picked automatically is decided by <strong>Frequency</strong> and <code>Condition</code> — Frequency is a selection weight, not a duration or a fixed percentage; zero excludes it from automatic selection, but it can still be called by name or reached from another behaviour. Several hidden behaviours have Frequency &gt; 0. <strong>toggle</strong> (<code>Toggleable=&quot;true&quot;</code>) can coexist with hidden. <code>Dragged</code> and <code>Thrown</code> are the behaviours the engine starts from mouse input.</p>
+<table><thead><tr><th>Name</th><th>Korean</th><th>Frequency</th><th>Hidden</th></tr></thead><tbody>
+<tr><td data-label="Name"><code>ChaseMouse</code></td><td data-label="Korean">마우스 쫓아가기</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>SitAndFaceMouse</code></td><td data-label="Korean">앉아서 마우스 향하기</td><td data-label="Frequency">0</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>SitAndSpinHead</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>Fall</code></td><td data-label="Korean">추락</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>Dragged</code></td><td data-label="Korean">들려 있음(엔진)</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>Thrown</code></td><td data-label="Korean">던져짐(엔진)</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>Talk</code></td><td data-label="Korean">입 뻐끔(말하는 동안 — ctx.mouthFlap 이 반복해 건다)</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>Flying</code></td><td data-label="Korean">자리로 날아가기(자바만 부른다)</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>AlarmNotice</code></td><td data-label="Korean">알람 「어!」(자바만 부른다)</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPat</code></td><td data-label="Korean">쓰다듬기</td><td data-label="Frequency">0</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>HeadPatTilt2</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatTilt3</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSit</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSitTilt2</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSitTilt3</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSitFacing</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSitFacingTilt2</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSitFacingTilt3</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HeadPatSitLedge</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>SelfTalk</code></td><td data-label="Korean">혼잣말</td><td data-label="Frequency">0</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>ChatHost</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>ChatGuest</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HiFiveHost</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HiFiveGuest</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GiftGiver</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GiftReceiver</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GiftDing</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GiftEnd</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GiftCatch</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GiftHopLoop</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>CreditSpot</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>ParadeBump</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GatherSit</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GatherCallAgain</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>TagWin</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>TagCaught</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>CreditGet</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>SkyReturn</code></td><td data-label="Korean"></td><td data-label="Frequency">900</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>VoidRescue</code></td><td data-label="Korean"></td><td data-label="Frequency">50</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>EventDrop</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>PullUp</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>Divided</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>StandUp</code></td><td data-label="Korean">일어서기</td><td data-label="Frequency">60</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>LookAround</code></td><td data-label="Korean">도리도리</td><td data-label="Frequency">120</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>TiltHead</code></td><td data-label="Korean">흥얼흥얼</td><td data-label="Frequency">120</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>Chatter</code></td><td data-label="Korean">인사하기</td><td data-label="Frequency">90</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>CreditEvent</code></td><td data-label="Korean">크레딧 획득</td><td data-label="Frequency">150</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>CreditRetry</code></td><td data-label="Korean">남은 크레딧 주우러 가기</td><td data-label="Frequency">60</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ChatInvite</code></td><td data-label="Korean">말 걸기</td><td data-label="Frequency">20</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>ChatApproach</code></td><td data-label="Korean"></td><td data-label="Frequency">70</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>LeadParade</code></td><td data-label="Korean">줄줄이 행진</td><td data-label="Frequency">20</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>JoinParade</code></td><td data-label="Korean"></td><td data-label="Frequency">70</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>GatherCall</code></td><td data-label="Korean">모여 모여</td><td data-label="Frequency">20</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>GatherJoin</code></td><td data-label="Korean"></td><td data-label="Frequency">70</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>TagRun</code></td><td data-label="Korean">술래잡기</td><td data-label="Frequency">20</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>TagChase</code></td><td data-label="Korean"></td><td data-label="Frequency">70</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>HiFiveInvite</code></td><td data-label="Korean">하이파이브</td><td data-label="Frequency">20</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>HiFiveApproach</code></td><td data-label="Korean"></td><td data-label="Frequency">70</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>GiftInvite</code></td><td data-label="Korean">크레딧 나눠주기</td><td data-label="Frequency">20</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>GiftApproach</code></td><td data-label="Korean"></td><td data-label="Frequency">70</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>SprintAndBrake</code></td><td data-label="Korean">전력질주</td><td data-label="Frequency">130</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbIEFace</code></td><td data-label="Korean">창 타고 오르기</td><td data-label="Frequency">90</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbIEFaceDrop</code></td><td data-label="Korean">창 타다 미끄러지기</td><td data-label="Frequency">50</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>FloorGrabIEWall</code></td><td data-label="Korean">창 옆면 매달리기</td><td data-label="Frequency">70</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>WindowDive</code></td><td data-label="Korean">창에서 뛰어내리기</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HappyHop</code></td><td data-label="Korean">폴짝폴짝</td><td data-label="Frequency">150</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>SitDown</code></td><td data-label="Korean">앉기</td><td data-label="Frequency">80</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>SitWhileDanglingLegs</code></td><td data-label="Korean">걸터앉기</td><td data-label="Frequency">50</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>LieDown</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>SplitIntoTwo</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HoldOntoWall</code></td><td data-label="Korean">벽 붙잡기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>FallFromWall</code></td><td data-label="Korean">벽에서 떨어지기</td><td data-label="Frequency">50</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>FocusHoldOntoIEWall</code></td><td data-label="Korean">벽 조용히 붙잡기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>HoldOntoCeiling</code></td><td data-label="Korean">천장 붙잡기</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>FallFromCeiling</code></td><td data-label="Korean">천장에서 떨어지기</td><td data-label="Frequency">50</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>FocusHoldOntoCeiling</code></td><td data-label="Korean">천장 조용히 붙잡기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>WalkAlongWorkAreaFloor</code></td><td data-label="Korean">작업 공간 바닥 걷기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>RunAlongWorkAreaFloor</code></td><td data-label="Korean">작업 공간 바닥 달리기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>CrawlAlongWorkAreaFloor</code></td><td data-label="Korean">바닥 기어가기</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>WalkLeftAlongFloorAndSit</code></td><td data-label="Korean">왼쪽으로 걷다가 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkRightAlongFloorAndSit</code></td><td data-label="Korean">오른쪽으로 걷다가 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>GrabWorkAreaBottomLeftWall</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>GrabWorkAreaBottomRightWall</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>WalkLeftAndSit</code></td><td data-label="Korean">왼쪽으로 달려가서 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkRightAndSit</code></td><td data-label="Korean">오른쪽으로 달려가서 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>RunAndGrabBottomLeftWall</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>RunAndGrabBottomRightWall</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>JumpFromBottomOfIE</code></td><td data-label="Korean">창 아래에서 뛰어오르기</td><td data-label="Frequency">40</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>PullUpShimeji</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>ClimbHalfwayAlongWall</code></td><td data-label="Korean">벽 따라 일부 오르기</td><td data-label="Frequency">50</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbAlongWall</code></td><td data-label="Korean">벽 따라 오르기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbAlongCeiling</code></td><td data-label="Korean">천장 따라 오르기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkAlongIECeiling</code></td><td data-label="Korean">창 천장 따라 걷기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>FaceFromTop</code></td><td data-label="Korean"></td><td data-label="Frequency">80</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>RunAlongIECeiling</code></td><td data-label="Korean">창 천장 따라 달리기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>CrawlAlongIECeiling</code></td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>SitOnTheLeftEdgeOfIE</code></td><td data-label="Korean">창 왼쪽 가장자리에 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>SitOnTheRightEdgeOfIE</code></td><td data-label="Korean">창 오른쪽 가장자리에 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>JumpFromLeftEdgeOfIE</code></td><td data-label="Korean">창 왼쪽 가장자리에서 뛰기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>JumpFromRightEdgeOfIE</code></td><td data-label="Korean">창 오른쪽 가장자리에서 뛰기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkLeftAlongIEAndSit</code></td><td data-label="Korean">창 따라 왼쪽으로 걷다가 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkRightAlongIEAndSit</code></td><td data-label="Korean">창 따라 오른쪽으로 걷다가 앉기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkLeftAlongIEAndJump</code></td><td data-label="Korean">창 따라 왼쪽으로 걷다가 뛰기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>WalkRightAlongIEAndJump</code></td><td data-label="Korean">창 따라 오른쪽으로 걷다가 뛰기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>HoldOntoIEWall</code></td><td data-label="Korean">창 벽 붙잡기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbIEWall</code></td><td data-label="Korean">창 벽 오르기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbGardenLadder</code></td><td data-label="Korean">섬 사다리 오르기</td><td data-label="Frequency">120</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ClimbIEBottom</code></td><td data-label="Korean">창 바닥 오르기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>GrabIEBottomLeftWall</code></td><td data-label="Korean">창 왼쪽 아래 벽 붙잡기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>GrabIEBottomRightWall</code></td><td data-label="Korean">창 오른쪽 아래 벽 붙잡기</td><td data-label="Frequency">100</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>JumpFromLeftWall</code></td><td data-label="Korean">창 왼쪽 벽에서 뛰기</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>JumpFromRightWall</code></td><td data-label="Korean">창 오른쪽 벽에서 뛰기</td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+<tr><td data-label="Name"><code>JumpOnIELeftWall</code></td><td data-label="Korean">창 왼쪽 벽으로 뛰기</td><td data-label="Frequency">50</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>JumpOnIERightWall</code></td><td data-label="Korean">창 오른쪽 벽으로 뛰기</td><td data-label="Frequency">50</td><td data-label="Hidden">hidden toggle</td></tr>
+<tr><td data-label="Name"><code>ThrowIEFromLeft</code></td><td data-label="Korean"></td><td data-label="Frequency">120</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>ThrowIEFromRight</code></td><td data-label="Korean"></td><td data-label="Frequency">120</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>RunAndThrowIEFromLeft</code></td><td data-label="Korean"></td><td data-label="Frequency">120</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>RunAndThrowIEFromRight</code></td><td data-label="Korean"></td><td data-label="Frequency">120</td><td data-label="Hidden">toggle</td></tr>
+<tr><td data-label="Name"><code>JumpDono_x&lt;n&gt;_y&lt;m&gt;</code> ×150</td><td data-label="Korean"></td><td data-label="Frequency">0</td><td data-label="Hidden">hidden</td></tr>
+</tbody></table>
+<a id="events"></a>
+<h2 id="2-event-topics-and-payloads-ctxontopic-event--">2. Event topics and payloads — <code>ctx.on(topic, event -&gt; …)</code></h2>
+<p>Items marked “preview” may change or disappear without an <code>api_version</code> bump (the same list is under <code>preview</code> in <code>sdk.json</code>). Unmarked items are stable — <a href="API.en.html#compatibility">API.en.md §8</a>.</p>
+<p>Values are strings unless a type is given. <code>mascotId</code> is valid only while that character lives (it may be reused after it leaves); coordinates are desktop coordinates. In the app, listeners run on the plugin&#x27;s own event thread; the test kit runs them on the calling thread. Payload examples and integration caveats: <a href="API.en.html#events">the events section of API.en.md</a>.</p>
+<table><thead><tr><th>Topic</th><th>Status</th><th>Meaning and fields</th></tr></thead><tbody>
+<tr><td data-label="Topic"><code>ready</code></td><td data-label="Status"></td><td data-label="Meaning and fields">the engine is up and the plugins have started — none</td></tr>
+<tr><td data-label="Topic"><code>behavior</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a mascot&#x27;s behaviour changed — <code>imageSet</code>, <code>name</code>, <code>mascotId</code> (Integer)</td></tr>
+<tr><td data-label="Topic"><code>bubble</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a bubble went up — <code>imageSet</code>, <code>mascotId</code> (Integer, 0 = by image set; absent for <code>kind=choice</code>), <code>text</code> (as shown — after the <code>bubble.text</code> hook), <code>ms</code> (Long, the final duration after <code>bubble.duration</code>; the timeout for <code>choice</code>), <code>kind</code> (<code>say</code> = a plain line incl. queued lines and <code>say.txt</code>, <code>private</code> = an alarm/errand line the broadcast stage skips, <code>choice</code> = a bubble with buttons opened). The 「···」 busy indicator publishes nothing</td></tr>
+<tr><td data-label="Topic"><code>choice</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">a choice bubble was answered — <code>imageSet</code>, <code>mascotId</code> (Integer), <code>index</code> (Integer, 0-based · <code>-1</code> = opened, no answer (timeout/Escape/character gone) · <code>-2</code> = withdrawn by the app (superseded by the same plugin / <code>clearQueue</code> / waited too long / line full)), <code>option</code> (the label, <code>&quot;&quot;</code> when negative), <code>from</code> (id of the plugin that asked)</td></tr>
+<tr><td data-label="Topic"><code>click</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a mouse button went down on a character — <code>imageSet</code>, <code>mascotId</code> (Integer), <code>button</code> (<code>left</code>/<code>right</code>/<code>middle</code>), <code>x</code>, <code>y</code> (Integer, screen coordinates)</td></tr>
+<tr><td data-label="Topic"><code>mascot</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a character appeared or left — <code>imageSet</code>, <code>mascotId</code> (Integer), <code>event</code> (<code>added</code>/<code>removed</code>)</td></tr>
+<tr><td data-label="Topic"><code>headpat</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a head-pat began — <code>behavior</code></td></tr>
+<tr><td data-label="Topic"><code>affection</code></td><td data-label="Status"></td><td data-label="Meaning and fields">the shown affection tier changed — <code>tier</code> (Integer), <code>previous</code> (Integer), <code>points</code> (Integer)</td></tr>
+<tr><td data-label="Topic"><code>achievement</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a Steam achievement unlocked — <code>id</code></td></tr>
+<tr><td data-label="Topic"><code>focus</code></td><td data-label="Status"></td><td data-label="Meaning and fields">focus mode engaged or released — <code>active</code> (Boolean)</td></tr>
+<tr><td data-label="Topic"><code>chat</code></td><td data-label="Status"></td><td data-label="Meaning and fields">Chat traffic topic listed by the app API — <code>phase</code> (<code>ask</code>/<code>reply</code>), <code>imageSet</code>, <code>text</code>. Availability depends on the installed chat integration. <code>ctx.publish(&quot;chat&quot;, ...)</code> publishes <code>&lt;your-id&gt;.chat</code>, not this app topic.</td></tr>
+<tr><td data-label="Topic"><code>tts</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a voice line started or ended — <code>phase</code> (<code>start</code>/<code>end</code>)</td></tr>
+<tr><td data-label="Topic"><code>settings</code></td><td data-label="Status"></td><td data-label="Meaning and fields">the settings window was applied, or the language changed — <code>phase</code> (<code>apply</code>), <code>changed</code> (comma-joined keys the app wrote through <code>LumiSettings</code> since the previous apply — stock engine keys are not journaled) / <code>phase</code> (<code>language</code>), <code>language</code> (BCP-47)</td></tr>
+<tr><td data-label="Topic"><code>ask</code></td><td data-label="Status"></td><td data-label="Meaning and fields"><code>speech\ask.txt</code> was written — <code>text</code></td></tr>
+<tr><td data-label="Topic"><code>settings_open</code></td><td data-label="Status"></td><td data-label="Meaning and fields"><code>speech\settings_open.txt</code> was written — none</td></tr>
+<tr><td data-label="Topic"><code>say_file</code></td><td data-label="Status"></td><td data-label="Meaning and fields">a <code>speech\say.txt</code> line was shown — <code>text</code></td></tr>
+<tr><td data-label="Topic"><code>drag</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">the user picked a character up or let go (<code>Dragged</code> began/ended) — <code>phase</code> (<code>start</code>/<code>end</code>), <code>imageSet</code>, <code>mascotId</code> (Integer), <code>x</code>, <code>y</code> (Integer, screen coordinates of the anchor)</td></tr>
+<tr><td data-label="Topic"><code>throw</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">let go with momentum (<code>Thrown</code> began) · that flight ended (the next behaviour began) — <code>phase</code> (<code>thrown</code>/<code>landed</code>), <code>imageSet</code>, <code>mascotId</code> (Integer), <code>x</code>, <code>y</code> (Integer), <code>next</code> (always present — the behaviour after the flight on <code>landed</code>, <code>&quot;&quot;</code> on <code>thrown</code>)</td></tr>
+<tr><td data-label="Topic"><code>hover</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">the pointer entered or left a character&#x27;s window — <code>phase</code> (<code>enter</code>/<code>exit</code>), <code>imageSet</code>, <code>mascotId</code> (Integer)</td></tr>
+<tr><td data-label="Topic"><code>doubleclick</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">two left presses on the same character within 600 ms and 90 px (the AWT click count cannot be trusted — the press starts a drag that moves the window) — <code>imageSet</code>, <code>mascotId</code> (Integer), <code>x</code>, <code>y</code> (Integer). Both presses also produce <code>click</code></td></tr>
+<tr><td data-label="Topic"><code>alarm</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">a reminder was actually delivered — <code>kind</code> (<code>hourly</code>/<code>alarm</code>), <code>time</code> (<code>HH:mm</code>), <code>late</code> (Boolean — an alarm held while the screen was busy)</td></tr>
+<tr><td data-label="Topic"><code>pomodoro</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">the focus/break cycle moved — <code>phase</code> (<code>focus</code>/<code>break</code>/<code>stopped</code>), <code>minutes</code> (Integer, length of the phase that begins; 0 on stop), <code>round</code> (Integer, focus phases started since the cycle was switched on)</td></tr>
+<tr><td data-label="Topic"><code>bongo</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">bongo mode drew a keystroke or click — <code>kind</code> (<code>keyboard</code>/<code>left_click</code>/<code>right_click</code>), <code>frame</code> (Integer, the hand slot drawn), <code>look</code> (<code>bongo</code>/<code>small</code>). <strong>Never a key code or character</strong> (the core does not read keys)</td></tr>
+<tr><td data-label="Topic"><code>app</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">the app is going down through its own exit door — <code>phase</code> (<code>exit</code>). Before the plugins&#x27; <code>stop()</code>; delivery is awaited with a short bound</td></tr>
+<tr><td data-label="Topic"><code>island</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">the garden (island) process was asked to start or stop, or served a photo request — <code>phase</code> (<code>start</code>/<code>stop</code>/<code>photo</code>), <code>request</code> (photo only)</td></tr>
+<tr><td data-label="Topic"><code>game</code></td><td data-label="Status">preview</td><td data-label="Meaning and fields">the contraption game board opened, started a run, or closed — <code>phase</code> (<code>start</code>/<code>run</code>/<code>stop</code>)</td></tr>
+</tbody></table>
+<a id="hooks"></a>
+<h2 id="3-hooks-and-ctx-keys-ctxhookid-hook-current-ctx--">3. Hooks and ctx keys — <code>ctx.hook(id, (hook, current, ctx) -&gt; …)</code></h2>
+<p>Items marked “preview” may change or disappear without an <code>api_version</code> bump (the same list is under <code>preview</code> in <code>sdk.json</code>). Unmarked items are stable — <a href="API.en.html#compatibility">API.en.md §8</a>.</p>
+<p>For every id in <code>PluginHooks.KNOWN</code>: where the core asks (the app source file — several are joined with <code> · </code>), the asking method, the default expression and the keys of the ctx map. The source paths say where the question is asked; those files are not part of the SDK. See <a href="API.en.html#hooks">the hook table of API.en.md</a> first for return types, bounds and special values. <code>null</code> passes (the earlier <code>current</code> stays); a later handler that returns a non-null value replaces the earlier answer. Never touch files, the network or locks inside a hook.</p>
+<table><thead><tr><th>Hook</th><th>Status</th><th>Asked at</th><th>Method</th><th>Default</th><th>ctx keys</th></tr></thead><tbody>
+<tr><td data-label="Hook"><code>affection.award</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/AffectionDirector.java</code></td><td data-label="Method"><code>decideInt</code></td><td data-label="Default"><code>points (clamp 0..1_000_000)</code></td><td data-label="ctx keys"><code>source</code>, <code>points</code>, <code>dailyCap</code>, <code>cooldownSeconds</code>, <code>todayPoints</code></td></tr>
+<tr><td data-label="Hook"><code>affection.tier</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/AffectionDirector.java</code></td><td data-label="Method"><code>decideInt</code></td><td data-label="Default"><code>tier (clamp 1..MAX_TIER)</code></td><td data-label="ctx keys"><code>points</code></td></tr>
+<tr><td data-label="Hook"><code>behavior.force</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/LumiBridge.java</code></td><td data-label="Method"><code>decideString</code></td><td data-label="Default"><code>name == null ? &quot;&quot; : name</code></td><td data-label="ctx keys"><code>name</code>, <code>caller</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="Hook"><code>bongo.key_frame</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/BongoWindow.java</code></td><td data-label="Method"><code>decideInt</code></td><td data-label="Default"><code>chosen (clamp -1..keyFrames() - 1)</code></td><td data-label="ctx keys"><code>frames</code>, <code>cycle</code>, <code>look</code></td></tr>
+<tr><td data-label="Hook"><code>bongo.key_input</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/BongoWindow.java</code></td><td data-label="Method"><code>decideInt</code></td><td data-label="Default"><code>-2 (clamp -2..bongo.keyFrames() - 1)</code></td><td data-label="ctx keys"><code>frames</code>, <code>look</code></td></tr>
+<tr><td data-label="Hook"><code>bubble.duration</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/SelfTalkDirector.java</code> · <code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="Method"><code>decideLong</code></td><td data-label="Default"><code>life (clamp 500..120_000)</code> · <code>computed (clamp 500..120_000)</code></td><td data-label="ctx keys"><code>text</code>, <code>requested</code>, <code>source</code>, <code>voiceMs</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="Hook"><code>bubble.text</code></td><td data-label="Status">preview</td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="Method"><code>decideString</code></td><td data-label="Default"><code>text</code></td><td data-label="ctx keys"><code>text</code>, <code>source</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="Hook"><code>focus.quiet</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/FocusDirector.java</code></td><td data-label="Method"><code>decideBoolean</code></td><td data-label="Default"><code>quiet</code></td><td data-label="ctx keys"><code>hidden</code>, <code>fullscreenAhead</code>, <code>focusActive</code></td></tr>
+<tr><td data-label="Hook"><code>focus.screen_busy</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/FocusDirector.java</code></td><td data-label="Method"><code>decideBoolean</code></td><td data-label="Default"><code>busy</code></td><td data-label="ctx keys"><code>hidden</code>, <code>fullscreenAhead</code></td></tr>
+<tr><td data-label="Hook"><code>place.allowed</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/TetherDirector.java</code></td><td data-label="Method"><code>decideBoolean</code></td><td data-label="Default"><code>allowed</code></td><td data-label="ctx keys"><code>x</code>, <code>y</code>, <code>confinement</code>, <code>mover</code></td></tr>
+<tr><td data-label="Hook"><code>selftalk.interval</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/SelfTalkDirector.java</code></td><td data-label="Method"><code>decideLong</code></td><td data-label="Default"><code>interval (clamp 3_000..3_600_000)</code></td><td data-label="ctx keys"><code>baseMs</code>, <code>frequency</code>, <code>minSec</code>, <code>maxSec</code></td></tr>
+<tr><td data-label="Hook"><code>selftalk.line</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/SelfTalkDirector.java</code></td><td data-label="Method"><code>decideString</code></td><td data-label="Default"><code>line</code></td><td data-label="ctx keys"><code>candidate</code>, <code>onGardenFloor</code>, <code>gardenPhase</code>, <code>tier</code>, <code>offered</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="Hook"><code>sound.effect</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/Mascot.java</code></td><td data-label="Method"><code>decideString</code></td><td data-label="Default"><code>soundPath</code></td><td data-label="ctx keys"><code>path</code>, <code>caller</code></td></tr>
+<tr><td data-label="Hook"><code>speech.greeting</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="Method"><code>decideString</code></td><td data-label="Default"><code>picked == null ? &quot;&quot; : picked</code></td><td data-label="ctx keys"><code>pool</code>, <code>last</code>, <code>trigger</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="Hook"><code>text.localized</code></td><td data-label="Status"></td><td data-label="Asked at"><code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="Method"><code>decideString</code></td><td data-label="Default"><code>value</code></td><td data-label="ctx keys"><code>key</code>, <code>language</code>, <code>fallback</code></td></tr>
+</tbody></table>
+<a id="mascot-state"></a>
+<h2 id="4-mascotstate-the-element-of-ctxmascots">4. <code>MascotState</code> — the element of <code>ctx.mascots()</code></h2>
+<p>A Java record, so read it through methods: <code>state.id()</code>, <code>state.imageSet()</code>, <code>state.anchor()</code>. The value is a snapshot of that moment, and <code>ctx.mascotById(id)</code> returns <code>null</code> when that character is gone.</p>
+<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody>
+<tr><td data-label="Field"><code>id</code></td><td data-label="Type"><code>int</code></td></tr>
+<tr><td data-label="Field"><code>imageSet</code></td><td data-label="Type"><code>String</code></td></tr>
+<tr><td data-label="Field"><code>bounds</code></td><td data-label="Type"><code>Rectangle</code></td></tr>
+<tr><td data-label="Field"><code>anchor</code></td><td data-label="Type"><code>Point</code></td></tr>
+<tr><td data-label="Field"><code>lookRight</code></td><td data-label="Type"><code>boolean</code></td></tr>
+<tr><td data-label="Field"><code>behavior</code></td><td data-label="Type"><code>String</code></td></tr>
+</tbody></table>
+<a id="app-settings"></a>
+<h2 id="5-app-setting-keys-ctxsettingkey-fallback-read-only">5. App setting keys — <code>ctx.setting(key, fallback)</code> (read only)</h2>
+<p>● = <code>Preferences.KEYS</code> (preference values that go to Steam Cloud; mirrored in <code>conf\preferences.properties</code>). The rest are keys the app really reads from and writes to <code>conf\settings.properties</code>, collected from the call sites that go through the settings store (<code>LumiSettings</code>). All values are strings, the list grows with app versions, and a row here is not a fixed contract.</p>
+<p>Read with <code>ctx.setting(key, fallback)</code> only when there is no public getter, and handle a missing value — the language is <code>language()</code>, the active sets <code>activeImageSets()</code>, the features <code>featureEnabled(id)</code>. <strong>A plugin does not write app keys</strong> — its own state goes to <code>ctx.prefs()</code>.</p>
+<table><thead><tr><th>Key</th><th>Preference (cloud)</th></tr></thead><tbody>
+<tr><td data-label="Key"><code>Language</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>ActiveShimeji</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>Scaling</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>Opacity</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>Sounds</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>Theme</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>SettingsAlwaysOnTop</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>AlwaysShowInformationScreen</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>HideOnFullscreen</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>SpeechFarewell</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>AffectionCelebrate</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>AlarmEnabled</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>AlarmTime</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>HourlyChime</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>Pomodoro</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>PomodoroFocusMinutes</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>PomodoroBreakMinutes</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.sound.volume</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.sound.off</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.voice.volume</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.voice.pack</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.selftalk.frequency</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.shortcuts.gesture</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.input.reaction</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.focus.enabled</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.focus.auto</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.island.enabled</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.game.enabled</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.windowthrow.enabled</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.steam.presence.enabled</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.look</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.input</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.size</code></td><td data-label="Preference (cloud)">●</td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.enabled</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.gamemode</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.x</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.bongo.y</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.broadcast.enabled</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.broadcast.private.hide</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.broadcast.source.lan</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.broadcast.source.port</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.broadcast.window.minimized</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.confguard.all</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.debug.enabled</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.island.tutorialShown</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.onboarding.step</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.shake.credit.state</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.steam.enabled</code></td><td data-label="Preference (cloud)"></td></tr>
+<tr><td data-label="Key"><code>lumi.transform.art.enabled</code></td><td data-label="Preference (cloud)"></td></tr>
+</tbody></table>
+<a id="setting-types"></a>
+<h2 id="6-type-of-a-pluginjson-settings-entry">6. <code>type</code> of a <code>plugin.json</code> <code>&quot;settings&quot;</code> entry</h2>
+<p>Values: <code>bool</code>, <code>int</code>, <code>string</code>, <code>choice</code>, <code>hotkey</code>. Entry shape and per-language labels: <a href="API.en.html#manifest">the manifest section of API.en.md</a>.</p>
+<a id="feature-ids"></a>
+<h2 id="7-feature-switch-ids-ctxfeatureenabledid">7. Feature switch ids — <code>ctx.featureEnabled(id)</code></h2>
+<p>The settings-window switches. Read only — a plugin never flips them. False when off or for an unknown id.</p>
+<table><thead><tr><th>id</th><th>App setting key</th></tr></thead><tbody>
+<tr><td data-label="id"><code>bongo</code></td><td data-label="App setting key"><code>lumi.bongo.enabled</code></td></tr>
+<tr><td data-label="id"><code>broadcast</code></td><td data-label="App setting key"><code>lumi.broadcast.enabled</code></td></tr>
+<tr><td data-label="id"><code>island</code></td><td data-label="App setting key"><code>lumi.island.enabled</code></td></tr>
+<tr><td data-label="id"><code>game</code></td><td data-label="App setting key"><code>lumi.game.enabled</code></td></tr>
+<tr><td data-label="id"><code>focus.auto</code></td><td data-label="App setting key"><code>lumi.focus.auto</code></td></tr>
+</tbody></table></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const code=document.getElementById(button.dataset.copy);let copied=false;
+ try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){
+  const field=document.createElement('textarea');field.value=code.textContent;
+  field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.focus();field.select();
+  try{copied=document.execCommand('copy')}catch(error){}field.remove();
+ }
+ const status=button.closest('.codebox').querySelector('.copy-status');
+ status.textContent=copied?'Copied / 복사 완료':'Select the text to copy / 문안을 선택해 복사해 주세요';
+}));
+</script></body></html>

@@ -124,7 +124,9 @@ public final class PluginDescriptor {
                 throw new IOException("no " + FILE + " at the root of the jar");
             }
             try (InputStream in = file.getInputStream(entry)) {
-                text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                byte[] metadata = in.readNBytes(1024 * 1024 + 1);
+                if (metadata.length > 1024 * 1024) throw new IOException("plugin.json exceeds 1 MiB");
+                text = new String(metadata, StandardCharsets.UTF_8);
             }
         }
         return parse(text, jar, sha256(jar), source);

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Little LUMI Model — 플러그인 카탈로그</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;font-size:18px;line-height:1.8;color:#243349;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:32px 24px 72px}header{border-bottom:1px solid #ccd8e6;margin-bottom:24px;padding-bottom:18px}.kicker{font-size:14px;color:#536c89}h1{font-size:clamp(28px,4vw,38px);line-height:1.3;word-break:keep-all;margin:14px 0}h2{font-size:26px;line-height:1.4;margin:38px 0 14px}h3{font-size:22px;line-height:1.5;margin-top:28px}h4,h5,h6{font-size:20px}p{margin:12px 0}a{color:#175baa;text-underline-offset:3px;overflow-wrap:anywhere}nav{display:flex;gap:10px 20px;flex-wrap:wrap}article{background:white;border:1px solid #d2deea;border-radius:14px;padding:26px;min-width:0;overflow-wrap:anywhere}ul,ol{padding-left:28px}li{margin:8px 0}code{font-family:ui-monospace,Consolas,monospace;font-size:1rem;white-space:normal;overflow-wrap:anywhere}p code,li code,td code{background:#edf2f8;border-radius:4px;padding:1px 3px}.codebox{border:1px solid #c8d7e8;border-radius:10px;overflow:hidden;margin:20px 0;background:#f5f8fc}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #d7e2ee}.codebar span{font-size:14px;color:#526783}button{font:inherit;font-size:16px;border:0;border-radius:6px;background:#175baa;color:#fff;padding:7px 14px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d68c19;outline-offset:3px}pre{margin:0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65;font-size:18px}pre code{white-space:pre-wrap;font-size:18px;background:none}table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:18px;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #d1dce8;overflow-wrap:anywhere}th{background:#eaf1fa}blockquote{margin:18px 0;padding:6px 18px;border-left:4px solid #87a8cc;background:#f2f6fc}.copy-status{display:block;min-height:1.4em;font-size:15px;color:#3b644b}details{margin:16px 0}summary{cursor:pointer;color:#175baa}.contents{font-size:16px}.contents ol{columns:2}footer{margin-top:28px;color:#5c7088;font-size:14px}.doclist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;padding:0}.doclist li{background:white;border:1px solid #d2deea;border-radius:9px;padding:14px;margin:0}
+@media(max-width:720px){main{padding:22px 14px 50px}article{padding:17px}h2{font-size:24px}.contents ol{columns:1}.doclist{grid-template-columns:1fr}table,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border:1px solid #d1dce8;border-radius:8px;margin:12px 0;padding:5px}td{border:0;padding:7px}td:before{content:attr(data-label);display:block;font-size:15px;color:#526783;font-weight:700}.codebar{flex-wrap:wrap}pre{padding:13px}}
+@media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
+</style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="../index.html">SDK 문서 / Documents</a><a href="../README.html">한국어</a><a href="../README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#1-%ED%96%89%EB%8F%99-%EC%9D%B4%EB%A6%84-ctxbehavename-ctxbehaviornamesimageset">1. 행동 이름 — ctx.behave(name) · ctx.behaviorNames(imageSet)</a></li><li><a href="#2-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%ED%86%A0%ED%94%BD%EA%B3%BC-%ED%8E%98%EC%9D%B4%EB%A1%9C%EB%93%9C-ctxontopic-event--">2. 이벤트 토픽과 페이로드 — ctx.on(topic, event -&gt; …)</a></li><li><a href="#3-%ED%9B%85%EA%B3%BC-ctx-%ED%82%A4-ctxhookid-hook-current-ctx--">3. 훅과 ctx 키 — ctx.hook(id, (hook, current, ctx) -&gt; …)</a></li><li><a href="#4-mascotstate-ctxmascots-%EC%9D%98-%EC%9B%90%EC%86%8C">4. MascotState — ctx.mascots() 의 원소</a></li><li><a href="#5-%EC%95%B1-%EC%84%A4%EC%A0%95-%ED%82%A4-ctxsettingkey-fallback-%EC%9D%BD%EA%B8%B0%EB%A7%8C">5. 앱 설정 키 — ctx.setting(key, fallback) (읽기만)</a></li><li><a href="#6-pluginjson-settings-%EC%9D%98-type">6. plugin.json &quot;settings&quot; 의 type</a></li><li><a href="#7-%EA%B8%B0%EB%8A%A5-%EC%8A%A4%EC%9C%84%EC%B9%98-id-ctxfeatureenabledid">7. 기능 스위치 id — ctx.featureEnabled(id)</a></li></ol></details><article><h1 id="little-lumi-model-플러그인-카탈로그">Little LUMI Model — 플러그인 카탈로그</h1>
+<p><strong>SDK/앱 1.3.0, API 1</strong> 의 이름·값 참조표입니다. 생성기가 소스에서 만듭니다 — 손으로 고치지 않습니다(SDK 빌드가 낡은 사본을 거부합니다). 규약과 예시는 <a href="API.html">API.md</a>, 여기는 이름과 값만 있습니다. <a href="CATALOG.en.html">English</a> · <a href="../README.html">시작 안내</a>.</p>
+<p><a href="#behaviours">행동</a> · <a href="#events">이벤트</a> · <a href="#hooks">훅</a> · <a href="#mascot-state">캐릭터 상태</a> · <a href="#app-settings">앱 설정</a> · <a href="#setting-types">설정 타입</a> · <a href="#feature-ids">기능 ID</a></p>
+<p>실행 중인 캐릭터가 할 수 있는 행동은 <code>ctx.behaviorNames(imageSet)</code> 으로 확인하세요. 플러그인의 옵션은 <code>ctx.prefs()</code> 에 두고, 앱 설정 키보다 공개 조회 메서드를 먼저 쓰세요.</p>
+<a id="behaviours"></a>
+<h2 id="1-행동-이름-ctxbehavename-ctxbehaviornamesimageset">1. 행동 이름 — <code>ctx.behave(name)</code> · <code>ctx.behaviorNames(imageSet)</code></h2>
+<p><code>img\Lumi\conf\behaviors.xml</code> 의 <code>&lt;Behavior Name&gt;</code> 전부와 <code>행동목록.txt</code> 의 한글 이름입니다. 다른 이미지셋은 제 <code>behaviors.xml</code> 을 따르므로 실행 중에는 <code>ctx.behaviorNames(imageSet)</code> 이 정답입니다. 기부 점프 <code>JumpDono_x&lt;0..9&gt;_y&lt;0..14&gt;</code> 150개는 좌표별로 생성된 것이라 한 줄로 접었습니다.</p>
+<p><strong>숨김</strong>(<code>Hidden=&quot;true&quot;</code>)은 캐릭터 메뉴에서 감출 뿐입니다. 저절로 골라지는지는 <strong>빈도</strong>와 <code>Condition</code> 이 정합니다 — 빈도는 선택 가중치이지 시간이나 고정 확률이 아니고, 0 이면 자동 선택에서 빠지지만 이름으로 부르거나 다른 행동에서 이어질 수는 있습니다. 숨김이면서 빈도 &gt; 0 인 행동도 있습니다. <strong>토글</strong>(<code>Toggleable=&quot;true&quot;</code>)은 숨김과 같이 붙을 수 있습니다. <code>Dragged</code>·<code>Thrown</code> 은 엔진이 마우스 조작으로 거는 행동입니다.</p>
+<table><thead><tr><th>이름</th><th>한글</th><th>빈도</th><th>숨김</th></tr></thead><tbody>
+<tr><td data-label="이름"><code>ChaseMouse</code></td><td data-label="한글">마우스 쫓아가기</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>SitAndFaceMouse</code></td><td data-label="한글">앉아서 마우스 향하기</td><td data-label="빈도">0</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>SitAndSpinHead</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>Fall</code></td><td data-label="한글">추락</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>Dragged</code></td><td data-label="한글">들려 있음(엔진)</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>Thrown</code></td><td data-label="한글">던져짐(엔진)</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>Talk</code></td><td data-label="한글">입 뻐끔(말하는 동안 — ctx.mouthFlap 이 반복해 건다)</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>Flying</code></td><td data-label="한글">자리로 날아가기(자바만 부른다)</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>AlarmNotice</code></td><td data-label="한글">알람 「어!」(자바만 부른다)</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPat</code></td><td data-label="한글">쓰다듬기</td><td data-label="빈도">0</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>HeadPatTilt2</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatTilt3</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSit</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSitTilt2</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSitTilt3</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSitFacing</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSitFacingTilt2</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSitFacingTilt3</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HeadPatSitLedge</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>SelfTalk</code></td><td data-label="한글">혼잣말</td><td data-label="빈도">0</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>ChatHost</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>ChatGuest</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HiFiveHost</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HiFiveGuest</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GiftGiver</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GiftReceiver</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GiftDing</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GiftEnd</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GiftCatch</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GiftHopLoop</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>CreditSpot</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>ParadeBump</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GatherSit</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GatherCallAgain</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>TagWin</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>TagCaught</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>CreditGet</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>SkyReturn</code></td><td data-label="한글"></td><td data-label="빈도">900</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>VoidRescue</code></td><td data-label="한글"></td><td data-label="빈도">50</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>EventDrop</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>PullUp</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>Divided</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>StandUp</code></td><td data-label="한글">일어서기</td><td data-label="빈도">60</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>LookAround</code></td><td data-label="한글">도리도리</td><td data-label="빈도">120</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>TiltHead</code></td><td data-label="한글">흥얼흥얼</td><td data-label="빈도">120</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>Chatter</code></td><td data-label="한글">인사하기</td><td data-label="빈도">90</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>CreditEvent</code></td><td data-label="한글">크레딧 획득</td><td data-label="빈도">150</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>CreditRetry</code></td><td data-label="한글">남은 크레딧 주우러 가기</td><td data-label="빈도">60</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ChatInvite</code></td><td data-label="한글">말 걸기</td><td data-label="빈도">20</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>ChatApproach</code></td><td data-label="한글"></td><td data-label="빈도">70</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>LeadParade</code></td><td data-label="한글">줄줄이 행진</td><td data-label="빈도">20</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>JoinParade</code></td><td data-label="한글"></td><td data-label="빈도">70</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>GatherCall</code></td><td data-label="한글">모여 모여</td><td data-label="빈도">20</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>GatherJoin</code></td><td data-label="한글"></td><td data-label="빈도">70</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>TagRun</code></td><td data-label="한글">술래잡기</td><td data-label="빈도">20</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>TagChase</code></td><td data-label="한글"></td><td data-label="빈도">70</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>HiFiveInvite</code></td><td data-label="한글">하이파이브</td><td data-label="빈도">20</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>HiFiveApproach</code></td><td data-label="한글"></td><td data-label="빈도">70</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>GiftInvite</code></td><td data-label="한글">크레딧 나눠주기</td><td data-label="빈도">20</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>GiftApproach</code></td><td data-label="한글"></td><td data-label="빈도">70</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>SprintAndBrake</code></td><td data-label="한글">전력질주</td><td data-label="빈도">130</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>ClimbIEFace</code></td><td data-label="한글">창 타고 오르기</td><td data-label="빈도">90</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>ClimbIEFaceDrop</code></td><td data-label="한글">창 타다 미끄러지기</td><td data-label="빈도">50</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>FloorGrabIEWall</code></td><td data-label="한글">창 옆면 매달리기</td><td data-label="빈도">70</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>WindowDive</code></td><td data-label="한글">창에서 뛰어내리기</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HappyHop</code></td><td data-label="한글">폴짝폴짝</td><td data-label="빈도">150</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>SitDown</code></td><td data-label="한글">앉기</td><td data-label="빈도">80</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>SitWhileDanglingLegs</code></td><td data-label="한글">걸터앉기</td><td data-label="빈도">50</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>LieDown</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>SplitIntoTwo</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HoldOntoWall</code></td><td data-label="한글">벽 붙잡기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>FallFromWall</code></td><td data-label="한글">벽에서 떨어지기</td><td data-label="빈도">50</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>FocusHoldOntoIEWall</code></td><td data-label="한글">벽 조용히 붙잡기</td><td data-label="빈도">100</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>HoldOntoCeiling</code></td><td data-label="한글">천장 붙잡기</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>FallFromCeiling</code></td><td data-label="한글">천장에서 떨어지기</td><td data-label="빈도">50</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>FocusHoldOntoCeiling</code></td><td data-label="한글">천장 조용히 붙잡기</td><td data-label="빈도">100</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>WalkAlongWorkAreaFloor</code></td><td data-label="한글">작업 공간 바닥 걷기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>RunAlongWorkAreaFloor</code></td><td data-label="한글">작업 공간 바닥 달리기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>CrawlAlongWorkAreaFloor</code></td><td data-label="한글">바닥 기어가기</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>WalkLeftAlongFloorAndSit</code></td><td data-label="한글">왼쪽으로 걷다가 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkRightAlongFloorAndSit</code></td><td data-label="한글">오른쪽으로 걷다가 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>GrabWorkAreaBottomLeftWall</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>GrabWorkAreaBottomRightWall</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>WalkLeftAndSit</code></td><td data-label="한글">왼쪽으로 달려가서 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkRightAndSit</code></td><td data-label="한글">오른쪽으로 달려가서 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>RunAndGrabBottomLeftWall</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>RunAndGrabBottomRightWall</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>JumpFromBottomOfIE</code></td><td data-label="한글">창 아래에서 뛰어오르기</td><td data-label="빈도">40</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>PullUpShimeji</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>ClimbHalfwayAlongWall</code></td><td data-label="한글">벽 따라 일부 오르기</td><td data-label="빈도">50</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ClimbAlongWall</code></td><td data-label="한글">벽 따라 오르기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ClimbAlongCeiling</code></td><td data-label="한글">천장 따라 오르기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkAlongIECeiling</code></td><td data-label="한글">창 천장 따라 걷기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>FaceFromTop</code></td><td data-label="한글"></td><td data-label="빈도">80</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>RunAlongIECeiling</code></td><td data-label="한글">창 천장 따라 달리기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>CrawlAlongIECeiling</code></td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>SitOnTheLeftEdgeOfIE</code></td><td data-label="한글">창 왼쪽 가장자리에 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>SitOnTheRightEdgeOfIE</code></td><td data-label="한글">창 오른쪽 가장자리에 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>JumpFromLeftEdgeOfIE</code></td><td data-label="한글">창 왼쪽 가장자리에서 뛰기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>JumpFromRightEdgeOfIE</code></td><td data-label="한글">창 오른쪽 가장자리에서 뛰기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkLeftAlongIEAndSit</code></td><td data-label="한글">창 따라 왼쪽으로 걷다가 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkRightAlongIEAndSit</code></td><td data-label="한글">창 따라 오른쪽으로 걷다가 앉기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkLeftAlongIEAndJump</code></td><td data-label="한글">창 따라 왼쪽으로 걷다가 뛰기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>WalkRightAlongIEAndJump</code></td><td data-label="한글">창 따라 오른쪽으로 걷다가 뛰기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>HoldOntoIEWall</code></td><td data-label="한글">창 벽 붙잡기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ClimbIEWall</code></td><td data-label="한글">창 벽 오르기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ClimbGardenLadder</code></td><td data-label="한글">섬 사다리 오르기</td><td data-label="빈도">120</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ClimbIEBottom</code></td><td data-label="한글">창 바닥 오르기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>GrabIEBottomLeftWall</code></td><td data-label="한글">창 왼쪽 아래 벽 붙잡기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>GrabIEBottomRightWall</code></td><td data-label="한글">창 오른쪽 아래 벽 붙잡기</td><td data-label="빈도">100</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>JumpFromLeftWall</code></td><td data-label="한글">창 왼쪽 벽에서 뛰기</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>JumpFromRightWall</code></td><td data-label="한글">창 오른쪽 벽에서 뛰기</td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+<tr><td data-label="이름"><code>JumpOnIELeftWall</code></td><td data-label="한글">창 왼쪽 벽으로 뛰기</td><td data-label="빈도">50</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>JumpOnIERightWall</code></td><td data-label="한글">창 오른쪽 벽으로 뛰기</td><td data-label="빈도">50</td><td data-label="숨김">숨김 토글</td></tr>
+<tr><td data-label="이름"><code>ThrowIEFromLeft</code></td><td data-label="한글"></td><td data-label="빈도">120</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>ThrowIEFromRight</code></td><td data-label="한글"></td><td data-label="빈도">120</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>RunAndThrowIEFromLeft</code></td><td data-label="한글"></td><td data-label="빈도">120</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>RunAndThrowIEFromRight</code></td><td data-label="한글"></td><td data-label="빈도">120</td><td data-label="숨김">토글</td></tr>
+<tr><td data-label="이름"><code>JumpDono_x&lt;n&gt;_y&lt;m&gt;</code> ×150</td><td data-label="한글"></td><td data-label="빈도">0</td><td data-label="숨김">숨김</td></tr>
+</tbody></table>
+<a id="events"></a>
+<h2 id="2-이벤트-토픽과-페이로드-ctxontopic-event--">2. 이벤트 토픽과 페이로드 — <code>ctx.on(topic, event -&gt; …)</code></h2>
+<p>「실험」 칩이 붙은 항목은 <code>api_version</code> 을 올리지 않고 바뀌거나 없어질 수 있습니다(같은 목록이 <code>sdk.json</code> 의 <code>preview</code> 에 있습니다). 표시가 없는 항목은 안정입니다 — <a href="API.html#compatibility">API.md §8</a>.</p>
+<p>따로 형을 적지 않은 값은 문자열입니다. <code>mascotId</code> 는 그 개체가 사는 동안만 유효하고(사라지면 재사용될 수 있습니다), 좌표는 바탕화면 좌표입니다. 앱에서는 플러그인마다 하나인 이벤트 스레드에서, 테스트 킷에서는 부른 스레드에서 리스너가 돕니다. 페이로드 예시와 연동 주의점은 <a href="API.html#events">API.md 의 이벤트 절</a> 을 보세요.</p>
+<table><thead><tr><th>토픽</th><th>구분</th><th>의미와 필드</th></tr></thead><tbody>
+<tr><td data-label="토픽"><code>ready</code></td><td data-label="구분"></td><td data-label="의미와 필드">엔진이 뜨고 플러그인들이 시작된 뒤 — 없음</td></tr>
+<tr><td data-label="토픽"><code>behavior</code></td><td data-label="구분"></td><td data-label="의미와 필드">마스코트의 행동이 바뀜 — <code>imageSet</code>, <code>name</code>, <code>mascotId</code>(Integer)</td></tr>
+<tr><td data-label="토픽"><code>bubble</code></td><td data-label="구분"></td><td data-label="의미와 필드">말풍선이 뜸 — <code>imageSet</code>, <code>mascotId</code>(Integer, 0 = 이미지셋 지정; <code>kind=choice</code> 에는 없음), <code>text</code>(보이는 글자 — <code>bubble.text</code> 훅 뒤), <code>ms</code>(Long, <code>bubble.duration</code> 뒤 최종 수명; <code>choice</code> 는 제한 시간), <code>kind</code>(<code>say</code> = 보통 줄(큐에 넣은 줄·<code>say.txt</code> 포함), <code>private</code> = 방송 무대가 건너뛰는 알람·부탁 줄, <code>choice</code> = 단추 달린 말풍선이 열림). 「···」 busy 표시는 이벤트를 내지 않습니다</td></tr>
+<tr><td data-label="토픽"><code>choice</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">선택지 말풍선에 답이 남 — <code>imageSet</code>, <code>mascotId</code>(Integer), <code>index</code>(Integer, 0부터 · <code>-1</code> = 떴는데 답 없음(시간 초과·Esc·캐릭터 사라짐) · <code>-2</code> = 앱이 치움(같은 플러그인이 대체·<code>clearQueue</code>·줄 대기 초과·줄 참)), <code>option</code>(고른 글자, 음수면 <code>&quot;&quot;</code>), <code>from</code>(물은 플러그인 id)</td></tr>
+<tr><td data-label="토픽"><code>click</code></td><td data-label="구분"></td><td data-label="의미와 필드">캐릭터 위에서 마우스 단추가 눌림 — <code>imageSet</code>, <code>mascotId</code>(Integer), <code>button</code>(<code>left</code>/<code>right</code>/<code>middle</code>), <code>x</code>, <code>y</code>(Integer, 화면 좌표)</td></tr>
+<tr><td data-label="토픽"><code>mascot</code></td><td data-label="구분"></td><td data-label="의미와 필드">캐릭터가 나타나거나 사라짐 — <code>imageSet</code>, <code>mascotId</code>(Integer), <code>event</code>(<code>added</code>/<code>removed</code>)</td></tr>
+<tr><td data-label="토픽"><code>headpat</code></td><td data-label="구분"></td><td data-label="의미와 필드">쓰다듬기 시작 — <code>behavior</code></td></tr>
+<tr><td data-label="토픽"><code>affection</code></td><td data-label="구분"></td><td data-label="의미와 필드">보이는 호감도 단계가 바뀜 — <code>tier</code>(Integer), <code>previous</code>(Integer), <code>points</code>(Integer)</td></tr>
+<tr><td data-label="토픽"><code>achievement</code></td><td data-label="구분"></td><td data-label="의미와 필드">스팀 도전과제 해금 — <code>id</code></td></tr>
+<tr><td data-label="토픽"><code>focus</code></td><td data-label="구분"></td><td data-label="의미와 필드">집중 모드 켜짐/풀림 — <code>active</code>(Boolean)</td></tr>
+<tr><td data-label="토픽"><code>chat</code></td><td data-label="구분"></td><td data-label="의미와 필드">앱 API에 등재된 채팅 토픽 — <code>phase</code>(<code>ask</code>/<code>reply</code>), <code>imageSet</code>, <code>text</code>. 발생 여부는 설치한 채팅 연동에 달려 있습니다. <code>ctx.publish(&quot;chat&quot;, ...)</code>는 앱 토픽이 아닌 <code>&lt;내-id&gt;.chat</code>을 발행합니다.</td></tr>
+<tr><td data-label="토픽"><code>tts</code></td><td data-label="구분"></td><td data-label="의미와 필드">음성 재생 시작/끝 — <code>phase</code>(<code>start</code>/<code>end</code>)</td></tr>
+<tr><td data-label="토픽"><code>settings</code></td><td data-label="구분"></td><td data-label="의미와 필드">설정 창 [적용], 또는 언어 변경 — <code>phase</code>(<code>apply</code>), <code>changed</code>(지난 [적용] 이후 앱이 <code>LumiSettings</code> 로 적은 키를 쉼표로 — 스톡 엔진 키는 안 실림) / <code>phase</code>(<code>language</code>), <code>language</code>(BCP-47)</td></tr>
+<tr><td data-label="토픽"><code>ask</code></td><td data-label="구분"></td><td data-label="의미와 필드"><code>speech\ask.txt</code> 가 쓰임 — <code>text</code></td></tr>
+<tr><td data-label="토픽"><code>settings_open</code></td><td data-label="구분"></td><td data-label="의미와 필드"><code>speech\settings_open.txt</code> 가 쓰임 — 없음</td></tr>
+<tr><td data-label="토픽"><code>say_file</code></td><td data-label="구분"></td><td data-label="의미와 필드"><code>speech\say.txt</code> 줄이 표시됨 — <code>text</code></td></tr>
+<tr><td data-label="토픽"><code>drag</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">사용자가 캐릭터를 집어 올림·놓음(<code>Dragged</code> 시작·끝) — <code>phase</code>(<code>start</code>/<code>end</code>), <code>imageSet</code>, <code>mascotId</code>(Integer), <code>x</code>, <code>y</code>(Integer, 앵커의 화면 좌표)</td></tr>
+<tr><td data-label="토픽"><code>throw</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">놓으며 던져짐(<code>Thrown</code> 시작) · 그 비행이 끝남(다음 행동 시작) — <code>phase</code>(<code>thrown</code>/<code>landed</code>), <code>imageSet</code>, <code>mascotId</code>(Integer), <code>x</code>, <code>y</code>(Integer), <code>next</code>(항상 실립니다 — <code>landed</code> 면 비행 뒤 행동 이름, <code>thrown</code> 이면 <code>&quot;&quot;</code>)</td></tr>
+<tr><td data-label="토픽"><code>hover</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">포인터가 캐릭터 창에 들어옴·나감 — <code>phase</code>(<code>enter</code>/<code>exit</code>), <code>imageSet</code>, <code>mascotId</code>(Integer)</td></tr>
+<tr><td data-label="토픽"><code>doubleclick</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">같은 캐릭터 위 왼쪽 누름 둘이 600 ms·90 px 안(AWT clickCount 는 믿을 수 없음 — 누르는 순간 들기가 창을 옮김) — <code>imageSet</code>, <code>mascotId</code>(Integer), <code>x</code>, <code>y</code>(Integer). 그 둘은 <code>click</code> 도 각각 냅니다</td></tr>
+<tr><td data-label="토픽"><code>alarm</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">알림이 실제로 전달됨 — <code>kind</code>(<code>hourly</code>/<code>alarm</code>), <code>time</code>(<code>HH:mm</code>), <code>late</code>(Boolean — 화면이 바빠 미뤄졌다 나온 알람)</td></tr>
+<tr><td data-label="토픽"><code>pomodoro</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">집중/휴식 주기가 움직임 — <code>phase</code>(<code>focus</code>/<code>break</code>/<code>stopped</code>), <code>minutes</code>(Integer, 시작하는 국면의 길이; stop 은 0), <code>round</code>(Integer, 켠 뒤 시작한 집중 국면 수)</td></tr>
+<tr><td data-label="토픽"><code>bongo</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">봉고 모드가 타건·클릭을 그림 — <code>kind</code>(<code>keyboard</code>/<code>left_click</code>/<code>right_click</code>), <code>frame</code>(Integer, 그린 손 자리), <code>look</code>(<code>bongo</code>/<code>small</code>). <strong>키 코드·글자는 절대 없음</strong>(코어는 키를 읽지 않음)</td></tr>
+<tr><td data-label="토픽"><code>app</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">앱이 제 종료 문으로 내려감 — <code>phase</code>(<code>exit</code>). 플러그인 <code>stop()</code> 보다 앞, 짧은 상한을 두고 전달을 기다린 뒤 내려감</td></tr>
+<tr><td data-label="토픽"><code>island</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">정원(섬) 프로세스 시작·정지 요청, 사진 요청 응답 — <code>phase</code>(<code>start</code>/<code>stop</code>/<code>photo</code>), <code>request</code>(photo 만)</td></tr>
+<tr><td data-label="토픽"><code>game</code></td><td data-label="구분">실험</td><td data-label="의미와 필드">장치 게임 판이 열림·달리기 시작·닫힘 — <code>phase</code>(<code>start</code>/<code>run</code>/<code>stop</code>)</td></tr>
+</tbody></table>
+<a id="hooks"></a>
+<h2 id="3-훅과-ctx-키-ctxhookid-hook-current-ctx--">3. 훅과 ctx 키 — <code>ctx.hook(id, (hook, current, ctx) -&gt; …)</code></h2>
+<p>「실험」 칩이 붙은 항목은 <code>api_version</code> 을 올리지 않고 바뀌거나 없어질 수 있습니다(같은 목록이 <code>sdk.json</code> 의 <code>preview</code> 에 있습니다). 표시가 없는 항목은 안정입니다 — <a href="API.html#compatibility">API.md §8</a>.</p>
+<p><code>PluginHooks.KNOWN</code> 의 id 마다 코어가 묻는 자리(앱 소스의 파일 — 여럿이면 <code> · </code> 로 잇습니다), 묻는 메서드, 기본값 식, ctx Map 의 키입니다. 소스 경로는 어디서 묻는지 알려 주는 참고이고 그 파일이 SDK 에 들어 있지는 않습니다. 반환형·범위·특수값은 <a href="API.html#hooks">API.md 의 훅 표</a> 를 먼저 보세요. <code>null</code> 은 통과(앞선 <code>current</code> 유지)이고, 뒤의 핸들러가 null 아닌 값을 돌려주면 앞선 답을 바꿉니다. 훅 안에서는 파일·네트워크·잠금을 잡지 마세요.</p>
+<table><thead><tr><th>훅</th><th>구분</th><th>묻는 자리</th><th>메서드</th><th>기본값</th><th>ctx 키</th></tr></thead><tbody>
+<tr><td data-label="훅"><code>affection.award</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/AffectionDirector.java</code></td><td data-label="메서드"><code>decideInt</code></td><td data-label="기본값"><code>points (clamp 0..1_000_000)</code></td><td data-label="ctx 키"><code>source</code>, <code>points</code>, <code>dailyCap</code>, <code>cooldownSeconds</code>, <code>todayPoints</code></td></tr>
+<tr><td data-label="훅"><code>affection.tier</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/AffectionDirector.java</code></td><td data-label="메서드"><code>decideInt</code></td><td data-label="기본값"><code>tier (clamp 1..MAX_TIER)</code></td><td data-label="ctx 키"><code>points</code></td></tr>
+<tr><td data-label="훅"><code>behavior.force</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/LumiBridge.java</code></td><td data-label="메서드"><code>decideString</code></td><td data-label="기본값"><code>name == null ? &quot;&quot; : name</code></td><td data-label="ctx 키"><code>name</code>, <code>caller</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="훅"><code>bongo.key_frame</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/BongoWindow.java</code></td><td data-label="메서드"><code>decideInt</code></td><td data-label="기본값"><code>chosen (clamp -1..keyFrames() - 1)</code></td><td data-label="ctx 키"><code>frames</code>, <code>cycle</code>, <code>look</code></td></tr>
+<tr><td data-label="훅"><code>bongo.key_input</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/BongoWindow.java</code></td><td data-label="메서드"><code>decideInt</code></td><td data-label="기본값"><code>-2 (clamp -2..bongo.keyFrames() - 1)</code></td><td data-label="ctx 키"><code>frames</code>, <code>look</code></td></tr>
+<tr><td data-label="훅"><code>bubble.duration</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/SelfTalkDirector.java</code> · <code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="메서드"><code>decideLong</code></td><td data-label="기본값"><code>life (clamp 500..120_000)</code> · <code>computed (clamp 500..120_000)</code></td><td data-label="ctx 키"><code>text</code>, <code>requested</code>, <code>source</code>, <code>voiceMs</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="훅"><code>bubble.text</code></td><td data-label="구분">실험</td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="메서드"><code>decideString</code></td><td data-label="기본값"><code>text</code></td><td data-label="ctx 키"><code>text</code>, <code>source</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="훅"><code>focus.quiet</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/FocusDirector.java</code></td><td data-label="메서드"><code>decideBoolean</code></td><td data-label="기본값"><code>quiet</code></td><td data-label="ctx 키"><code>hidden</code>, <code>fullscreenAhead</code>, <code>focusActive</code></td></tr>
+<tr><td data-label="훅"><code>focus.screen_busy</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/FocusDirector.java</code></td><td data-label="메서드"><code>decideBoolean</code></td><td data-label="기본값"><code>busy</code></td><td data-label="ctx 키"><code>hidden</code>, <code>fullscreenAhead</code></td></tr>
+<tr><td data-label="훅"><code>place.allowed</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/TetherDirector.java</code></td><td data-label="메서드"><code>decideBoolean</code></td><td data-label="기본값"><code>allowed</code></td><td data-label="ctx 키"><code>x</code>, <code>y</code>, <code>confinement</code>, <code>mover</code></td></tr>
+<tr><td data-label="훅"><code>selftalk.interval</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/SelfTalkDirector.java</code></td><td data-label="메서드"><code>decideLong</code></td><td data-label="기본값"><code>interval (clamp 3_000..3_600_000)</code></td><td data-label="ctx 키"><code>baseMs</code>, <code>frequency</code>, <code>minSec</code>, <code>maxSec</code></td></tr>
+<tr><td data-label="훅"><code>selftalk.line</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/SelfTalkDirector.java</code></td><td data-label="메서드"><code>decideString</code></td><td data-label="기본값"><code>line</code></td><td data-label="ctx 키"><code>candidate</code>, <code>onGardenFloor</code>, <code>gardenPhase</code>, <code>tier</code>, <code>offered</code>, <code>mascotId</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="훅"><code>sound.effect</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/Mascot.java</code></td><td data-label="메서드"><code>decideString</code></td><td data-label="기본값"><code>soundPath</code></td><td data-label="ctx 키"><code>path</code>, <code>caller</code></td></tr>
+<tr><td data-label="훅"><code>speech.greeting</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="메서드"><code>decideString</code></td><td data-label="기본값"><code>picked == null ? &quot;&quot; : picked</code></td><td data-label="ctx 키"><code>pool</code>, <code>last</code>, <code>trigger</code>, <code>imageSet</code></td></tr>
+<tr><td data-label="훅"><code>text.localized</code></td><td data-label="구분"></td><td data-label="묻는 자리"><code>com/group_finity/mascot/lumi/SpeechDirector.java</code></td><td data-label="메서드"><code>decideString</code></td><td data-label="기본값"><code>value</code></td><td data-label="ctx 키"><code>key</code>, <code>language</code>, <code>fallback</code></td></tr>
+</tbody></table>
+<a id="mascot-state"></a>
+<h2 id="4-mascotstate-ctxmascots-의-원소">4. <code>MascotState</code> — <code>ctx.mascots()</code> 의 원소</h2>
+<p>자바 레코드라 <code>state.id()</code>, <code>state.imageSet()</code>, <code>state.anchor()</code> 처럼 메서드로 읽습니다. 값은 그 순간의 사본이고, <code>ctx.mascotById(id)</code> 는 그 캐릭터가 없으면 <code>null</code> 입니다.</p>
+<table><thead><tr><th>필드</th><th>형</th></tr></thead><tbody>
+<tr><td data-label="필드"><code>id</code></td><td data-label="형"><code>int</code></td></tr>
+<tr><td data-label="필드"><code>imageSet</code></td><td data-label="형"><code>String</code></td></tr>
+<tr><td data-label="필드"><code>bounds</code></td><td data-label="형"><code>Rectangle</code></td></tr>
+<tr><td data-label="필드"><code>anchor</code></td><td data-label="형"><code>Point</code></td></tr>
+<tr><td data-label="필드"><code>lookRight</code></td><td data-label="형"><code>boolean</code></td></tr>
+<tr><td data-label="필드"><code>behavior</code></td><td data-label="형"><code>String</code></td></tr>
+</tbody></table>
+<a id="app-settings"></a>
+<h2 id="5-앱-설정-키-ctxsettingkey-fallback-읽기만">5. 앱 설정 키 — <code>ctx.setting(key, fallback)</code> (읽기만)</h2>
+<p>● = <code>Preferences.KEYS</code>(스팀 클라우드에 오르는 취향 값, <code>conf\preferences.properties</code> 에도 사본). 나머지는 앱이 <code>conf\settings.properties</code> 에 실제로 읽고 쓰는 키입니다 — 앱 소스에서 설정 저장소(<code>LumiSettings</code>)를 지나는 자리에서만 모았습니다. 값은 전부 문자열이고 앱 버전마다 늘 수 있으며, 표에 실렸다고 고정 계약이 되지는 않습니다.</p>
+<p>대응하는 공개 조회 메서드가 없을 때만 <code>ctx.setting(key, fallback)</code> 으로 읽고 없는 경우를 처리하세요 — 언어는 <code>language()</code>, 활성 셋은 <code>activeImageSets()</code>, 기능은 <code>featureEnabled(id)</code> 입니다. <strong>플러그인은 앱 키를 쓰지 않습니다</strong> — 제 것은 <code>ctx.prefs()</code> 에 둡니다.</p>
+<table><thead><tr><th>키</th><th>취향(클라우드)</th></tr></thead><tbody>
+<tr><td data-label="키"><code>Language</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>ActiveShimeji</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>Scaling</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>Opacity</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>Sounds</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>Theme</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>SettingsAlwaysOnTop</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>AlwaysShowInformationScreen</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>HideOnFullscreen</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>SpeechFarewell</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>AffectionCelebrate</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>AlarmEnabled</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>AlarmTime</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>HourlyChime</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>Pomodoro</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>PomodoroFocusMinutes</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>PomodoroBreakMinutes</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.sound.volume</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.sound.off</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.voice.volume</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.voice.pack</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.selftalk.frequency</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.shortcuts.gesture</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.input.reaction</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.focus.enabled</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.focus.auto</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.island.enabled</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.game.enabled</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.windowthrow.enabled</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.steam.presence.enabled</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.bongo.look</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.bongo.input</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.bongo.size</code></td><td data-label="취향(클라우드)">●</td></tr>
+<tr><td data-label="키"><code>lumi.bongo.enabled</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.bongo.gamemode</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.bongo.x</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.bongo.y</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.broadcast.enabled</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.broadcast.private.hide</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.broadcast.source.lan</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.broadcast.source.port</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.broadcast.window.minimized</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.confguard.all</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.debug.enabled</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.island.tutorialShown</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.onboarding.step</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.shake.credit.state</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.steam.enabled</code></td><td data-label="취향(클라우드)"></td></tr>
+<tr><td data-label="키"><code>lumi.transform.art.enabled</code></td><td data-label="취향(클라우드)"></td></tr>
+</tbody></table>
+<a id="setting-types"></a>
+<h2 id="6-pluginjson-settings-의-type">6. <code>plugin.json</code> <code>&quot;settings&quot;</code> 의 <code>type</code></h2>
+<p>값: <code>bool</code>, <code>int</code>, <code>string</code>, <code>choice</code>, <code>hotkey</code>. 항목 꼴과 언어별 이름은 <a href="API.html#manifest">API.md 의 매니페스트 절</a> 을 보세요.</p>
+<a id="feature-ids"></a>
+<h2 id="7-기능-스위치-id-ctxfeatureenabledid">7. 기능 스위치 id — <code>ctx.featureEnabled(id)</code></h2>
+<p>설정 창의 스위치입니다. 읽기만 합니다 — 플러그인은 켜고 끄지 않습니다. 안 켰거나 모르는 id 는 거짓입니다.</p>
+<table><thead><tr><th>id</th><th>앱 설정 키</th></tr></thead><tbody>
+<tr><td data-label="id"><code>bongo</code></td><td data-label="앱 설정 키"><code>lumi.bongo.enabled</code></td></tr>
+<tr><td data-label="id"><code>broadcast</code></td><td data-label="앱 설정 키"><code>lumi.broadcast.enabled</code></td></tr>
+<tr><td data-label="id"><code>island</code></td><td data-label="앱 설정 키"><code>lumi.island.enabled</code></td></tr>
+<tr><td data-label="id"><code>game</code></td><td data-label="앱 설정 키"><code>lumi.game.enabled</code></td></tr>
+<tr><td data-label="id"><code>focus.auto</code></td><td data-label="앱 설정 키"><code>lumi.focus.auto</code></td></tr>
+</tbody></table></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const code=document.getElementById(button.dataset.copy);let copied=false;
+ try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){
+  const field=document.createElement('textarea');field.value=code.textContent;
+  field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.focus();field.select();
+  try{copied=document.execCommand('copy')}catch(error){}field.remove();
+ }
+ const status=button.closest('.codebox').querySelector('.copy-status');
+ status.textContent=copied?'Copied / 복사 완료':'Select the text to copy / 문안을 선택해 복사해 주세요';
+}));
+</script></body></html>

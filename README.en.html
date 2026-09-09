@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Little LUMI Model — Plugin SDK</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;font-size:18px;line-height:1.8;color:#243349;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:32px 24px 72px}header{border-bottom:1px solid #ccd8e6;margin-bottom:24px;padding-bottom:18px}.kicker{font-size:14px;color:#536c89}h1{font-size:clamp(28px,4vw,38px);line-height:1.3;word-break:keep-all;margin:14px 0}h2{font-size:26px;line-height:1.4;margin:38px 0 14px}h3{font-size:22px;line-height:1.5;margin-top:28px}h4,h5,h6{font-size:20px}p{margin:12px 0}a{color:#175baa;text-underline-offset:3px;overflow-wrap:anywhere}nav{display:flex;gap:10px 20px;flex-wrap:wrap}article{background:white;border:1px solid #d2deea;border-radius:14px;padding:26px;min-width:0;overflow-wrap:anywhere}ul,ol{padding-left:28px}li{margin:8px 0}code{font-family:ui-monospace,Consolas,monospace;font-size:1rem;white-space:normal;overflow-wrap:anywhere}p code,li code,td code{background:#edf2f8;border-radius:4px;padding:1px 3px}.codebox{border:1px solid #c8d7e8;border-radius:10px;overflow:hidden;margin:20px 0;background:#f5f8fc}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #d7e2ee}.codebar span{font-size:14px;color:#526783}button{font:inherit;font-size:16px;border:0;border-radius:6px;background:#175baa;color:#fff;padding:7px 14px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d68c19;outline-offset:3px}pre{margin:0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65;font-size:18px}pre code{white-space:pre-wrap;font-size:18px;background:none}table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:18px;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #d1dce8;overflow-wrap:anywhere}th{background:#eaf1fa}blockquote{margin:18px 0;padding:6px 18px;border-left:4px solid #87a8cc;background:#f2f6fc}.copy-status{display:block;min-height:1.4em;font-size:15px;color:#3b644b}details{margin:16px 0}summary{cursor:pointer;color:#175baa}.contents{font-size:16px}.contents ol{columns:2}footer{margin-top:28px;color:#5c7088;font-size:14px}.doclist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;padding:0}.doclist li{background:white;border:1px solid #d2deea;border-radius:9px;padding:14px;margin:0}
+@media(max-width:720px){main{padding:22px 14px 50px}article{padding:17px}h2{font-size:24px}.contents ol{columns:1}.doclist{grid-template-columns:1fr}table,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border:1px solid #d1dce8;border-radius:8px;margin:12px 0;padding:5px}td{border:0;padding:7px}td:before{content:attr(data-label);display:block;font-size:15px;color:#526783;font-weight:700}.codebar{flex-wrap:wrap}pre{padding:13px}}
+@media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
+</style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="index.html">SDK 문서 / Documents</a><a href="README.html">한국어</a><a href="README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#what-is-in-here">What is in here</a></li><li><a href="#new-here">New here</a></li><li><a href="#in-a-hurry">In a hurry</a></li><li><a href="#where-to-go-next">Where to go next</a></li><li><a href="#worth-knowing">Worth knowing</a></li><li><a href="#code-mod-consent">Code mod consent</a></li></ol></details><article><h1 id="little-lumi-model-plugin-sdk">Little LUMI Model — Plugin SDK</h1>
+<p><a href="README.html">한국어</a> · <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Downloads (Releases)</a></p>
+<blockquote><strong>This repository holds the readable parts only</strong> — docs, examples, tools and the public API sources. <strong>To build a plugin, download the ZIP from <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a></strong>: the <code>lib/</code> jars you compile against and the generated javadoc live there. This is version <strong>1.3.0</strong>.</blockquote>
+<hr>
+<p>Welcome. This SDK is the toolkit for adding your own things to Little LUMI: make her react to clicks, head pats and alarms, add lines, menus and hotkeys, or build a mod out of nothing but data — artwork, behaviours, translations.</p>
+<p>This distribution is <strong>SDK 1.3.0 / app 1.3.0 / api_version 1</strong>.</p>
+<p>Open <a href="index.html">index.html</a> for the offline document collection. Code examples have copy buttons; the original Markdown and licence notices are preserved.</p>
+<h2 id="what-is-in-here">What is in here</h2>
+<table><thead><tr><th>Folder or file</th><th>What it is for</th></tr></thead><tbody>
+<tr><td data-label="Folder or file"><a href="index.html"><code>index.html</code></a></td><td data-label="What it is for">offline API, catalogue, example and licence readers</td></tr>
+<tr><td data-label="Folder or file"><a href="plugin-guide.en.html"><code>plugin-guide.en.html</code></a></td><td data-label="What it is for">the walkthrough, start to finish</td></tr>
+<tr><td data-label="Folder or file"><code>lib\</code></td><td data-label="What it is for">the jars you compile a plugin against</td></tr>
+<tr><td data-label="Folder or file"><code>tools\</code></td><td data-label="What it is for">scripts that build, test and prepare for the Workshop</td></tr>
+<tr><td data-label="Folder or file"><code>examples\</code></td><td data-label="What it is for">two samples you can build as they are</td></tr>
+<tr><td data-label="Folder or file"><code>docs\</code></td><td data-label="What it is for">API reference · identifier catalogue · changelog · javadoc</td></tr>
+<tr><td data-label="Folder or file"><code>sdk.json</code></td><td data-label="What it is for">this distribution&#x27;s versions, and the hooks and events this app offers</td></tr>
+<tr><td data-label="Folder or file"><a href="LICENSE-SDK.html"><code>LICENSE-SDK.txt</code></a></td><td data-label="What it is for">terms of use</td></tr>
+</tbody></table>
+<h2 id="new-here">New here</h2>
+<p>Open <a href="plugin-guide.en.html"><strong>plugin-guide.en.html</strong></a>. That is the place to start.</p>
+<p>It takes you in order from installing the tools to seeing Lumi say a line you wrote, and it assumes you have never programmed before. The Korean page is <a href="plugin-guide.html">plugin-guide.html</a>.</p>
+<h2 id="in-a-hurry">In a hurry</h2>
+<p>With JDK 25 and Python 3 installed, three lines in PowerShell from the unpacked SDK folder:</p>
+<div class="codebox"><div class="codebar"><span>powershell</span><button type="button" data-copy="code-1">Copy / 복사</button></div><pre><code id="code-1">python tools\build_plugin.py examples\hello
+python tools\run_tests.py examples\hello
+Copy-Item -Recurse dist\hello.lumi.sample &quot;&lt;install folder&gt;\mods\hello.lumi.sample&quot;
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>The first line builds the example into <code>dist\hello.lumi.sample\</code>, the second tests it without the app, the third installs that whole folder. Close the app before you copy and start it again afterwards — a row for the example appears under Settings → Mods.</p>
+<h2 id="where-to-go-next">Where to go next</h2>
+<table><thead><tr><th>Document</th><th>What it holds</th></tr></thead><tbody>
+<tr><td data-label="Document"><a href="plugin-guide.en.html">plugin-guide.en.html</a></td><td data-label="What it holds">the walkthrough — from knowing nothing</td></tr>
+<tr><td data-label="Document"><a href="docs/API.en.html">docs/API.en.md</a></td><td data-label="What it holds">everything you can do</td></tr>
+<tr><td data-label="Document"><a href="docs/CATALOG.en.html">docs/CATALOG.en.md</a></td><td data-label="What it holds">names of behaviours, events, hooks and settings keys</td></tr>
+<tr><td data-label="Document"><a href="docs/CHANGELOG.html">docs/CHANGELOG.md</a></td><td data-label="What it holds">what changed in each version</td></tr>
+<tr><td data-label="Document"><code>examples\</code></td><td data-label="What it holds">two samples — a greeting plugin and a bytecode transformer</td></tr>
+<tr><td data-label="Document"><code>tools\</code></td><td data-label="What it holds">building and testing, and the check before a Workshop upload</td></tr>
+</tbody></table>
+<h2 id="worth-knowing">Worth knowing</h2>
+<ul>
+<li><strong>The SDK version is the app version.</strong> Pick the SDK that matches the LUMI you run. <code>api_version</code> is a separate API compatibility number. Documentation/example-only revisions keep the product version and differ by the filename and the <code>commit</code> in <code>sdk.json</code>.</li>
+<li><code>lib\Shimeji-ee.jar</code> is <strong>compile-only</strong>. It is the Steam build as shipped, so the SDK alone cannot start the app — try your work in your purchased install.</li>
+<li>A plugin runs <strong>inside the app with your rights</strong> (no sandbox). Tell the people you share it with.</li>
+<li>Terms of use are in <a href="LICENSE-SDK.html">LICENSE-SDK.txt</a>.</li>
+</ul>
+<p>What stays and what may change as the app moves to a new version is written up in <a href="docs/API.en.html#compatibility">API.en.md &quot;Compatibility&quot;</a>.</p>
+<h2 id="code-mod-consent">Code mod consent</h2>
+<p>Installing or subscribing does not authorize execution. Enable the mod&#x27;s checkbox, review the warning, and agree; code and bundled data are applied on the next app start. Existing last-run hashes are not approval. Changes to any plugin JAR or its <code>plugins/lib</code> libraries require approval again. Creator-declared network/behavior fields are informational, not enforced permissions.</p>
+<p>Library JARs must belong to the same approved mod as a plugin; unrelated library-only mods are not placed on the class path. Put dependencies in <code>plugins/lib</code> instead of a JAR manifest <code>Class-Path</code>; manifest class paths and JAR indexes are rejected. The loader executes verified copies, so plugins must not rely on their CodeSource path being their install directory.</p>
+<p>Code paths containing symbolic links or junctions are unsupported.</p>
+<p>When new or changed code mods need approval, a startup notice opens. Its <strong>OK</strong> button only opens Settings → Mods; it does not grant consent. Review the red <strong>Unapproved</strong> badge and enable the mod checkbox to give explicit consent.</p>
+<p>Declining consent sets the toggle to <strong>− (unapproved lock)</strong> and suppresses startup reminders for that code version. <strong>Click − to return to OFF</strong>. Updating a JAR or library clears the lock. Locking never grants consent; code and data remain off. Closing with Escape or X leaves approval and lock state unchanged.</p></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const code=document.getElementById(button.dataset.copy);let copied=false;
+ try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){
+  const field=document.createElement('textarea');field.value=code.textContent;
+  field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.focus();field.select();
+  try{copied=document.execCommand('copy')}catch(error){}field.remove();
+ }
+ const status=button.closest('.codebox').querySelector('.copy-status');
+ status.textContent=copied?'Copied / 복사 완료':'Select the text to copy / 문안을 선택해 복사해 주세요';
+}));
+</script></body></html>

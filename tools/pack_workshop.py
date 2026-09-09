@@ -27,6 +27,11 @@ already filled in. Exit code 0 = this item can be uploaded (dropped files are wa
 1 = it cannot (the kind is refused, or the content is over the size cap). --strict makes dropped files
 fail too.
 
+출력은 원본과 서로 포함하지 않는 별도 폴더여야 합니다. 링크·정션 안으로는 들어가지 않습니다.
+기존 item.vdf가 있으면 작성한 항목 ID·제목·미리보기·설명·공개 범위를 보존하고 contentfolder만 맞춥니다.
+Output must be separate from the input, with neither containing the other. Links and junctions are
+not followed. Repacking preserves an existing item.vdf's upload metadata and updates only contentfolder.
+
 규칙 정본: WorkshopSync (앱 소스). 여기 적힌 것과 다르면 앱이 옳습니다.
 """
 import argparse
@@ -34,6 +39,7 @@ import os
 import re
 import shutil
 import sys
+import tempfile
 from pathlib import Path, PurePosixPath
 
 HERE = Path(__file__).resolve().parent
@@ -292,15 +298,25 @@ def scan(root: Path, with_plugins: bool, kind=None):
     앱도 그 폴더를 기준으로 상대경로를 잡으므로 REFUSED_RELATIVE 판정이 그대로 맞습니다.
     """
     kept, dropped, folders = [], [], []
+    if is_link(root):
+        return [], [(PurePosixPath('.'), 0, DROP_LINK, '링크 말고 파일 자체를 넣으세요.')], []
     for dirpath, dirnames, filenames in os.walk(root):
         here = Path(dirpath)
         dirnames.sort()
-        for name in dirnames:
-            folders.append(PurePosixPath((here / name).relative_to(root).as_posix()))
+        # os.walk(followlinks=False) still enters Windows directory junctions.
+        # Prune every directory reparse point before os.walk can descend into it.
+        for name in list(dirnames):
+            full = here / name
+            rel = PurePosixPath(full.relative_to(root).as_posix())
+            if is_link(full):
+                dirnames.remove(name)
+                dropped.append((rel, 0, DROP_LINK, '링크 말고 파일 자체를 넣으세요.'))
+            else:
+                folders.append(rel)
         for name in sorted(filenames):
             full = here / name
             rel = PurePosixPath(full.relative_to(root).as_posix())
-            link = full.is_symlink() or (os.name == 'nt' and _is_reparse(full))
+            link = is_link(full)
             size = 0 if link else full.stat().st_size
             ok, reason, fix = judge(rel, with_plugins, link, kind)
             (kept if ok else dropped).append((rel, size, reason, fix))
@@ -318,6 +334,7 @@ def outside_scope(root: Path, base: Path):
             dirnames[:] = []
             continue
         dirnames.sort()
+        dirnames[:] = [name for name in dirnames if not is_link(here / name)]
         for name in sorted(filenames):
             found.append(PurePosixPath((here / name).relative_to(root).as_posix()))
     return found
@@ -329,6 +346,16 @@ def _is_reparse(path: Path) -> bool:
         return bool(path.lstat().st_file_attributes & 0x400)  # FILE_ATTRIBUTE_REPARSE_POINT
     except (AttributeError, OSError):
         return False
+
+
+def is_link(path: Path) -> bool:
+    return path.is_symlink() or (os.name == 'nt' and _is_reparse(path))
+
+
+def reject_overlapping_output(source: Path, target: Path) -> None:
+    """Both paths are resolved first, including existing junction/symlink parents."""
+    if source == target or source in target.parents or target in source.parents:
+        raise SystemExit('원본과 출력 폴더가 겹칩니다 — 서로 포함하지 않는 별도 폴더를 주세요.')
 
 
 # ── item.vdf ─────────────────────────────────────────────────────────────────
@@ -349,11 +376,72 @@ def read_appid() -> str:
 
 
 def vdf_path(text: Path) -> str:
-    return str(text).replace('/', '\\').replace('\\', '\\\\')
+    return str(text).replace('\\', '\\\\').replace('"', '\\"')
 
 
-def write_vdf(target: Path, content: Path, appid: str) -> Path:
+def update_contentfolder(text: str, content: Path) -> str:
+    """Replace only the root contentfolder value, preserving user metadata and comments."""
+    token = re.compile(r'\s+|//[^\r\n]*|"(?:\\.|[^"\\])*"|[{}]|[^\s{}"]+')
+    tokens = []
+    end = 0
+    for match in token.finditer(text):
+        if match.start() != end:
+            raise SystemExit('기존 item.vdf의 따옴표가 닫히지 않았습니다 — 원본을 보존했습니다.')
+        end = match.end()
+        value = match.group()
+        if value.isspace() or value.startswith('//'):
+            continue
+        tokens.append((value, match.start(), match.end()))
+    if end != len(text):
+        raise SystemExit('기존 item.vdf의 따옴표가 닫히지 않았습니다 — 원본을 보존했습니다.')
+
+    def word(raw):
+        return re.sub(r'\\(.)', r'\1', raw[1:-1]) if raw.startswith('"') else raw
+
+    found = []
+
+    def object_end(at, depth):
+        while at < len(tokens) and tokens[at][0] != '}':
+            key = tokens[at][0]
+            if key in ('{', '}') or at + 1 >= len(tokens):
+                raise ValueError('expected a key and value')
+            value = tokens[at + 1]
+            if value[0] == '{':
+                at = object_end(at + 2, depth + 1) + 1
+            elif value[0] == '}':
+                raise ValueError('missing value')
+            else:
+                if depth == 1 and word(key).lower() == 'contentfolder':
+                    found.append(value)
+                at += 2
+        if at >= len(tokens):
+            raise ValueError('unclosed object')
+        return at
+
+    try:
+        if len(tokens) < 3 or word(tokens[0][0]).lower() != 'workshopitem' or tokens[1][0] != '{':
+            raise ValueError('expected workshopitem object')
+        closing = object_end(2, 1)
+        if closing != len(tokens) - 1 or len(found) > 1:
+            raise ValueError('ambiguous workshopitem or contentfolder')
+    except ValueError as error:
+        raise SystemExit(f'기존 item.vdf를 읽지 못했습니다 — 원본을 보존했습니다: {error}')
+    value = '"' + vdf_path(content) + '"'
+    if found:
+        _, start, end = found[0]
+        return text[:start] + value + text[end:]
+    newline = '\r\n' if '\r\n' in text else '\n'
+    at = tokens[closing][1]
+    return text[:at] + '\t"contentfolder"\t\t' + value + newline + text[at:]
+
+
+def prepare_vdf(target: Path, content: Path, appid: str):
     out = target.parent / (target.name + '-item.vdf')
+    if is_link(out):
+        raise SystemExit(f'업로드 정의가 링크입니다 — 원본을 보존했습니다: {win(out)}')
+    if out.exists():
+        with out.open(encoding='utf-8-sig', newline='') as stream:
+            return out, update_contentfolder(stream.read(), content)
     body = f'''// Little LUMI 창작마당 업로드 정의 — tools\\pack_workshop.py 가 만든 밑틀입니다.
 //
 // 채워 넣을 것은 둘입니다.
@@ -379,7 +467,21 @@ def write_vdf(target: Path, content: Path, appid: str) -> Path:
 \t"changenote"\t\t"첫 판"
 }}
 '''
-    out.write_text(body, encoding='utf-8', newline='\r\n')
+    return out, body.replace('\n', '\r\n')
+
+
+def write_vdf(out: Path, body: str) -> Path:
+    # Replacing an existing definition must not truncate the user's metadata on interruption.
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', newline='',
+                                         dir=out.parent, prefix='.' + out.name + '.', delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(body)
+        temporary.replace(out)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return out
 
 
@@ -425,6 +527,9 @@ def main():
     root = Path(args.mod_dir).resolve()
     if not root.is_dir():
         raise SystemExit(f'폴더가 없습니다: {win(root)}')
+    target = Path(args.out).resolve() if args.out else (SDK / 'dist' / 'workshop' / root.name).resolve()
+    if not args.check:
+        reject_overlapping_output(root, target)
 
     kind, why = detect_kind(root)
     with_plugins = kind in (KIND_PLUGIN, KIND_MOD)
@@ -478,6 +583,11 @@ def main():
         print('      jar 을 빼는 순간 캐릭터로 넘어갑니다 — 그 파일은 한 겹 아래로 옮기는 편이 안전합니다.')
         print()
 
+    if kind == KIND_PLUGIN:
+        print('코드 모드는 구독 후 기본 OFF입니다. 모드 체크박스에서 동의해야 코드와 데이터가 다음 실행부터 적용됩니다.')
+        print('JAR·plugins\\lib 라이브러리 변경 시 재동의가 필요합니다. 매니페스트 Class-Path와 JAR 인덱스는 지원하지 않습니다.')
+        print()
+
     if dropped:
         print(f'빠지는 파일 {len(dropped)} 개 — 올려도 구독자에게 가지 않습니다. 의도한 것인지 확인하세요.')
         print()
@@ -508,10 +618,9 @@ def main():
         print('폴더를 만들지 않았습니다 — 이 항목은 이대로 올릴 수 없습니다.')
         print()
     else:
-        target = Path(args.out).resolve() if args.out else (SDK / 'dist' / 'workshop' / root.name).resolve()
-        if target == root:
-            raise SystemExit('만들 곳이 원본과 같습니다 — --out 으로 다른 폴더를 주세요.')
-        shutil.rmtree(target, ignore_errors=True)
+        vdf, definition = prepare_vdf(target, target, read_appid())
+        if target.exists():
+            shutil.rmtree(target)
         target.mkdir(parents=True, exist_ok=True)
         for rel in folders:
             (target / rel).mkdir(parents=True, exist_ok=True)
@@ -519,7 +628,7 @@ def main():
             destination = target / rel
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(base / rel, destination)
-        vdf = write_vdf(target, target, read_appid())
+        write_vdf(vdf, definition)
         print(f'만들었습니다: {win(target)}  (여기 있는 것만 구독자에게 갑니다)')
         print(f'업로드 정의: {win(vdf)}  (title 과 previewfile 을 채우세요)')
         print()

@@ -213,8 +213,9 @@ CREDITS.txt.
 
 What was altered:
 
-- Ten stock Shimeji-Desktop classes are shipped as modified copies and
-  re-injected into Shimeji-ee.jar at build time: Main, Mascot,
+- Eleven stock Shimeji-Desktop classes are shipped as modified copies and
+  re-injected into Shimeji-ee.jar at build time: ImageSetChooser (in
+  com.group_finity.mascot.imagesetchooser), Main, Mascot,
   SettingsWindow, TrayMenu, TrayMenuPanel, and BehaviorOptionsWindow (all in
   com.group_finity.mascot), ImagePairs (in com.group_finity.mascot.image),
   ScanMove and ScanJump (in com.group_finity.mascot.action), and Script (in
@@ -259,7 +260,7 @@ not place the rest of Little LUMI Model under the GPL.
 
 ── MIT License ───────────────────────────────────────────────────────
    (applies to SLF4J, OSHI, steamworks4j, the Joni engine embedded in
-    Nashorn, the Launch4j executable stub, and Electron together with the
+    Nashorn, and Electron together with the
     Node.js it embeds, each with the copyright line given in the Overview
     above)
 
