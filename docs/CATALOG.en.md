@@ -1,7 +1,7 @@
 <!-- 자동 생성 — 손대지 말 것 · python build/gen_plugin_catalog.py -->
 # Little LUMI Model — plugin catalogue
 
-Lookup tables of names and values for **SDK/app 1.3.0, API 1**. Generated from the sources by the build — never hand-edited (the SDK build refuses a stale copy). Rules and examples live in [API.en.md](API.en.md); this file is names and values only. [한국어](CATALOG.md) · [Getting started](../README.en.md).
+Lookup tables of names and values for **SDK 1.3.0a / app 1.3.0, API 1**. Generated from the sources by the build — never hand-edited (the SDK build refuses a stale copy). Rules and examples live in [API.en.md](API.en.md); this file is names and values only. [한국어](CATALOG.md) · [Getting started](../README.en.md).
 
 [Behaviours](#behaviours) · [Events](#events) · [Hooks](#hooks) · [Mascot state](#mascot-state) · [App settings](#app-settings) · [Setting types](#setting-types) · [Feature IDs](#feature-ids)
 

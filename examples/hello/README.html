@@ -9,8 +9,10 @@
 <h2 id="빌드-build">빌드 / Build</h2>
 <div class="codebox"><div class="codebar"><span>text</span><button type="button" data-copy="code-1">Copy / 복사</button></div><pre><code id="code-1">python tools\build_plugin.py examples\hello
 </code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
-<p>결과는 <code>dist\hello.lumi.sample\plugins\hello.lumi.sample.jar</code>입니다. 설치본의 <code>mods\&lt;이름&gt;\</code>에 결과 모드 폴더를 복사하고 앱을 다시 시작합니다.</p>
-<p>Copy the resulting mod folder into <code>mods\&lt;name&gt;\</code> in your purchased app installation, then restart the app.</p>
+<p>결과는 <code>dist\hello.lumi.sample\plugins\hello.lumi.sample.jar</code>입니다. 앱을 종료한 뒤 <code>dist\hello.lumi.sample</code> 폴더를 설치본의 <code>mods\</code> 아래에 복사합니다. 앱을 켜고 설정 &gt; 모드에서 예제의 토글을 눌러 권한 안내를 확인한 뒤 <strong>활성화</strong>를 선택합니다. 시작 안내의 확인은 설정으로 이동할 뿐 활성화가 아닙니다. 앱을 완전히 종료하고 다시 켜면 인사와 설정 카드·트레이 메뉴가 나타납니다.</p>
+<p>Quit the app and copy <code>dist\hello.lumi.sample</code> into the installation’s <code>mods\</code> folder. Start the app, click the sample’s toggle in Settings &gt; Mods, review the permissions and choose <strong>Enable</strong>. Confirming the startup notice only opens Settings. Quit completely and start again to load the greeting, settings card and tray entries.</p>
+<p>문구나 의존 라이브러리를 수정해 JAR 내용이 바뀌면 다시 활성화하고 다음 앱 실행에서 확인합니다. 시작 인사 옵션과 앱 언어를 확인하세요. 트레이의 인사는 별도 문구이며 「인사 말투」 설정을 따릅니다. 자세한 순서는 <a href="../../plugin-guide.html#zero">첫걸음 안내</a>를 참고하세요.</p>
+<p>After changing text or dependency JARs, enable the changed mod again and restart. Check the startup greeting option and app language. The tray greeting uses separate text and follows Greeting mood. See the <a href="../../plugin-guide.en.html#zero">walkthrough</a>.</p>
 <h2 id="앱-없이-검사-test-without-the-app">앱 없이 검사 / Test without the app</h2>
 <div class="codebox"><div class="codebar"><span>text</span><button type="button" data-copy="code-2">Copy / 복사</button></div><pre><code id="code-2">python tools\run_tests.py examples\hello
 </code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>

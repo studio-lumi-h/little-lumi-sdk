@@ -12,7 +12,7 @@ A plugin folder holds:
                                 (and ...LumiTransformer) files here, naming your classes
 
 The jar is named after the manifest's "id". The mod is the folder that contains plugins\<id>.jar:
-copy it to the game's mods\<name>\ and restart — Settings → Mods lists it with a plugin chip.
+copy it to the game's mods\<name>\, enable it in Settings → Mods, and restart again.
 Several plugins can be active at once (mod order = apply order).
 Needs a JDK 25: --javac PATH, $JAVAC, $JAVA_HOME, or javac on PATH.
 """
@@ -108,6 +108,10 @@ def main():
                 print(f'done: {out_norm} is not a plugins\\ folder — the loader only reads '
                       f'mods\\<name>\\plugins\\*.jar, so move {plugin_id}.jar there (or rebuild with '
                       f'--out <mod folder>\\plugins) and restart')
+            print('Next: open Settings > Mods, review the mod permissions and choose Enable; '
+                  'then quit the app completely and start it again.')
+            print('New or changed JARs (including text edits and dependencies) need permission again. '
+                  'Confirming the startup notice only opens Settings.')
     finally:
         shutil.rmtree(work, ignore_errors=True)
 

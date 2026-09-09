@@ -5,13 +5,13 @@
 
 > **This repository holds the readable parts only** — docs, examples, tools and the public API sources.
 > **To build a plugin, download the ZIP from [Releases](https://github.com/studio-lumi-h/little-lumi-sdk/releases)**: the `lib/` jars you compile
-> against and the generated javadoc live there. This is version **1.3.0**.
+> against and the generated javadoc live there. This is version **1.3.0a**.
 
 ---
 
 Welcome. This SDK is the toolkit for adding your own things to Little LUMI: make her react to clicks, head pats and alarms, add lines, menus and hotkeys, or build a mod out of nothing but data — artwork, behaviours, translations.
 
-This distribution is **SDK 1.3.0 / app 1.3.0 / api_version 1**.
+This distribution is **SDK 1.3.0a / app 1.3.0 / api_version 1**.
 
 Open [index.html](index.html) for the offline document collection. Code examples have copy buttons; the original Markdown and licence notices are preserved.
 
@@ -59,7 +59,7 @@ The first line builds the example into `dist\hello.lumi.sample\`, the second tes
 
 ## Worth knowing
 
-- **The SDK version is the app version.** Pick the SDK that matches the LUMI you run. `api_version` is a separate API compatibility number. Documentation/example-only revisions keep the product version and differ by the filename and the `commit` in `sdk.json`.
+- **SDK 1.3.0a is a revision for app 1.3.0.** It updates the example activation instructions and build-tool messages. `sdk_version` is `1.3.0a`, `app_version` is `1.3.0`, and `api_version` remains `1`.
 - `lib\Shimeji-ee.jar` is **compile-only**. It is the Steam build as shipped, so the SDK alone cannot start the app — try your work in your purchased install.
 - A plugin runs **inside the app with your rights** (no sandbox). Tell the people you share it with.
 - Terms of use are in [LICENSE-SDK.txt](LICENSE-SDK.txt).

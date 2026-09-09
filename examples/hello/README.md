@@ -10,9 +10,13 @@ This sample demonstrates events, hooks, settings, tray entries and unit tests. R
 python tools\build_plugin.py examples\hello
 ```
 
-결과는 `dist\hello.lumi.sample\plugins\hello.lumi.sample.jar`입니다. 설치본의 `mods\<이름>\`에 결과 모드 폴더를 복사하고 앱을 다시 시작합니다.
+결과는 `dist\hello.lumi.sample\plugins\hello.lumi.sample.jar`입니다. 앱을 종료한 뒤 `dist\hello.lumi.sample` 폴더를 설치본의 `mods\` 아래에 복사합니다. 앱을 켜고 설정 > 모드에서 예제의 토글을 눌러 권한 안내를 확인한 뒤 **활성화**를 선택합니다. 시작 안내의 확인은 설정으로 이동할 뿐 활성화가 아닙니다. 앱을 완전히 종료하고 다시 켜면 인사와 설정 카드·트레이 메뉴가 나타납니다.
 
-Copy the resulting mod folder into `mods\<name>\` in your purchased app installation, then restart the app.
+Quit the app and copy `dist\hello.lumi.sample` into the installation’s `mods\` folder. Start the app, click the sample’s toggle in Settings > Mods, review the permissions and choose **Enable**. Confirming the startup notice only opens Settings. Quit completely and start again to load the greeting, settings card and tray entries.
+
+문구나 의존 라이브러리를 수정해 JAR 내용이 바뀌면 다시 활성화하고 다음 앱 실행에서 확인합니다. 시작 인사 옵션과 앱 언어를 확인하세요. 트레이의 인사는 별도 문구이며 「인사 말투」 설정을 따릅니다. 자세한 순서는 [첫걸음 안내](../../plugin-guide.html#zero)를 참고하세요.
+
+After changing text or dependency JARs, enable the changed mod again and restart. Check the startup greeting option and app language. The tray greeting uses separate text and follows Greeting mood. See the [walkthrough](../../plugin-guide.en.html#zero).
 
 ## 앱 없이 검사 / Test without the app
 

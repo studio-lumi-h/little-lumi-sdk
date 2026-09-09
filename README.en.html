@@ -5,10 +5,10 @@
 @media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
 </style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="index.html">SDK 문서 / Documents</a><a href="README.html">한국어</a><a href="README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#what-is-in-here">What is in here</a></li><li><a href="#new-here">New here</a></li><li><a href="#in-a-hurry">In a hurry</a></li><li><a href="#where-to-go-next">Where to go next</a></li><li><a href="#worth-knowing">Worth knowing</a></li><li><a href="#code-mod-consent">Code mod consent</a></li></ol></details><article><h1 id="little-lumi-model-plugin-sdk">Little LUMI Model — Plugin SDK</h1>
 <p><a href="README.html">한국어</a> · <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Downloads (Releases)</a></p>
-<blockquote><strong>This repository holds the readable parts only</strong> — docs, examples, tools and the public API sources. <strong>To build a plugin, download the ZIP from <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a></strong>: the <code>lib/</code> jars you compile against and the generated javadoc live there. This is version <strong>1.3.0</strong>.</blockquote>
+<blockquote><strong>This repository holds the readable parts only</strong> — docs, examples, tools and the public API sources. <strong>To build a plugin, download the ZIP from <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a></strong>: the <code>lib/</code> jars you compile against and the generated javadoc live there. This is version <strong>1.3.0a</strong>.</blockquote>
 <hr>
 <p>Welcome. This SDK is the toolkit for adding your own things to Little LUMI: make her react to clicks, head pats and alarms, add lines, menus and hotkeys, or build a mod out of nothing but data — artwork, behaviours, translations.</p>
-<p>This distribution is <strong>SDK 1.3.0 / app 1.3.0 / api_version 1</strong>.</p>
+<p>This distribution is <strong>SDK 1.3.0a / app 1.3.0 / api_version 1</strong>.</p>
 <p>Open <a href="index.html">index.html</a> for the offline document collection. Code examples have copy buttons; the original Markdown and licence notices are preserved.</p>
 <h2 id="what-is-in-here">What is in here</h2>
 <table><thead><tr><th>Folder or file</th><th>What it is for</th></tr></thead><tbody>
@@ -42,7 +42,7 @@ Copy-Item -Recurse dist\hello.lumi.sample &quot;&lt;install folder&gt;\mods\hell
 </tbody></table>
 <h2 id="worth-knowing">Worth knowing</h2>
 <ul>
-<li><strong>The SDK version is the app version.</strong> Pick the SDK that matches the LUMI you run. <code>api_version</code> is a separate API compatibility number. Documentation/example-only revisions keep the product version and differ by the filename and the <code>commit</code> in <code>sdk.json</code>.</li>
+<li><strong>SDK 1.3.0a is a revision for app 1.3.0.</strong> It updates the example activation instructions and build-tool messages. <code>sdk_version</code> is <code>1.3.0a</code>, <code>app_version</code> is <code>1.3.0</code>, and <code>api_version</code> remains <code>1</code>.</li>
 <li><code>lib\Shimeji-ee.jar</code> is <strong>compile-only</strong>. It is the Steam build as shipped, so the SDK alone cannot start the app — try your work in your purchased install.</li>
 <li>A plugin runs <strong>inside the app with your rights</strong> (no sandbox). Tell the people you share it with.</li>
 <li>Terms of use are in <a href="LICENSE-SDK.html">LICENSE-SDK.txt</a>.</li>

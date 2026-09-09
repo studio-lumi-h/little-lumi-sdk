@@ -1,6 +1,6 @@
 # Little LUMI Model — 플러그인 API 참조 (api_version 1)
 
-**SDK/앱 1.3.0, `api_version` 1** 기준 참조입니다. 이 문서는 플러그인이 기대도 되는 표면 전부이고, 여기 적힌 것만이 앱 업데이트를 건너 살아남는다고 약속합니다([호환 정책](#compatibility)). 같은 폴더의 `javadoc\index.html` 은 아래 타입의 시그니처·주석을 그대로 옮긴 것이고, `api-src\` 는 그 소스 파일들입니다. 처음이면 [첫걸음 안내](../plugin-guide.html)부터 따라 하고, 이름을 찾을 때는 [카탈로그](CATALOG.md)를 쓰세요. [English](API.en.md).
+**SDK 1.3.0a / 앱 1.3.0, `api_version` 1** 기준 참조입니다. 이 문서는 플러그인이 기대도 되는 표면 전부이고, 여기 적힌 것만이 앱 업데이트를 건너 살아남는다고 약속합니다([호환 정책](#compatibility)). 같은 폴더의 `javadoc\index.html` 은 아래 타입의 시그니처·주석을 그대로 옮긴 것이고, `api-src\` 는 그 소스 파일들입니다. 처음이면 [첫걸음 안내](../plugin-guide.html)부터 따라 하고, 이름을 찾을 때는 [카탈로그](CATALOG.md)를 쓰세요. [English](API.en.md).
 
 [매니페스트](#manifest) · [생명주기](#lifecycle) · [메서드](#context) · [이벤트](#events) · [훅](#hooks) · [바이트코드](#bytecode) · [데이터 조각](#data-mods) · [호환 정책](#compatibility) · [하지 말 것](#practices) · [테스트](#testing) · [카탈로그](#catalogue) · [약속 밖](#alternatives) · [자주 쓰는 코드](#recipes)
 
@@ -351,7 +351,7 @@ app         {phase=exit}
 - 「더해지기만 한다」는 뒤집으면 나중 앱 버전에서 더해진 메서드·훅·토픽이 같은 `api_version` 의 옛 앱에는 없다는 뜻입니다. 검증한 앱 버전을 `plugin.json` 의 `app_version` 에 적으세요. 실행 중인 앱과 다르면 모드 탭에 「N용」 칩이 붙습니다(안내일 뿐 막지 않습니다).
 - 약속 밖: 변환기가 건드리는 코어 클래스의 모양, `PluginContext` 와 이 문서의 타입 표 밖의 공개 클래스(클래스패스에 있어 부를 수는 있지만 버전마다 바뀔 수 있습니다), `conf\settings.properties` 의 앱 키.
 - (현재 버전 사실) 1.3.0 의 로더는 `api_version` 을 읽기만 하고 판단하지 않습니다. 위의 거부·칩은 다음 앱 버전부터 로더가 집행합니다.
-- SDK 버전은 앱 버전과 같습니다(`sdk.json` 의 `sdk_version` = `app_version`). `api_version` 은 별개의 호환 번호로 이 문서 제목에 적혀 있습니다. 문서·예제만 바뀐 개정본은 버전을 유지하고 파일 이름과 `sdk.json` 의 `commit` 으로 구분합니다.
+- **SDK 1.3.0a는 앱 1.3.0용 개정본입니다.** 예제 활성화 안내와 빌드 도구의 안내 문구를 보완했습니다. `sdk_version`은 `1.3.0a`, `app_version`은 `1.3.0`이며 `api_version`은 `1`입니다.
 
 <a id="practices"></a>
 
