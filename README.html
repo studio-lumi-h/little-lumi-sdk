@@ -5,10 +5,10 @@
 @media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
 </style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="index.html">SDK 문서 / Documents</a><a href="README.html">한국어</a><a href="README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%93%A4%EC%96%B4-%EC%9E%88%EB%82%98">무엇이 들어 있나</a></li><li><a href="#%EC%B2%98%EC%9D%8C%EC%9D%B4%EB%9D%BC%EB%A9%B4">처음이라면</a></li><li><a href="#%EB%B9%A8%EB%A6%AC-%ED%95%B4-%EB%B3%B4%EA%B3%A0-%EC%8B%B6%EB%8B%A4%EB%A9%B4">빨리 해 보고 싶다면</a></li><li><a href="#%EA%B7%B8%EB%8B%A4%EC%9D%8C%EC%97%90-%EB%B3%BC-%EA%B2%83">그다음에 볼 것</a></li><li><a href="#%EC%95%8C%EC%95%84-%EB%91%98-%EA%B2%83">알아 둘 것</a></li><li><a href="#%EC%BD%94%EB%93%9C-%EB%AA%A8%EB%93%9C-%ED%99%9C%EC%84%B1%ED%99%94">코드 모드 활성화</a></li></ol></details><article><h1 id="little-lumi-model-플러그인-sdk">Little LUMI Model — 플러그인 SDK</h1>
 <p><a href="README.en.html">English</a> · <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">다운로드(Releases)</a></p>
-<blockquote><strong>이 저장소는 읽을 것만 담고 있습니다.</strong> 문서·예제·도구·공개 API 소스입니다. <strong>플러그인을 만들려면 <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a>에서 ZIP 을 받으세요</strong> — 컴파일에 필요한 <code>lib/</code> 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 <strong>1.3.0b</strong> 입니다.</blockquote>
+<blockquote><strong>이 저장소는 읽을 것만 담고 있습니다.</strong> 문서·예제·도구·공개 API 소스입니다. <strong>플러그인을 만들려면 <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a>에서 ZIP 을 받으세요</strong> — 컴파일에 필요한 <code>lib/</code> 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 <strong>1.4.0</strong> 입니다.</blockquote>
 <hr>
 <p>반갑습니다. 이 SDK 는 루미에 내 것을 더하는 도구 모음입니다. 클릭·쓰다듬기·알람 같은 일에 반응시키고, 대사·메뉴·단축키를 더하고, 그림이나 행동·번역 같은 데이터만으로 된 모드도 만들 수 있습니다.</p>
-<p>이 배포본은 <strong>SDK 1.3.0b / 앱 1.3.0 / api_version 1</strong> 입니다.</p>
+<p>이 배포본은 <strong>SDK 1.4.0 / 앱 1.4.0 / api_version 1</strong> 입니다.</p>
 <p>문서 모음은 <a href="index.html">index.html</a>에서 브라우저로 읽을 수 있습니다. 코드 예제에는 복사 버튼이 있고, 원본 Markdown과 라이선스도 그대로 들어 있습니다.</p>
 <h2 id="무엇이-들어-있나">무엇이 들어 있나</h2>
 <table><thead><tr><th>폴더·파일</th><th>무엇에 쓰나</th></tr></thead><tbody>
@@ -50,7 +50,7 @@ Copy-Item -Recurse dist\hello.lumi.sample &quot;&lt;설치 폴더&gt;\mods\hello
 <p>앱이 새 버전으로 올라갈 때 무엇이 그대로 남고 무엇이 바뀔 수 있는지는 <a href="docs/API.html#compatibility">API.md 「호환 약속」</a>에 적혀 있습니다.</p>
 <h2 id="코드-모드-활성화">코드 모드 활성화</h2>
 <p>설치·구독만으로 모드 활성화를 허용하지 않습니다. 모드 체크박스를 켜고 안내에 동의하면 코드와 함께 들어 있는 데이터가 <strong>다음 앱 실행부터</strong> 적용됩니다. 기존 실행 해시는 동의로 간주하지 않습니다. 플러그인 JAR 또는 <code>plugins/lib</code> 라이브러리가 바뀌면 다시 동의해야 합니다. 네트워크·행동 변경 표시는 제작자 선언이며 강제 권한 제한이 아닙니다.</p>
-<p>라이브러리는 플러그인과 같은 동의된 모드 안에 포함하세요. 별도 라이브러리 전용 모드는 클래스 경로에 추가하지 않습니다. 의존 파일은 JAR 매니페스트 <code>Class-Path</code> 대신 <code>plugins/lib</code>에 배치하세요. 매니페스트 클래스 경로와 JAR 인덱스는 거부합니다. 검증한 별도 사본을 실행하므로 CodeSource 경로가 설치 폴더라고 가정하면 안 됩니다.</p>
+<p>라이브러리는 플러그인과 같은 동의된 모드 안에 포함하세요. 별도 라이브러리 전용 모드는 클래스 경로에 추가하지 않습니다. 의존 파일은 JAR 매니페스트 <code>Class-Path</code> 대신 <code>plugins/lib</code>에 배치하세요. 매니페스트 클래스 경로와 JAR 인덱스는 거부합니다. 검증·보호된 별도 경로에서 실행하므로 CodeSource 경로가 설치 폴더라고 가정하면 안 됩니다.</p>
 <p>심볼릭 링크·정션을 포함한 코드 경로는 지원하지 않습니다.</p>
 <p>시작 시 신규·변경 코드 모드의 동의가 필요하면 안내 창이 뜹니다. 이 창의 <strong>확인</strong>은 설정 → 모드로 이동할 뿐 모드를 활성화하지 않습니다. 이름 앞의 빨간 <strong>비활성화</strong> 칩을 확인하고 모드 체크박스에서 별도로 동의하세요.</p>
 <p>동의창에서 취소 버튼을 누르면 토글이 <strong>−(미동의 잠금)</strong>으로 바뀌어 같은 코드 버전의 시작 알림에서 제외됩니다. <strong>−를 클릭하면 OFF</strong>로 돌아가며, JAR·라이브러리 업데이트 시 잠금이 풀립니다. 잠금 상태에서는 모드가 활성화되지 않으므로 코드와 데이터는 계속 꺼져 있습니다. ESC나 X로 창을 닫으면 동의·잠금 상태를 바꾸지 않습니다.</p></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>

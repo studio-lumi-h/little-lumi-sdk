@@ -28,3 +28,5 @@ The SDK builder copies the existing SDK terms and application notices to each ex
 In the application notices, `LICENSE.txt` maps to `APP-LICENSE.txt` in this folder. The referenced `CREDITS.txt` is also reproduced here. The clarification at the end of `APP-LICENSE.txt` identifies the current C# launcher instead of the historical Launch4j reference; the SDK contains no launcher EXE.
 
 제3자 소스·빌드·재결합 방법은 [대응 소스 안내](../sources/README.md)를 확인하세요. / See the [corresponding-source guide](../sources/README.md).
+
+오디오 라이브러리의 원본 소스와 수정 Vorbis 디코더 소스는 `../sources/audio-sources.zip`에 동봉합니다. 앱 고지의 `lib/audio-sources/`는 SDK에서는 이 ZIP에 해당합니다. / Audio library sources, including the modified Vorbis decoder, are included in `../sources/audio-sources.zip`; this is the SDK counterpart of the application notice’s `lib/audio-sources/` path.

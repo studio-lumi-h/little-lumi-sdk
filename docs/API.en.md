@@ -1,6 +1,6 @@
 # Little LUMI Model — Plugin API reference (api_version 1)
 
-This reference describes **SDK 1.3.0b / app 1.3.0, `api_version` 1**. It is the whole surface a plugin may rely on: only what is written here is promised to survive an app update (see the [compatibility policy](#compatibility)). `javadoc\index.html` in this folder carries the signatures and comments of the types below verbatim, and `api-src\` holds those source files. Start with the [walkthrough](../plugin-guide.en.html); look identifiers up in the [catalogue](CATALOG.en.md). [한국어](API.md).
+This reference describes **SDK/app 1.4.0, `api_version` 1**. It is the whole surface a plugin may rely on: only what is written here is promised to survive an app update (see the [compatibility policy](#compatibility)). `javadoc\index.html` in this folder carries the signatures and comments of the types below verbatim, and `api-src\` holds those source files. Start with the [walkthrough](../plugin-guide.en.html); look identifiers up in the [catalogue](CATALOG.en.md). [한국어](API.md).
 
 [Manifest](#manifest) · [Lifecycle](#lifecycle) · [Methods](#context) · [Events](#events) · [Hooks](#hooks) · [Bytecode](#bytecode) · [Data fragments](#data-mods) · [Compatibility policy](#compatibility) · [Do not](#practices) · [Testing](#testing) · [Catalogue](#catalogue) · [Outside the promise](#alternatives) · [Recipes](#recipes)
 
@@ -10,7 +10,7 @@ This reference describes **SDK 1.3.0b / app 1.3.0, `api_version` 1**. It is the 
 | `PluginContext` | the door the app hands you — speech, behaviour, state queries, control, events, hooks, settings, UI rows, hotkeys, bytecode |
 | `MascotState` | one character's current state (id, image set, rectangle, feet, facing, behaviour; desktop coordinates) — the record `ctx.mascots()` returns |
 | `PcmAudio` | one piece of audio to play (format, PCM bytes, length in ms) — what `ctx.speak()` takes |
-| `MicCaptureLease` | a closeable hold that suppresses LUMI voice output during microphone recording — returned by `ctx.beginMicCapture()` (added in SDK 1.3.0) |
+| `MicCaptureLease` | a closeable hold that suppresses LUMI voice output during microphone recording — returned by `ctx.beginMicCapture()` |
 | `HotkeyResult` | the answer of `ctx.bindHotkey()` — `OK` `NONE` `BAD_COMBINATION` `REFUSED` `UNSUPPORTED` |
 | `PluginTheme` | the app's look — colours, the CJK-capable font, button/toggle/slider dress, card pieces (`ctx.theme()`) |
 | `Json` | dependency-free JSON read/write (`parse` `get` `getString` `write`) — for LLM replies and settings files |
@@ -23,6 +23,14 @@ This reference describes **SDK 1.3.0b / app 1.3.0, `api_version` 1**. It is the 
 | `ScheduledHandle` · preview | cancel a scheduled task, or ask whether it was cancelled |
 | `PluginSettingsSchema` | the declarative-settings parser — ordinarily you only declare them in `plugin.json` |
 | `PluginTestKit` · preview | a fake context, call records and a clock the test drives (§10) |
+| `WorkshopContent`, `WorkshopContent.PromptSource` | Read-only Workshop creator files and subscription identities |
+
+
+### Workshop creator data
+
+`WorkshopContent.promptSources(imageSet)` returns an immutable list of `PromptSource` records in mod order (later providers win collisions). Each contains `promptsFile()` and `personaFile()` (`Path`, read-only, possibly absent), `workshopId()`, `subscriptionId()` and `modStyleName()` (preserve the persona label including its Workshop ID). Handle missing/unreadable files. Disabled, unsubscribed and unapproved providers are excluded; after startup only the prepared inventory is returned. Invalid character names or missing Workshop support return an empty list.
+
+Bind an explicitly selected creator preset to both IDs: updates, toggles and temporary download waits retain subscription identity; unsubscribe/resubscribe changes it and requires a new selection. Querying never selects a prompt or grants execution consent. `WorkshopContent.hasDirectSource(id)` includes unsubscribed records and lets readers suppress old mirror fallback; it does not indicate enabled/approved status. Both methods query host state and do not require a plugin context.
 
 <a id="manifest"></a>
 
@@ -49,7 +57,7 @@ At the root of the jar. The only thing the parser insists on is `id`. A missing 
   "id": "my.first.lumi",
   "name": "My first LUMI plugin",
   "api_version": 1,
-  "app_version": "1.3.0",
+  "app_version": "1.4.0",
   "settings": [
   { "key": "greet",  "type": "bool",   "default": true, "label": { "ko": "인사하기", "en": "Greet" } },
   { "key": "volume", "type": "int",    "default": 50, "min": 0, "max": 100, "step": 5, "label": "Volume" },
@@ -67,6 +75,10 @@ The entry class goes in `META-INF\services\com.group_finity.mascot.lumi.plugin.L
 <a id="lifecycle"></a>
 
 ## 2. Lifecycle
+
+Code and data may share one mod package. Approval covers the origin and the names and contents of executable files; changes to ordinary images or audio alone do not require renewed approval. All companion files under `plugins/runtime/` are execution inputs. On Windows, executable contents are not copied: a separate execution path uses hardlinks protected by handles that deny writes and deletion. Ordinary data is read from its original location and validated when used. Disabled or unapproved code packages contribute neither code nor data. Change mod files while the app is closed.
+
+Place Windows x64 DLLs under the mod root's `native/` or `audio-native/` directory. Bundle helper interpreters and tools with their companion files under `plugins/runtime/`. The entire directory is executable content; EXE, DLL and PYD files undergo PE format checks. The protected execution view preserves relative directories, with the corresponding `native/`, `audio-native/` and `runtime/` directories beside its classpath JARs. The app does not run these tools automatically. Code changes require renewed approval. Do not assume the original installation path or JAR filename is the execution path.
 
 - `start(ctx)` — called once after the built-in features boot, **before** the engine (mascots) loads. Register `on`/`hook`/`addTrayItem`/`onLoad` here. Character state may still be empty at this point, so leave engine-dependent work to `ready`. Throwing marks only this plugin as failed.
 - `ready` event — once, after the engine is up and every plugin's `start` has run; the app publishes it. `PluginTestKit` does not publish it for you (§10).
@@ -183,7 +195,7 @@ One voice line, shared by everyone.
 | `addTrayItem(label, action)` → `PluginUi.MenuHandle` | a tray-menu row (below the app rows, above Quit). `action` runs on the EDT. The returned **handle** relabels, disables, checks or removes the row (`setLabel`, `setEnabled`, `setChecked(Boolean)`, `remove()`; readers `label()`, `enabled()`, `checked()`, `removed()`) — ignore it when the row never changes. Changes show the next time the menu opens (menus are rebuilt on open). Any thread. **The label is a plain string and does not follow a language change by itself** — listen for the `settings` event with `phase=language` and call `setLabel(text(...))` again (LUMI Chat and Super Bongo do) |
 | `addTrayToggle(label, initial, onChange)` → `MenuHandle` · preview | a **toggle row** — fixed label, an on/off state chip (the app's own 「잠깐 숨기기」 grammar). Pressing flips it and calls `onChange(newValue)` on the EDT; `setChecked` changes the chip without calling `onChange` |
 | `addSettingsButton(label, action)` → `MenuHandle` | a button on the settings window's Information tab, near the help buttons. `action` runs on the EDT. The app re-reads the registrations whenever the window opens, so handle label/enabled/removal changes appear on the next open |
-| `addFeatureToggle(label, description, state, onChange, dependsOnFeature)` → `PluginUi.FeatureToggle` | an app-styled switch at the **bottom** of Lumi → Features. No registration means no row or spacing. The window fills the check from `state` when it opens and calls `onChange(newValue)` immediately when the check changes (since app 1.3.0); returning false restores it from `state`. When `dependsOnFeature` (`bongo`, etc.) is off, the row is greyed without clearing its check. Harness: `press:feature:<label>` |
+| `addFeatureToggle(label, description, state, onChange, dependsOnFeature)` → `PluginUi.FeatureToggle` | an app-styled switch at the **bottom** of Lumi → Features. No registration means no row or spacing. The window fills the check from `state` when it opens and calls `onChange(newValue)` immediately when the check changes; returning false restores it from `state`. When `dependsOnFeature` (`bongo`, etc.) is off, the row is greyed without clearing its check. Harness: `press:feature:<label>` |
 | `addCharacterMenuItem(label, forImageSet, action)` → `MenuHandle` | a row in each character's right-click menu. `forImageSet` decides per character (null = all); `action(imageSet, mascotId)`. The handle works like the tray one |
 | `addCharacterMenuToggle(label, forImageSet, initial, onChange)` → `MenuHandle` · preview | a toggle row in the character menu. A toggle's state is one per row, not per character. `onChange(newValue)` runs on the EDT |
 | `claimClickGreeting()` | tells the app this plugin answers a click itself (the app's click greeting goes quiet) |
@@ -246,7 +258,7 @@ Values are strings unless noted. Listeners run one after another on that plugin'
 | `alarm` · preview | a reminder was actually delivered | `kind` (`hourly`/`alarm`), `time` (`HH:mm`), `late` (Boolean — an alarm held while the screen was busy) |
 | `pomodoro` · preview | the focus/break cycle moved | `phase` (`focus`/`break`/`stopped`), `minutes` (Integer, length of the phase that begins; 0 on stop), `round` (Integer, focus phases started since the cycle was switched on) |
 | `bongo` · preview | bongo mode drew a keystroke or click | `kind` (`keyboard`/`left_click`/`right_click`), `frame` (Integer, the hand slot drawn), `look` (`bongo`/`small`). **Never a key code or character** (the core does not read keys) |
-| `app` · preview | the app is going down through its own exit door | `phase` (`exit`). Before the plugins' `stop()`; delivery is awaited with a short bound |
+| `app` · preview | App exit or restart | `phase` (`exit`/`restart`). Delivered before `stop()` with a short bound. Skip farewell presentation on `restart`; save state and release resources in `stop()` for both phases |
 | `island` · preview | the garden (island) process was asked to start or stop, or served a photo request | `phase` (`start`/`stop`/`photo`), `request` (photo only) |
 | `game` · preview | the contraption game board opened, started a run, or closed | `phase` (`start`/`run`/`stop`) |
 
@@ -269,7 +281,7 @@ pomodoro    {phase=break, minutes=5, round=2}
 bongo       {kind=keyboard, frame=3, look=bongo}
 settings    {phase=apply, changed=lumi.selftalk.frequency}
 settings    {phase=language, language=ja}
-app         {phase=exit}
+app         {phase=exit} / {phase=restart}
 ```
 
 <a id="hooks"></a>
@@ -346,11 +358,11 @@ A broken fragment is skipped with one warning; if the merged set fails engine va
 
 - The public surface of the plugin API is split into **stable** and **preview**. Unmarked items are stable; preview items carry a "preview" chip in the tables and are listed under `preview` in `sdk.json`.
 - **Stable items only ever gain entries within one `api_version`** — nothing is removed, no type changes. A hook whose decision point leaves the app stays as an empty slot returning the default, marked deprecated in the table. Events may gain keys, never lose them — ignore keys you do not know.
-- **Preview items may change or disappear without an `api_version` bump.** Each such change is listed in `CHANGELOG.md` and a removed item stays as an empty slot for one app release. A preview item that survives one app release unchanged is promoted to stable. The 1.3.0 split: doors the first-party plugins (LUMI Chat, Super Bongo) or the app itself use, and their counterparts, are stable; the rest is preview.
+- **Preview items may change or disappear without an `api_version` bump.** Each such change is listed in `CHANGELOG.md` and a removed item stays as an empty slot for one app release. A preview item that survives one app release unchanged is promoted to stable. The 1.4.0 split: doors the first-party plugins (LUMI Chat, Super Bongo) or the app itself use, and their counterparts, are stable; the rest is preview.
 - **`api_version` rises only when a stable item must be removed or reshaped.** The migration list goes to `CHANGELOG.md`, and **plugins written for the previous version (N-1) keep loading for one more version** (removed hooks as empty slots, removed methods as forwarding shims). Plugins two versions behind are not loaded and get an update notice; neither is a plugin declaring a newer `api_version` than the app.
 - "Additive only" also means a method, hook or topic added in a later app is absent from older apps with the same `api_version`. Declare the app version you tested in `app_version` in `plugin.json`; a running app that differs shows an informational chip in the Mods tab (it blocks nothing).
 - Outside the promise: the shape of core classes a transformer touches, public classes outside `PluginContext` and this document's type table (callable from the class path, free to change per release), the app's own keys in `conf\settings.properties`.
-- (Current build) The 1.3.0 loader reads `api_version` but does not act on it; the refusals and chips above are enforced by the loader from the next app version.
+- (Current build) The 1.4.0 loader reads `api_version` but does not act on it; the refusals and chips above are enforced by the loader from the next app version.
 - The SDK version equals the app version (`sdk_version` = `app_version` in `sdk.json`); `api_version` is the separate compatibility number in this document's title. See the release notes for documentation and example revisions.
 
 <a id="practices"></a>
@@ -366,9 +378,9 @@ A broken fragment is skipped with one warning; if the merged set fails engine va
 
 ## 10. Test kit — `PluginTestKit`
 
-SDK 1.3.0 includes a fake for `beginMicCapture()`. The kit records `beginMicCapture`/`endMicCapture` with the owner id; `speak` during a hold records `speakSuppressed` without playback callbacks. `kit.close()` releases all nested holds. No audio device is opened.
+SDK 1.4.0 includes a fake for `beginMicCapture()`. The kit records `beginMicCapture`/`endMicCapture` with the owner id; `speak` during a hold records `speakSuppressed` without playback callbacks. `kit.close()` releases all nested holds. No audio device is opened.
 
-This compatible addition keeps `api_version` at 1. Plugins supporting older apps must check that the method exists and disable microphone input when it does not. `app_version` is informational, not an enforced minimum host version. Compiling against SDK 1.3.0 does not add the new method to an older host.
+This compatible addition keeps `api_version` at 1. Plugins supporting older apps must check that the method exists and disable microphone input when it does not. `app_version` is informational, not an enforced minimum host version. Compiling against SDK 1.4.0 does not add the new method to an older host.
 
 `lib\Shimeji-ee.jar` cannot start the app (the gate), but a plugin's **unit tests** need no app. The `PluginContext` a `PluginTestKit` hands out leads to the kit behind every door — what the plugin does is **recorded**, what it reads comes from **fakes**, and events, hooks and the clock are driven by the test. No engine, no window, no Steam. `tools\run_tests.py <plugin folder>` builds and runs `test\*.java` (see `examples\hello\test\HelloPluginTest.java` — a plain `main`, no framework).
 
@@ -445,7 +457,7 @@ For anything outside §3–§5, **do not call app classes** — do it as below. 
 | detect a double click | `ctx.on("doubleclick", …)` — do not install a global AWT listener. The app forwards presses that land on its own pass-through windows (heart, note) as `click` too |
 | a window next to a character | check `ctx.mascotById(id)` for null, then below its `anchor()` (feet, desktop coordinates); monitors from `screens()` |
 | the sets of the characters on screen | `ctx.mascots()`, `imageSet()` in order without duplicates — not the same as `activeImageSets` (enabled but maybe not yet spawned) |
-| make a sound | effects: `playSound(path)`; voice (TTS, pre-baked files): decode to PCM and `speak(PcmAudio, onStart, onEnd)` — `javax.sound` cannot read mp3, ask for wav/PCM |
+| make a sound | effects: `playSound(path)`; voice (TTS, pre-baked files): decode to PCM and `speak(PcmAudio, onStart, onEnd)` — the bundled JavaSound decoders support WAV, OGG (Vorbis), MP3, FLAC, AIFF and AU; pass decoded PCM to `speak` |
 | move the mouth | `mouthFlap(set, ctx::isSpeaking)` — do not loop `behave("Talk")` by hand |
 | move the cursor, touch other programs' windows | the app does not do this, so there is no door. Use JNA directly (outside the promise; do not put a second jna in `plugins\lib\` — use the app's) |
 | edit a persona | `writeAtomic` to `personaFile(set)` — the file convention is the app's |

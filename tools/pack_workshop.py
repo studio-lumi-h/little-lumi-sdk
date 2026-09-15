@@ -1,38 +1,17 @@
 #!/usr/bin/env python3
-r"""Little LUMI mod SDK — check a mod folder against the Workshop rules and pack it for upload.
+r"""Little LUMI Workshop package preparation.
 
-    python tools\pack_workshop.py dist\my.plugin                 → dist\workshop\my.plugin\ + my.plugin-item.vdf
-    python tools\pack_workshop.py my-mod --out C:\upload\my-mod
-    python tools\pack_workshop.py my-mod --check                 → 검사만 하고 아무것도 만들지 않습니다
-    python tools\pack_workshop.py my-mod --strict                → 빠지는 파일이 있으면 실패로 칩니다(CI 관문용)
+python tools/pack_workshop.py <mod-folder> [--out <folder>] [--check] [--strict]
 
-앱은 구독한 항목을 그대로 복사하지 않습니다 — 규칙에 맞는 파일만 옮기고 나머지는 **조용히**
-빠집니다(오류가 아닙니다). 그래서 「올렸는데 일부 파일이 안 갔다」가 생깁니다. 이 도구는 앱과
-똑같은 규칙을 미리 적용해, 올려도 되는 폴더인지와 무엇이 빠지는지를 먼저 알려 줍니다.
+Checks package paths, supported executable locations, limits and Windows PE headers.
+The app performs complete content validation and asks for execution consent at startup.
+Voice/character packages may contain plugins; every file belongs to one package.
+Unsupported files fail the operation instead of being silently omitted. Original files
+and existing output are preserved on validation failure. Existing item.vdf metadata is retained.
 
-종료 코드는 「이 항목을 올릴 수 있는가」 하나만 답합니다.
-
-  0 — 올릴 수 있습니다. 고지 외의 파일이 빠지면 경고만 합니다 — README.md 를 하나 넣어 둔 모드는
-      멀쩡한 항목이고, 그 파일만 구독자에게 안 갈 뿐입니다. 빠지는 것은 경고로 적어 두니
-      의도한 것인지 확인하세요.
-  1 — 올릴 수 없습니다. 앱이 이 폴더를 모드로 받지 않거나(캐릭터·보이스팩·알 수 없음),
-      가는 파일의 합이 크기 상한을 넘었거나 라이선스·저작권 고지가 빠집니다.
-
-  --strict 를 주면 안 가는 파일도 1 로 칩니다. 「하나도 빠지면 안 된다」를 관문으로 걸 때만.
-
-The app never copies a subscribed item as-is: only the files its rules allow travel, and the rest are
-dropped silently. This tool applies exactly the same rules first, so you learn what would be missing on
-the subscriber's disk before you upload. It also writes an item.vdf template with the content folder
-already filled in. Exit code 0 = this item can be uploaded (dropped non-notice files are warnings),
-1 = it cannot (the kind is refused, the content is over the size cap, or a legal notice is dropped). --strict makes dropped files
-fail too.
-
-출력은 원본과 서로 포함하지 않는 별도 폴더여야 합니다. 링크·정션 안으로는 들어가지 않습니다.
-기존 item.vdf가 있으면 작성한 항목 ID·제목·미리보기·설명·공개 범위를 보존하고 contentfolder만 맞춥니다.
-Output must be separate from the input, with neither containing the other. Links and junctions are
-not followed. Repacking preserves an existing item.vdf's upload metadata and updates only contentfolder.
-
-규칙 정본: WorkshopSync (앱 소스). 여기 적힌 것과 다르면 앱이 옳습니다.
+모드·캐릭터·보이스팩 전체를 포장합니다. 지원하지 않는 파일·경로가 있으면 실패하며
+일부 파일만 버린 불완전한 패키지는 만들지 않습니다. 앱에서 내용 검사와 실행 동의를
+추가로 확인합니다. --strict는 이전 호출과의 호환용이며 현재는 항상 누락을 거부합니다.
 """
 import argparse
 import os
@@ -40,6 +19,7 @@ import re
 import shutil
 import sys
 import tempfile
+import struct
 from pathlib import Path, PurePosixPath
 
 HERE = Path(__file__).resolve().parent
@@ -62,7 +42,7 @@ REFUSED_RELATIVE = {
 }
 
 # MAX_ITEM_BYTES — 이미지셋·모드 항목 하나의 크기 상한 (WorkshopSync.MAX_ITEM_BYTES).
-MAX_ITEM_BYTES = 768 * 1024 * 1024
+MAX_ITEM_BYTES = 4 * 1024 * 1024 * 1024
 
 # MAX_VOICE_PACK_BYTES — 보이스팩만 상한이 다릅니다 (WorkshopSync.MAX_VOICE_PACK_BYTES).
 # 무압축 wav 라 간체·번체를 함께 든 중국어 팩이 931 MiB 였고 768 MiB 로는 거부됐습니다.
@@ -93,9 +73,9 @@ DROP_PROTECTED = '보호된 이름'
 DROP_LINK = '바로가기·링크'
 
 DROP_HELP = {
-    DROP_EXTENSION: '이 확장자는 어디에 두어도 가지 않습니다.',
+    DROP_EXTENSION: '지원 실행 경로 또는 파일 헤더 검사를 통과하지 못했습니다.',
     DROP_PLACE: '확장자는 맞지만 놓인 자리가 규칙 밖입니다.',
-    DROP_KIND: 'jar·py 의 자리 예외는 모드 항목에만 있습니다 — 이 종류에서는 어디에 두어도 안 갑니다.',
+    DROP_KIND: '패키지 구성을 확인하세요.',
     DROP_PROTECTED: '사용자의 상태 파일이라 항목으로는 못 보냅니다.',
     DROP_LINK: '링크는 따라가지 않습니다 — 진짜 파일을 넣으세요.',
 }
@@ -191,8 +171,7 @@ def image_set_missing(root: Path):
 def is_mod_layout(root: Path) -> bool:
     if looks_like_image_set(root):
         return False
-    return ((root / 'img').is_dir() or (root / 'plugins').is_dir()
-            or ((root / 'conf').is_dir() and not (root / 'voice' / 'index.tsv').is_file()))
+    return any((root / name).is_dir() for name in ('img', 'plugins', 'conf', 'voice', 'sound', 'native', 'audio-native')) or (root / 'mod.json').is_file()
 
 
 def detect_kind(root: Path):
@@ -204,24 +183,19 @@ def detect_kind(root: Path):
                       if p.is_file() and p.name.lower().endswith('.jar'))
         return KIND_PLUGIN, f'plugins\\{jars[0]} — plugins\\ 바로 아래에 .jar 이 있습니다.'
     if is_mod_layout(root):
-        for name in ('img', 'plugins', 'conf'):
+        for name in ('img', 'plugins', 'conf', 'voice', 'sound', 'native', 'audio-native'):
             if (root / name).is_dir():
-                return KIND_MOD, f'{name}\\ 폴더가 있고 캐릭터·보이스팩 표시가 없습니다.'
+                return KIND_MOD, f'{name}\\ 폴더가 있는 모드 패키지입니다.'
     if looks_like_image_set(root):
         witness = 'conf\\actions.xml' if (root / 'conf' / 'actions.xml').is_file() else 'shime1.png'
         return KIND_IMAGE_SET, f'뿌리에 {witness} 가 있습니다 — 앱은 이 폴더를 캐릭터 길로 보냅니다.'
-    return KIND_UNKNOWN, 'img\\ · plugins\\ · conf\\ 중 아무것도 없습니다.'
+    if (root / 'mod.json').is_file():
+        return KIND_MOD, 'mod.json으로 선언된 데이터 패키지입니다.'
+    return KIND_UNKNOWN, '모드의 콘텐츠 디렉터리나 mod.json이 없습니다.'
 
 
 def item_scope(root: Path, kind: str):
-    """(훑을 뿌리, 보고에 붙일 앞머리, 크기 상한) — 종류마다 미러되는 범위가 다릅니다.
-
-    보이스팩은 항목 뿌리가 아니라 **voice\\ 아래만** 미러되고 상한도 다릅니다
-    (WorkshopSync.mirrorVoicePack → copyTree(source.resolve("voice"), target, MAX_VOICE_PACK_BYTES)).
-    나머지 종류는 뿌리 전체를 MAX_ITEM_BYTES 로 훑습니다.
-    """
-    if kind == KIND_VOICE_PACK:
-        return root / 'voice', 'voice/', MAX_VOICE_PACK_BYTES
+    """All package kinds retain their complete inventory, including mixed-in code."""
     return root, '', MAX_ITEM_BYTES
 
 
@@ -231,10 +205,63 @@ def is_refused(rel: PurePosixPath) -> bool:
     return str(rel).lower() in REFUSED_RELATIVE
 
 
+EXECUTABLE_SUFFIXES = {
+    '.exe', '.dll', '.com', '.scr', '.cpl', '.msi', '.msp', '.class', '.jmod', '.war', '.ear',
+    '.so', '.dylib', '.wasm', '.bat', '.cmd', '.ps1', '.psm1', '.psd1', '.vbs', '.vbe',
+    '.wsf', '.wsh', '.hta', '.lnk', '.url', '.reg', '.sh', '.bash', '.zsh', '.fish',
+    '.py', '.pyc', '.pyo', '.pyw', '.js', '.jse', '.mjs', '.cjs', '.ts', '.jsx', '.tsx',
+    '.html', '.htm', '.xhtml', '.php', '.pl', '.rb', '.lua', '.groovy', '.kts', '.sc', '.desktop', '.appref-ms',
+}
+
+
 def is_allowed(rel: PurePosixPath) -> bool:
-    name = rel.name.lower()
-    dot = name.rfind('.')
-    return dot > 0 and name[dot:] in ALLOWED_SUFFIXES
+    path = rel.as_posix().lower()
+    if path.startswith('plugins/runtime/'):
+        return True
+    if rel.suffix.lower() == '.jar':
+        return re.fullmatch(r'(?:plugins/)?(?:lib/)?[^/]+\.jar', path) is not None
+    if path.startswith(('native/', 'audio-native/')) and path.endswith('.dll'):
+        return True
+    if path.startswith('tools/') and rel.suffix.lower() in ('.py', '.js'):
+        return True
+    return rel.suffix.lower() not in EXECUTABLE_SUFFIXES
+
+
+def valid_path(rel: PurePosixPath) -> bool:
+    return all(part not in ('.', '..') and not part.endswith(('.', ' '))
+               and not any(ord(c) < 32 or c in ':\\' for c in part)
+               and not re.fullmatch(r'(?i)(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?', part)
+               for part in rel.parts)
+
+
+def inspect_header(path: Path, rel: PurePosixPath) -> None:
+    lower = rel.as_posix().lower()
+    helper = lower.startswith('plugins/runtime/')
+    pe = rel.suffix.lower() in ('.exe', '.dll', '.pyd') and (helper or lower.startswith(('native/', 'audio-native/')))
+    with path.open('rb') as stream:
+        head = stream.read(64)
+        if pe:
+            if len(head) != 64 or head[:2] != b'MZ':
+                raise ValueError('잘못된 Windows 실행 파일 헤더')
+            offset = struct.unpack_from('<I', head, 60)[0]
+            size = path.stat().st_size
+            if offset < 64 or offset > size - 26:
+                raise ValueError('잘못된 PE 헤더 위치')
+            stream.seek(offset); header = stream.read(26)
+            machine, sections = struct.unpack_from('<HH', header, 4)
+            optional, flags, magic = struct.unpack_from('<HHH', header, 20)
+            expected = 2 if rel.suffix.lower() == '.exe' else 0x2002
+            if header[:4] != b'PE\0\0' or machine != 0x8664 or flags & 0x2002 != expected or magic != 0x20b:
+                raise ValueError('Windows x64 EXE/DLL/PYD 형식만 지원합니다')
+            if not 1 <= sections <= 96 or optional < 112 or offset + 24 + optional + 40 * sections > size:
+                raise ValueError('손상된 PE 섹션 표')
+            for i in range(sections):
+                stream.seek(offset + 24 + optional + 40 * i + 16)
+                length, start = struct.unpack('<II', stream.read(8))
+                if length and (start > size or length > size - start):
+                    raise ValueError('잘린 PE 섹션')
+        elif not helper and (head.startswith((b'MZ', b'\x7fELF', b'\xca\xfe\xba\xbe'))):
+            raise ValueError('실행 파일을 데이터 이름으로 배포할 수 없습니다')
 
 
 def is_legal_notice(rel: PurePosixPath) -> bool:
@@ -280,34 +307,24 @@ def kind_fix(kind) -> str:
 
 
 def judge(rel: PurePosixPath, with_plugins: bool, link: bool, kind=None):
-    """(가는가, 사유, 한 줄 처방)."""
     if link:
         return False, DROP_LINK, '링크 말고 파일 자체를 넣으세요.'
+    if not valid_path(rel):
+        return False, DROP_PLACE, 'Windows에서 사용할 수 없는 경로입니다.'
     if is_refused(rel):
         return False, DROP_PROTECTED, FIX_PROTECTED
     if is_allowed(rel):
         return True, '', ''
-    if with_plugins and (is_plugin_file(rel) or is_tool_script(rel)):
-        return True, '', ''
-    suffix = suffix_of(rel)
-    if suffix in ('.jar', '.py'):
-        # 자리 예외는 모드 항목에만 있습니다. 다른 종류에서는 자리를 옮겨도 안 가므로
-        # 사유와 처방이 어긋나지 않게 종류 쪽 이야기를 합니다.
-        if with_plugins:
-            return False, DROP_PLACE, (FIX_JAR_PLACE if suffix == '.jar' else FIX_PY_PLACE)
-        return False, DROP_KIND, kind_fix(kind)
-    if not suffix:
-        return False, DROP_EXTENSION, FIX_NO_EXTENSION
-    return False, DROP_EXTENSION, EXTENSION_FIX.get(suffix, f'{suffix} 는 허용 목록에 없습니다 — .txt · .png · .wav · .xml · .json 등으로 바꾸세요.')
+    return False, DROP_EXTENSION, '지원 실행 코드는 plugins/, tools/, native/ 또는 plugins/runtime/ 규칙을 확인하세요.'
 
 
 def scan(root: Path, with_plugins: bool, kind=None):
     """(가는 것, 빠지는 것, 폴더 목록). 각 항목은 (상대경로, 크기, 사유, 처방).
 
-    `root` 는 항목 뿌리가 아니라 **미러되는 뿌리**입니다 — 보이스팩이면 <항목>\\voice 입니다.
-    앱도 그 폴더를 기준으로 상대경로를 잡으므로 REFUSED_RELATIVE 판정이 그대로 맞습니다.
+    `root`는 전체 창작마당 항목의 뿌리입니다. 혼합 패키지의 코드와 데이터를 함께 검사합니다.
     """
     kept, dropped, folders = [], [], []
+    folded = set()
     if is_link(root):
         return [], [(PurePosixPath('.'), 0, DROP_LINK, '링크 말고 파일 자체를 넣으세요.')], []
     for dirpath, dirnames, filenames in os.walk(root):
@@ -329,6 +346,13 @@ def scan(root: Path, with_plugins: bool, kind=None):
             link = is_link(full)
             size = 0 if link else full.stat().st_size
             ok, reason, fix = judge(rel, with_plugins, link, kind)
+            if rel.as_posix().lower() in folded:
+                ok, reason, fix = False, DROP_PLACE, '대소문자만 다른 중복 경로입니다.'
+            folded.add(rel.as_posix().lower())
+            if ok:
+                try: inspect_header(full, rel)
+                except (OSError, ValueError, struct.error) as error:
+                    ok, reason, fix = False, DROP_EXTENSION, str(error)
             (kept if ok else dropped).append((rel, size, reason, fix))
     return kept, dropped, folders
 
@@ -474,7 +498,7 @@ def prepare_vdf(target: Path, content: Path, appid: str):
 \t"visibility"\t\t"2"
 \t"title"\t\t\t""
 \t"description"\t\t""
-\t"changenote"\t\t"첫 판"
+\t"changenote"\t\t"첫 버전"
 }}
 '''
     return out, body.replace('\n', '\r\n')
@@ -531,7 +555,7 @@ def main():
                          '현재 폴더가 아니라 SDK 뿌리 기준입니다)')
     ap.add_argument('--check', action='store_true', help='검사만 하고 아무것도 만들지 않습니다')
     ap.add_argument('--strict', action='store_true',
-                    help='안 가는 파일이 하나라도 있으면 1 로 끝냅니다 (기본은 경고로만 적고 0)')
+                    help='이전 호출과의 호환용: 현재는 누락 파일이 있으면 항상 실패합니다')
     args = ap.parse_args()
 
     root = Path(args.mod_dir).resolve()
@@ -542,7 +566,7 @@ def main():
         reject_overlapping_output(root, target)
 
     kind, why = detect_kind(root)
-    with_plugins = kind in (KIND_PLUGIN, KIND_MOD)
+    with_plugins = True
     base, prefix, max_bytes = item_scope(root, kind)
     kept, dropped, folders = scan(base, with_plugins, kind) if base.is_dir() else ([], [], [])
     ignored = outside_scope(root, base)
@@ -555,42 +579,15 @@ def main():
     print(f'  근거: {why}')
     print()
 
-    # Refuse unsupported kinds, oversized content, and missing legal notices (checked below).
     refused = None
-    if kind == KIND_VOICE_PACK:
-        refused = '보이스팩 항목이라 이 도구로는 못 만듭니다(플러그인·모드 항목 전용).'
-        print('이 폴더는 모드가 아니라 보이스팩으로 읽힙니다.')
-        print('  앱은 voice\\index.tsv 를 먼저 봅니다 — 이 파일이 있으면 plugins\\ 에 jar 이 있어도')
-        print('  보이스팩으로 가서 voice\\Lumi\\<이름>\\ 에 놓이고, 플러그인은 실행되지 않습니다.')
-        print('  가는 것은 voice\\ 아래뿐입니다(항목 뿌리가 아닙니다) — voice\\ 밖의 파일은 한 개도')
-        print(f'  가지 않고, 상한도 이 종류만 {human(MAX_VOICE_PACK_BYTES)} 입니다.')
-        print('  고치기: 진짜 보이스팩이면 이 도구를 쓰지 마시고 폴더를 그대로 올리세요.')
-        print('          모드로 만들 생각이었다면 voice\\index.tsv 를 빼세요.')
-        print()
-    elif kind == KIND_IMAGE_SET:
-        witness = 'conf\\actions.xml' if (root / 'conf' / 'actions.xml').is_file() else 'shime1.png'
-        refused = '캐릭터(이미지셋) 항목이라 이 도구로는 못 만듭니다(플러그인·모드 항목 전용).'
-        print('이 폴더는 모드가 아니라 캐릭터(이미지셋)로 읽힙니다.')
-        print(f'  뿌리에 {witness} 가 있으면 앱은 이 폴더를 캐릭터 길로 보냅니다 — img\\<이름>\\ 으로 가고')
-        print('  plugins\\ 는 통째로 무시됩니다(플러그인이 조용히 안 켜지는 가장 흔한 까닭입니다).')
-        print('  다만 캐릭터로 실리는 조건은 그보다 빡빡합니다 — 앱은 conf\\actions.xml 과')
-        print('  conf\\behaviors.xml 을 둘 다 요구하고(ImageSetCheck.reject), 하나라도 없으면')
-        print('  항목이 통째로 거부돼 아무것도 놓이지 않습니다.')
-        missing = image_set_missing(root)
-        if missing:
-            print(f'  지금 없는 것: {" · ".join(missing)} — 이대로면 캐릭터로도 안 실립니다.')
-        print('  고치기: 캐릭터 파일은 img\\<이름>\\ 아래로 한 겹 내려 넣으세요.')
-        print()
-    elif kind == KIND_UNKNOWN:
-        refused = '항목으로 알아보지 못했습니다. 앱은 캐릭터로 검사하다 실패합니다.'
-        print('이 폴더는 항목으로 알아보지 못합니다 — 앱은 캐릭터로 검사하다 실패합니다.')
-        print('  고치기: plugins\\<이름>.jar 을 넣거나(플러그인), img\\ · conf\\ 로 시작하는 배치를 만드세요.')
-        print()
-    elif kind == KIND_PLUGIN and looks_like_image_set(root):
-        witness = 'conf\\actions.xml' if (root / 'conf' / 'actions.xml').is_file() else 'shime1.png'
-        print(f'주의: 뿌리에 {witness} 가 있습니다. 지금은 plugins\\ 의 jar 이 먼저 읽혀 플러그인 항목이지만,')
-        print('      jar 을 빼는 순간 캐릭터로 넘어갑니다 — 그 파일은 한 겹 아래로 옮기는 편이 안전합니다.')
-        print()
+    if kind == KIND_UNKNOWN:
+        refused = '모드·보이스팩·캐릭터 배치를 확인할 수 없습니다.'
+    if dropped or ignored:
+        refused = '지원하지 않는 파일이나 경로가 있습니다. 원본을 확인한 뒤 다시 실행하세요.'
+    if len(kept) + len(dropped) > 100_000:
+        refused = '패키지 파일 수 상한(100,000개)을 넘었습니다.'
+    print('전체 패키지를 보존합니다. 혼합 패키지는 실행 코드에 동의한 뒤 코드와 데이터를 함께 적용합니다.')
+    print('파일 내용과 실제 실행 동의는 앱에서 추가 검사합니다.')
 
     if kind == KIND_PLUGIN:
         print('코드 모드는 구독 후 기본 OFF입니다. 모드 체크박스에서 동의해야 코드와 데이터가 다음 실행부터 적용됩니다.')
@@ -598,7 +595,7 @@ def main():
         print()
 
     if dropped:
-        print(f'빠지는 파일 {len(dropped)} 개 — 올려도 구독자에게 가지 않습니다. 의도한 것인지 확인하세요.')
+        print(f'거부된 파일 {len(dropped)} 개 — 이 파일을 버린 패키지는 만들지 않습니다.')
         print()
         report_drops(dropped, prefix)
     else:
@@ -664,7 +661,7 @@ def main():
         print(f'OK — 올려도 됩니다. 다만 파일 {missing_count} 개는 구독자에게 가지 않습니다 — '
               '의도한 것인지 확인하세요.')
         return 0
-    print('OK — 올려도 됩니다.')
+    print('OK — 포장 경로 검사를 통과했습니다. 앱의 내용 검사와 실행 동의는 별도입니다.')
     return 0
 
 

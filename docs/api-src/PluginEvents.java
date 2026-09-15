@@ -81,8 +81,10 @@ import java.util.logging.Logger;
  *       {@code left_click}/{@code right_click}), {@code frame} (Integer, the hand-slot index drawn),
  *       {@code look} ({@code bongo}/{@code small}). <b>Never a key code or character</b> — the
  *       core does not read keys ({@code docs/spec-bongo.md} §3)</li>
- *   <li>{@code app} — the app is going down through its own exit door: {@code phase} ({@code exit}).
- *       Published before the plugins' {@code stop()} and flushed for a short bounded wait</li>
+ *   <li>{@code app} — the app is going down through its own exit door: {@code phase}
+ *       ({@code exit}/{@code restart}). Published before the plugins' {@code stop()} and flushed
+ *       for a short bounded wait. Restart skips farewell presentation; save and release resources
+ *       in {@code stop()}, which runs for both phases</li>
  *   <li>{@code island} — the garden (island) window process was asked to start or stop, or served
  *       a photo request: {@code phase} ({@code start}/{@code stop}/{@code photo}), {@code request}
  *       (photo only, the {@code photo_request.txt} body)</li>

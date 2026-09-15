@@ -3,6 +3,21 @@
 플러그인이 기대도 되는 표면(`API.md`)이 앱 버전마다 어떻게 바뀌는지 여기에 적습니다 — 더한 것은 「추가」, 기본값만 돌려주는 빈 자리가 된 훅은 「폐기」. 실험 항목(「실험」 칩, `sdk.json` 의 `preview`)의 변경과 폐기도 여기에 적습니다.
 Per app version: what changed in the surface a plugin may rely on (`API.md`) — "Added" for additions, "Deprecated" for a hook that became an empty default-only slot. Changes to and removals of preview items (the "preview" chip, `preview` in `sdk.json`) are listed here too.
 
+## SDK 1.4.0 · 앱 1.4.0 · api_version 1 — 현재 배포 / Current distribution
+
+- `WorkshopContent`의 제작자 파일·구독 식별자 조회를 안정 API로 추가했습니다. / Added stable `WorkshopContent` queries for creator files and subscription identities.
+
+- 재시작은 `app` 이벤트의 `phase=restart`로 구분합니다. `phase=exit`는 일반 종료입니다. 재시작에는 인사 연출을 생략하고 필수 저장·해제는 두 경우 모두 `stop()`에서 수행합니다. / Restarts publish `app` with `phase=restart`; normal exit uses `phase=exit`. Skip farewell presentation on restart and perform required persistence and cleanup in `stop()` for both phases.
+- 제품 버전은 루트 `VERSION`에서 읽습니다. / The product version comes from the root `VERSION` file.
+- SDK 공개 저장소와 ZIP의 문서·예제·도구·API 소스를 갱신하고 기존 고지·대응 소스를 보존합니다. 오디오 라이브러리의 대응 소스도 동봉합니다. / Updated SDK documentation, examples, tools and API sources while preserving existing notices and corresponding sources, including audio library sources.
+- 창작마당 패커는 혼합 보이스팩·캐릭터·네이티브 보조 실행 환경과 추가 데이터 형식을 보존합니다. 지원하지 않는 파일이 있으면 일부만 버리고 성공하지 않고 패키징을 중단합니다. / The Workshop packer preserves mixed voice/character packages, native helpers and additional data formats, and rejects unsupported files without producing a partial package.
+- 모든 창작마당 레이아웃의 데이터는 Steam 원본에서 직접 읽습니다. 동의는 출처와 실행 파일 목록·내용을 기준으로 하며, Windows 실행 파일은 내용 복사 없이 잠근 하드링크 경로를 사용합니다. / All Workshop layouts read ordinary data directly from Steam originals. Approval covers executable origins, inventories and contents; Windows execution uses locked hardlinks without copying file contents.
+- `native/`·`audio-native/`의 Windows x64 DLL과 `plugins/runtime/`의 보조 실행 환경을 지원합니다. 보호된 실행 경로에서 상대 폴더 구성을 유지하며, 코드 변경 시 재동의가 필요합니다. / Added support for Windows x64 DLLs under `native/` or `audio-native/` and helper toolchains under `plugins/runtime/`. Protected execution views retain relative paths; executable updates require renewed approval.
+
+## SDK 1.3.1 · 앱 1.3.1 · api_version 1
+
+- 앱·SDK·자사 플러그인의 배포 버전과 예제의 대상 앱 버전을 1.3.1로 맞췄습니다. API 호환 번호는 1을 유지합니다. / Aligned the app, SDK, first-party plugin release versions and example target app versions to 1.3.1. The API compatibility number remains 1.
+
 ## SDK 1.3.0b · 앱 1.3.0 · api_version 1
 
 - hqx 대응 소스·빌드 자료·재결합 도구와 Nashorn 15.7 전체 소스·Ant 빌드 자료를 `docs/sources/third-party-sources.zip`에 동봉합니다. / Corresponding hqx sources/build materials/recombination helper and complete Nashorn 15.7 sources/Ant build materials accompany the SDK.
@@ -26,7 +41,7 @@ Per app version: what changed in the surface a plugin may rely on (`API.md`) —
 - `text()`는 같은 이름의 jar가 여럿이어도 자신의 jar에서 언어별 문구를 찾고, `sayTo()`는 지정한 개체 ID를 말풍선 서비스에 전달합니다. / `text()` resolves translations within its own archive even when jar names collide; `sayTo()` preserves the requested mascot ID when dispatching its bubble.
 
 - `API.md` 의 표면 전부가 이 버전에서 시작합니다 / The whole surface in `API.md` starts here.
-- 버전 규칙: 이번 SDK 개정은 1.3.0b이며 대응 앱 버전은 1.3.0, API 호환 번호는 1입니다. / This SDK revision is 1.3.0b for app 1.3.0, api_version 1.
+- 버전 규칙: SDK 버전은 앱 버전과 같습니다(`sdk.json` 의 `sdk_version` = `app_version`); `api_version` 은 별개의 API 호환 번호이고 `PluginContext.API_VERSION` 도 `1` 입니다; 문서·예제 개정 내용은 배포 안내에서 확인합니다 / Versioning: the SDK version is the app version (`sdk_version` = `app_version` in `sdk.json`); `api_version` is the separate compatibility number and `PluginContext.API_VERSION` is `1`; see the release notes for documentation and example revisions.
 - 안정·실험: 공개 표면은 안정과 실험으로 나뉩니다. 안정 항목은 같은 `api_version` 안에서 더해지기만 하고, 실험 항목은 `api_version` 을 올리지 않고 바뀌거나 없어질 수 있으며(이 파일에 적고 한 앱 버전 동안 빈 자리를 남깁니다) 앱 버전 하나를 바뀌지 않고 넘기면 안정으로 올립니다. 1.3.0 의 구분 기준: 자사 플러그인(LUMI Chat·Super Bongo)이나 앱 자체가 실제로 쓰는 문과 그 짝은 안정, 그 밖은 실험 — 목록은 `sdk.json` 의 `preview`, 규칙 전체는 `API.md` §8. 1.3.0 의 로더는 `api_version` 을 읽기만 하고 판단하지 않습니다 / Stable and preview: the public surface is split in two. Stable items only ever gain entries within one `api_version`; preview items may change or disappear without a bump (listed here, an empty slot kept for one app release) and are promoted to stable after surviving one app release unchanged. The 1.3.0 split: doors the first-party plugins (LUMI Chat, Super Bongo) or the app itself use, and their counterparts, are stable; the rest is preview — the list is `preview` in `sdk.json`, the full rules are `API.md` §8. The 1.3.0 loader reads `api_version` but does not act on it.
 - 이벤트 26 토픽 — `ctx.on(topic, handler)`: `ready`·`behavior`·`bubble`·`choice`·`click`·`doubleclick`·`drag`·`throw`·`hover`·`mascot`·`headpat`·`affection`·`achievement`·`focus`·`alarm`·`pomodoro`·`bongo`·`settings`·`app`·`island`·`game`·`chat`·`tts`·`ask`·`settings_open`·`say_file`. 리스너는 플러그인마다 제 스레드(`lumi-plugin-events-<id>`)에서 돌고, `ctx.publish` 로 내는 토픽에는 `<id>.` 이 붙습니다 / 26 event topics — `ctx.on(topic, handler)`: the list above. Listeners run on a thread per plugin (`lumi-plugin-events-<id>`); topics a plugin publishes through `ctx.publish` are prefixed `<id>.`.
 - 훅 15개 — `ctx.hook(id, (hook, current, ctx) -> …)`: `focus.quiet`·`focus.screen_busy`·`text.localized`·`sound.effect`·`behavior.force`·`bubble.duration`·`bubble.text`·`selftalk.line`·`selftalk.interval`·`speech.greeting`·`affection.award`·`affection.tier`·`place.allowed`·`bongo.key_frame`·`bongo.key_input`. 모드 탭 순서로 돌고 아래가 이기며 `null` 은 넘김입니다. 사용자가 건 약속(알람, 사용자가 누른 부탁, `say.txt`)은 훅으로 막을 수 없고, 앱이 스스로 고르는 것(혼잣말·인사)은 `""` 로 건너뛸 수 있습니다 / 15 hooks — `ctx.hook(id, (hook, current, ctx) -> …)`: the list above. Handlers run in Mods-list order, the lower one wins, `null` passes. Promises the user made (alarms, a request the user triggered, `say.txt`) cannot be cancelled through a hook; choices the app makes on its own (self-talk, greeting) may be skipped with `""`.

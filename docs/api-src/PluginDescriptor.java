@@ -142,11 +142,7 @@ public final class PluginDescriptor {
                     digest.update(buffer, 0, n);
                 }
             }
-            StringBuilder hex = new StringBuilder();
-            for (byte b : digest.digest()) {
-                hex.append(String.format(Locale.ROOT, "%02x", b));
-            }
-            return hex.toString();
+            return java.util.HexFormat.of().formatHex(digest.digest());
         } catch (java.security.NoSuchAlgorithmException e) {
             throw new IOException(e);
         }
