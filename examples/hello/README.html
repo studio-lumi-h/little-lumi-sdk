@@ -21,8 +21,8 @@
 <h2 id="배포-고지-distribution-notices">배포 고지 / Distribution notices</h2>
 <p>예제를 복사할 때 <code>src/META-INF/little-lumi/</code>도 함께 보존하세요. SDK 생성 시 들어가는 기존 이용 조건·저작권·면책 고지는 빌드한 JAR에도 자동으로 포함됩니다. 추가한 코드와 외부 의존성의 고지는 별도로 넣으세요.</p>
 <p>Keep <code>src/META-INF/little-lumi/</code> when copying this example. The existing terms, copyright and disclaimer supplied by the SDK builder are automatically included in the built JAR. Add notices for your own additions and dependencies separately.</p>
-<p>창작마당 패커는 전달되지 않는 <code>LICENSE</code>, <code>NOTICE</code>, <code>COPYING</code>, <code>COPYRIGHT</code> 계열 파일이 있으면 <code>--strict</code> 없이도 실패합니다. 고지 본문을 유지한 <code>.txt</code> 파일이나 JAR 내부의 <code>META-INF/</code>로 보존하세요.</p>
-<p>The Workshop packer fails even without <code>--strict</code> if a LICENSE, NOTICE, COPYING or COPYRIGHT file would be dropped. Preserve its text in a <code>.txt</code> file or in <code>META-INF/</code> inside the JAR.</p></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+<p>창작마당 패커는 고지를 포함한 모든 파일을 보존합니다. 지원하지 않는 파일이나 경로가 있으면 일부 파일만 버린 패키지를 만들지 않고 실패합니다.</p>
+<p>The Workshop packer preserves every file, including notices. Unsupported files or paths fail the operation instead of producing a partial package.</p></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
 document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
  const code=document.getElementById(button.dataset.copy);let copied=false;
  try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){

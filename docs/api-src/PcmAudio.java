@@ -4,8 +4,8 @@ import javax.sound.sampled.AudioFormat;
 
 /**
  * 재생할 소리 한 토막 — {@link PluginContext#speak}. TTS 응답이든 미리 구운 파일이든 <b>PCM</b> 으로
- * 풀어서 건넨다({@code javax.sound.sampled.AudioSystem} 이 mp3 는 못 읽는다; wav 는
- * {@code AudioSystem.getAudioInputStream} 으로 바로 PCM 이다).
+ * 풀어서 건넨다. 앱에 동봉한 JavaSound 디코더는 WAV·OGG(Vorbis)·MP3·FLAC·AIFF·AU를
+ * 지원하며 압축 음원은 PCM 변환 스트림을 거쳐 읽는다.
  *
  * @param format 샘플 형식 (예: 16-bit signed little-endian, 44100 Hz, mono)
  * @param pcm    샘플 바이트. 복사하지 않는다 — 큰 배열이라 건넨 뒤 만지지 말 것

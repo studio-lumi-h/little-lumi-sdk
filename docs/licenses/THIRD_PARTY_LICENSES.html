@@ -118,6 +118,22 @@ Bundled fonts (assets/):
 
 Bundled libraries (lib/):
 
+- VorbisSPI 1.0.3.3 and MP3SPI 1.9.5.4 — JavaZOOM and contributors.
+- JOrbis 0.0.17.4 — Copyright (C) 2000 ymnk, JCraft, Inc.
+- JLayer 1.0.1.4 — JavaZOOM and contributors.
+- Tritonus Share 0.3.7.4 — Matthias Pfisterer and contributors.
+- jFLAC Codec 1.5.2 — Josh Coalson, David R. Robison and contributors.
+  These JavaSound libraries are provided under LGPL-2.1 (the sources
+  permit LGPL version 2 or later). Complete corresponding source archives,
+  preserved copyright notices, download URLs and checksums are supplied in
+  lib/audio-sources/. The full license is lib/audio-sources/LGPL-2.1.txt.
+  Modification, replacement and reverse engineering for debugging changes
+  to these libraries are permitted. VorbisSPI&#x27;s decoded stream has a
+  MODIFIED SOURCE copy in Shimeji-ee.jar to drain buffered pages before EOF;
+  that complete modified source and rebuild instructions are also in
+  lib/audio-sources/. The other libraries are unmodified.
+
+
 - JNA 5.19.1 (jna-jpms, jna-platform-jpms) — Copyright (c) Timothy Wall
   and contributors. Dual-licensed Apache-2.0 / LGPL-2.1; distributed here
   under the Apache License 2.0 (text below; also embedded in the jars at
@@ -226,13 +242,15 @@ CREDITS.txt.
 
 What was altered:
 
-- Eleven stock Shimeji-Desktop classes are shipped as modified copies and
+- Twelve stock Shimeji-Desktop classes are shipped as modified copies and
   re-injected into Shimeji-ee.jar at build time: ImageSetChooser (in
   com.group_finity.mascot.imagesetchooser), Main, Mascot,
   SettingsWindow, TrayMenu, TrayMenuPanel, and BehaviorOptionsWindow (all in
   com.group_finity.mascot), ImagePairs (in com.group_finity.mascot.image),
-  ScanMove and ScanJump (in com.group_finity.mascot.action), and Script (in
-  com.group_finity.mascot.script). Each source
+  ScanMove, ScanJump and Mute (in com.group_finity.mascot.action), and Script (in
+  com.group_finity.mascot.script), and MascotEnvironment (in
+  com.group_finity.mascot.environment), and Sounds (in
+  com.group_finity.mascot.sound). Each source
   file carries a &quot;MODIFIED SOURCE (Little LUMI Model)&quot; header naming the
   original authors; the original copyright notices and licenses are kept
   intact.

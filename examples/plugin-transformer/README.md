@@ -55,6 +55,6 @@ python tools\build_plugin.py examples\plugin-transformer
 
 Keep `src/META-INF/little-lumi/` when copying this example. The existing terms, copyright and disclaimer supplied by the SDK builder are automatically included in the built JAR. Add notices for your own additions and dependencies separately.
 
-창작마당 패커는 전달되지 않는 `LICENSE`, `NOTICE`, `COPYING`, `COPYRIGHT` 계열 파일이 있으면 `--strict` 없이도 실패합니다. 고지 본문을 유지한 `.txt` 파일이나 JAR 내부의 `META-INF/`로 보존하세요.
+창작마당 패커는 고지를 포함한 모든 파일을 보존합니다. 지원하지 않는 파일이나 경로가 있으면 일부 파일만 버린 패키지를 만들지 않고 실패합니다.
 
-The Workshop packer fails even without `--strict` if a LICENSE, NOTICE, COPYING or COPYRIGHT file would be dropped. Preserve its text in a `.txt` file or in `META-INF/` inside the JAR.
+The Workshop packer preserves every file, including notices. Unsupported files or paths fail the operation instead of producing a partial package.

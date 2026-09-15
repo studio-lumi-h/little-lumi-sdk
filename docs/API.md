@@ -1,6 +1,6 @@
 # Little LUMI Model — 플러그인 API 참조 (api_version 1)
 
-**SDK 1.3.0b / 앱 1.3.0, `api_version` 1** 기준 참조입니다. 이 문서는 플러그인이 기대도 되는 표면 전부이고, 여기 적힌 것만이 앱 업데이트를 건너 살아남는다고 약속합니다([호환 정책](#compatibility)). 같은 폴더의 `javadoc\index.html` 은 아래 타입의 시그니처·주석을 그대로 옮긴 것이고, `api-src\` 는 그 소스 파일들입니다. 처음이면 [첫걸음 안내](../plugin-guide.html)부터 따라 하고, 이름을 찾을 때는 [카탈로그](CATALOG.md)를 쓰세요. [English](API.en.md).
+**SDK/앱 1.4.0, `api_version` 1** 기준 참조입니다. 이 문서는 플러그인이 기대도 되는 표면 전부이고, 여기 적힌 것만이 앱 업데이트를 건너 살아남는다고 약속합니다([호환 정책](#compatibility)). 같은 폴더의 `javadoc\index.html` 은 아래 타입의 시그니처·주석을 그대로 옮긴 것이고, `api-src\` 는 그 소스 파일들입니다. 처음이면 [첫걸음 안내](../plugin-guide.html)부터 따라 하고, 이름을 찾을 때는 [카탈로그](CATALOG.md)를 쓰세요. [English](API.en.md).
 
 [매니페스트](#manifest) · [생명주기](#lifecycle) · [메서드](#context) · [이벤트](#events) · [훅](#hooks) · [바이트코드](#bytecode) · [데이터 조각](#data-mods) · [호환 정책](#compatibility) · [하지 말 것](#practices) · [테스트](#testing) · [카탈로그](#catalogue) · [약속 밖](#alternatives) · [자주 쓰는 코드](#recipes)
 
@@ -10,7 +10,7 @@
 | `PluginContext` | 앱이 건네는 문 — 말하기·행동·상태 조회·제어·이벤트·훅·설정·UI 자리·단축키·바이트코드 |
 | `MascotState` | 캐릭터 하나의 지금 상태(id·이미지셋·사각형·발끝·방향·행동, 바탕화면 좌표) — `ctx.mascots()` 가 돌려주는 레코드 |
 | `PcmAudio` | 재생할 소리 한 토막(형식·PCM 바이트·길이 ms) — `ctx.speak()` 가 받는 레코드 |
-| `MicCaptureLease` | 마이크 녹음 동안 앱 음성을 억제하는 손잡이 — `ctx.beginMicCapture()`로 얻고 `close()`로 반환(SDK 1.3.0 추가) |
+| `MicCaptureLease` | 마이크 녹음 동안 앱 음성을 억제하는 손잡이 — `ctx.beginMicCapture()`로 얻고 `close()`로 반환 |
 | `HotkeyResult` | `ctx.bindHotkey()` 의 답 — `OK` `NONE` `BAD_COMBINATION` `REFUSED` `UNSUPPORTED` |
 | `PluginTheme` | 앱의 옷 — 색·CJK 글꼴·단추/토글/슬라이더 손질·카드 조각 (`ctx.theme()`) |
 | `Json` | 의존성 없는 JSON 읽기·쓰기(`parse` `get` `getString` `write`) — LLM 답장·설정 파일에 |
@@ -49,7 +49,7 @@ jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 `id` 뿐입니�
   "id": "my.first.lumi",
   "name": "My first LUMI plugin",
   "api_version": 1,
-  "app_version": "1.3.0",
+  "app_version": "1.4.0",
   "settings": [
   { "key": "greet",  "type": "bool",   "default": true, "label": { "ko": "인사하기", "en": "Greet" } },
   { "key": "volume", "type": "int",    "default": 50, "min": 0, "max": 100, "step": 5, "label": "Volume" },
@@ -67,6 +67,10 @@ jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 `id` 뿐입니�
 <a id="lifecycle"></a>
 
 ## 2. 생명주기
+
+모드에 실행 코드와 데이터를 함께 넣을 수 있습니다. 전체 패키지에 동의한 뒤 실행 코드는 검증한 사본으로 사용합니다. 창작마당 보이스팩의 데이터는 Steam 설치 원본에서 직접 읽으며, 미승인 혼합 패키지는 데이터까지 적용하지 않습니다. 모드 파일은 앱 종료 후 변경하세요.
+
+Windows x64 DLL은 모드 루트의 `native/` 또는 `audio-native/`에 둘 수 있습니다. 보조 인터프리터·실행 도구는 `plugins/runtime/`에 동반 파일과 함께 넣습니다. 이 디렉터리 전체는 실행 코드 묶음이며 EXE·DLL·PYD의 PE 형식을 검사합니다. 모드 사본에서 상대 폴더 구성을 유지하고, 짧은 클래스패스 JAR 사본 옆에도 `native/`·`audio-native/`·`runtime/` 경로를 보존합니다. 앱이 이 도구를 자동 실행하지는 않습니다. 코드 변경은 다시 동의를 받아야 하며, 설치 원본 경로나 원본 JAR 이름이 실행 경로라고 가정하지 마세요.
 
 - `start(ctx)` — 내장 기능이 뜬 뒤, 엔진(마스코트)이 실리기 **전**에 한 번 불립니다. 여기서 `on`/`hook`/`addTrayItem`/`onLoad` 를 겁니다. 이때 캐릭터 상태는 비어 있을 수 있으니 엔진이 필요한 일은 `ready` 에서 하세요. 던지면 그 플러그인만 실패로 표시됩니다.
 - `ready` 이벤트 — 엔진이 뜨고 모든 플러그인의 `start` 가 끝난 뒤 한 번, 앱이 냅니다. `PluginTestKit` 은 대신 내 주지 않습니다(§10).
@@ -183,7 +187,7 @@ jar 뿌리에 둡니다. 파서가 필수로 검증하는 것은 `id` 뿐입니�
 | `addTrayItem(label, action)` → `PluginUi.MenuHandle` | 트레이 메뉴 줄(앱 줄 아래·「종료」 위). `action` 은 EDT. 돌려주는 **손잡이**로 `setLabel`·`setEnabled`·`setChecked(Boolean)`·`remove()`, 읽기 `label()`·`enabled()`·`checked()`·`removed()` — 줄이 안 바뀌면 무시해도 됩니다. 바뀐 것은 다음에 메뉴가 열릴 때 보입니다(메뉴는 열 때마다 새로 짓습니다). 어느 스레드에서든. **이름은 문자열이라 언어가 바뀌어도 스스로 안 바뀝니다** — `settings` 이벤트의 `phase=language` 를 듣고 `setLabel(text(...))` 로 다시 놓으세요(LUMI Chat·Super Bongo 가 그렇게 합니다) |
 | `addTrayToggle(label, initial, onChange)` → `MenuHandle` · 실험 | **토글 줄** — 이름은 그대로, 「켜짐/꺼짐」 상태 칩(앱의 「잠깐 숨기기」 문법). 누르면 스스로 뒤집고 `onChange(새 값)` 을 EDT 에서 부릅니다; `setChecked` 는 칩만 바꾸고 `onChange` 를 부르지 않습니다 |
 | `addSettingsButton(label, action)` → `MenuHandle` | 설정 창 정보 탭의 사용법 단추 가까이에 단추 하나. `action` 은 EDT. 앱은 설정 창을 열 때마다 등록 목록을 다시 읽으므로 손잡이의 이름·활성·제거는 다음에 창을 열 때 반영됩니다 |
-| `addFeatureToggle(label, description, state, onChange, dependsOnFeature)` → `PluginUi.FeatureToggle` | 루미 탭 「기능 켜고 끄기」 카드의 **맨 아래**에 앱 모양의 스위치 줄. 등록이 0개면 줄·여백도 없습니다. 창을 열 때 `state` 로 체크를 채우고, 앱 1.3.0부터 체크가 바뀌는 즉시 `onChange(새 값)` 으로 건넵니다. false 를 돌려주면 `state` 로 되돌립니다. `dependsOnFeature`(`bongo` 등)가 꺼지면 회색이 되지만 체크는 보존됩니다. 하네스 `press:feature:<라벨>` |
+| `addFeatureToggle(label, description, state, onChange, dependsOnFeature)` → `PluginUi.FeatureToggle` | 루미 탭 「기능 켜고 끄기」 카드의 **맨 아래**에 앱 모양의 스위치 줄. 등록이 0개면 줄·여백도 없습니다. 창을 열 때 `state` 로 체크를 채우고, 체크가 바뀌는 즉시 `onChange(새 값)` 으로 건넵니다. false 를 돌려주면 `state` 로 되돌립니다. `dependsOnFeature`(`bongo` 등)가 꺼지면 회색이 되지만 체크는 보존됩니다. 하네스 `press:feature:<라벨>` |
 | `addCharacterMenuItem(label, forImageSet, action)` → `MenuHandle` | 캐릭터 우클릭 메뉴 줄. `forImageSet` 이 캐릭터마다 보일지 정합니다(null = 모두), `action(imageSet, mascotId)`. 손잡이는 트레이 줄과 같습니다 |
 | `addCharacterMenuToggle(label, forImageSet, initial, onChange)` → `MenuHandle` · 실험 | 캐릭터 메뉴의 토글 줄. 토글 상태는 줄 하나에 하나(캐릭터마다가 아님). `onChange(새 값)` 은 EDT |
 | `claimClickGreeting()` | 클릭 인사를 이 플러그인이 맡는다고 알립니다(앱의 클릭 인사가 조용해집니다) |
@@ -346,11 +350,11 @@ app         {phase=exit}
 
 - 플러그인 API 의 공개 표면은 **안정**과 **실험** 둘로 나뉩니다. 표시가 없는 항목은 안정입니다. 실험 항목은 표에 「실험」 칩으로 표시되고 `sdk.json` 의 `preview` 에 같은 목록이 있습니다.
 - **안정 항목은 같은 `api_version` 안에서 더해지기만 합니다.** 없어지지 않고 형이 바뀌지 않습니다. 결정 자리가 앱에서 사라진 훅은 기본값만 돌려주는 빈 자리로 남고 표에 폐기로 표시됩니다. 이벤트에는 키가 더해질 수 있고 빠지지 않습니다 — 모르는 키는 무시하세요.
-- **실험 항목은 `api_version` 을 올리지 않고 바뀌거나 없어질 수 있습니다.** 그때는 `CHANGELOG.md` 에 적고, 없앤 자리는 한 앱 버전 동안 빈 자리로 남깁니다. 실험 항목이 앱 버전 하나를 바뀌지 않고 넘기면 안정으로 올립니다. 1.3.0 의 구분 기준: 자사 플러그인(LUMI Chat·Super Bongo)이나 앱 자체가 실제로 쓰는 문과 그 짝은 안정, 그 밖은 실험입니다.
+- **실험 항목은 `api_version` 을 올리지 않고 바뀌거나 없어질 수 있습니다.** 그때는 `CHANGELOG.md` 에 적고, 없앤 자리는 한 앱 버전 동안 빈 자리로 남깁니다. 실험 항목이 앱 버전 하나를 바뀌지 않고 넘기면 안정으로 올립니다. 1.4.0 의 구분 기준: 자사 플러그인(LUMI Chat·Super Bongo)이나 앱 자체가 실제로 쓰는 문과 그 짝은 안정, 그 밖은 실험입니다.
 - **`api_version` 은 안정 항목을 없애거나 모양을 바꿔야만 할 때 오릅니다.** 그때 이행 목록을 `CHANGELOG.md` 에 적고, **직전 버전(N-1)을 위해 쓰인 플러그인은 한 버전 더 실립니다**(없앤 훅은 빈 자리, 없앤 메서드는 위임 껍데기로). 두 버전 전 플러그인은 실리지 않고 업데이트 안내를 받습니다. 앱보다 새 `api_version` 을 적은 플러그인도 실리지 않습니다.
 - 「더해지기만 한다」는 뒤집으면 나중 앱 버전에서 더해진 메서드·훅·토픽이 같은 `api_version` 의 옛 앱에는 없다는 뜻입니다. 검증한 앱 버전을 `plugin.json` 의 `app_version` 에 적으세요. 실행 중인 앱과 다르면 모드 탭에 「N용」 칩이 붙습니다(안내일 뿐 막지 않습니다).
 - 약속 밖: 변환기가 건드리는 코어 클래스의 모양, `PluginContext` 와 이 문서의 타입 표 밖의 공개 클래스(클래스패스에 있어 부를 수는 있지만 버전마다 바뀔 수 있습니다), `conf\settings.properties` 의 앱 키.
-- (현재 버전 사실) 1.3.0 의 로더는 `api_version` 을 읽기만 하고 판단하지 않습니다. 위의 거부·칩은 다음 앱 버전부터 로더가 집행합니다.
+- (현재 버전 사실) 1.4.0 의 로더는 `api_version` 을 읽기만 하고 판단하지 않습니다. 위의 거부·칩은 다음 앱 버전부터 로더가 집행합니다.
 - SDK 버전은 앱 버전과 같습니다(`sdk.json` 의 `sdk_version` = `app_version`). `api_version` 은 별개의 호환 번호로 이 문서 제목에 적혀 있습니다. 문서·예제 개정 내용은 배포 안내에서 확인하세요.
 
 <a id="practices"></a>
@@ -366,9 +370,9 @@ app         {phase=exit}
 
 ## 10. 테스트 킷 — `PluginTestKit`
 
-SDK 1.3.0의 `beginMicCapture()`도 가짜 백엔드에서 검사할 수 있습니다. `beginMicCapture`/`endMicCapture` 호출이 소유자 id와 함께 기록되고, lease 보유 중 `speak`는 `speakSuppressed`를 기록하며 재생 콜백을 호출하지 않습니다. `kit.close()`는 중첩 lease를 모두 반환합니다. 실제 오디오 장치는 열지 않습니다.
+SDK 1.4.0의 `beginMicCapture()`도 가짜 백엔드에서 검사할 수 있습니다. `beginMicCapture`/`endMicCapture` 호출이 소유자 id와 함께 기록되고, lease 보유 중 `speak`는 `speakSuppressed`를 기록하며 재생 콜백을 호출하지 않습니다. `kit.close()`는 중첩 lease를 모두 반환합니다. 실제 오디오 장치는 열지 않습니다.
 
-`api_version`은 호환 가능한 추가이므로 1을 유지합니다. 이 메서드가 없는 이전 앱도 지원하는 플러그인은 시작 시 메서드 존재를 확인하고 음성 입력만 비활성화해야 합니다. `app_version`은 표시용이며 최소 앱 버전을 강제하지 않습니다. SDK 1.3.0으로 컴파일했다는 사실만으로 이전 앱에 새 메서드가 생기지는 않습니다.
+`api_version`은 호환 가능한 추가이므로 1을 유지합니다. 이 메서드가 없는 이전 앱도 지원하는 플러그인은 시작 시 메서드 존재를 확인하고 음성 입력만 비활성화해야 합니다. `app_version`은 표시용이며 최소 앱 버전을 강제하지 않습니다. SDK 1.4.0으로 컴파일했다는 사실만으로 이전 앱에 새 메서드가 생기지는 않습니다.
 
 `lib\Shimeji-ee.jar` 는 게이트 때문에 앱을 띄울 수 없지만, 플러그인의 **단위 검사**는 앱 없이 됩니다. `PluginTestKit` 이 주는 `PluginContext` 는 문마다 이 킷으로 이어져 있어 — 플러그인이 한 일은 **기록**되고, 읽는 값은 **가짜**에서 오고, 이벤트·훅·시계는 검사가 직접 밉니다. 엔진·창·스팀은 하나도 안 뜹니다. `tools\run_tests.py <플러그인 폴더>` 가 `test\*.java` 를 굽고 돌립니다(예 `examples\hello\test\HelloPluginTest.java`; 프레임워크 없이 `main` 하나).
 
@@ -445,7 +449,7 @@ public final class HelloSmokeTest {
 | 더블클릭 감지 | `ctx.on("doubleclick", …)` — 전역 AWT 리스너를 걸지 마세요. 앱이 제 통과 창(하트·음표) 위의 누름까지 `click` 으로 넘겨 줍니다 |
 | 캐릭터 옆에 창 띄우기 | `ctx.mascotById(id)` 가 null 이 아닌지 본 뒤 `anchor()`(발끝, 바탕화면 좌표) 아래에; 화면은 `screens()` |
 | 지금 화면에 있는 캐릭터의 셋 목록 | `ctx.mascots()` 에서 `imageSet()` 을 순서대로 중복 없이 — 켜진 셋(`activeImageSets`)과 다릅니다(켜졌어도 아직 안 태어났을 수 있습니다) |
-| 소리 내기 | 효과음은 `playSound(path)`, 목소리(TTS·미리 구운 파일)는 PCM 으로 풀어 `speak(PcmAudio, onStart, onEnd)` — mp3 는 `javax.sound` 가 못 읽으니 wav/PCM 으로 받으세요 |
+| 소리 내기 | 효과음은 `playSound(path)`, 목소리(TTS·미리 구운 파일)는 PCM 으로 풀어 `speak(PcmAudio, onStart, onEnd)` — 앱 JavaSound 디코더는 WAV·OGG(Vorbis)·MP3·FLAC·AIFF·AU를 지원합니다. `speak`에는 디코딩한 PCM을 전달하세요 |
 | 입 움직이기 | `mouthFlap(set, ctx::isSpeaking)` — `behave("Talk")` 를 손으로 반복하지 마세요 |
 | 마우스 커서·다른 프로그램의 창 만지기 | 앱이 하지 않는 일이라 문이 없습니다. JNA 로 직접 합니다(약속 밖, `plugins\lib\` 에 jna 를 넣지 마세요 — 앱의 것을 씁니다) |
 | 페르소나 편집 | `personaFile(set)` 에 `writeAtomic` — 파일 규약은 앱 것입니다 |
