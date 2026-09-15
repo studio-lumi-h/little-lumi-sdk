@@ -321,8 +321,7 @@ def judge(rel: PurePosixPath, with_plugins: bool, link: bool, kind=None):
 def scan(root: Path, with_plugins: bool, kind=None):
     """(가는 것, 빠지는 것, 폴더 목록). 각 항목은 (상대경로, 크기, 사유, 처방).
 
-    `root` 는 항목 뿌리가 아니라 **미러되는 뿌리**입니다 — 보이스팩이면 <항목>\\voice 입니다.
-    앱도 그 폴더를 기준으로 상대경로를 잡으므로 REFUSED_RELATIVE 판정이 그대로 맞습니다.
+    `root`는 전체 창작마당 항목의 뿌리입니다. 혼합 패키지의 코드와 데이터를 함께 검사합니다.
     """
     kept, dropped, folders = [], [], []
     folded = set()
@@ -587,7 +586,7 @@ def main():
         refused = '지원하지 않는 파일이나 경로가 있습니다. 원본을 확인한 뒤 다시 실행하세요.'
     if len(kept) + len(dropped) > 100_000:
         refused = '패키지 파일 수 상한(100,000개)을 넘었습니다.'
-    print('전체 패키지를 보존합니다. 혼합 패키지의 코드와 데이터는 함께 동의를 받습니다.')
+    print('전체 패키지를 보존합니다. 혼합 패키지는 실행 코드에 동의한 뒤 코드와 데이터를 함께 적용합니다.')
     print('파일 내용과 실제 실행 동의는 앱에서 추가 검사합니다.')
 
     if kind == KIND_PLUGIN:

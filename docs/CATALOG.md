@@ -170,7 +170,7 @@
 | `alarm` | 실험 | 알림이 실제로 전달됨 — `kind`(`hourly`/`alarm`), `time`(`HH:mm`), `late`(Boolean — 화면이 바빠 미뤄졌다 나온 알람) |
 | `pomodoro` | 실험 | 집중/휴식 주기가 움직임 — `phase`(`focus`/`break`/`stopped`), `minutes`(Integer, 시작하는 국면의 길이; stop 은 0), `round`(Integer, 켠 뒤 시작한 집중 국면 수) |
 | `bongo` | 실험 | 봉고 모드가 타건·클릭을 그림 — `kind`(`keyboard`/`left_click`/`right_click`), `frame`(Integer, 그린 손 자리), `look`(`bongo`/`small`). **키 코드·글자는 절대 없음**(코어는 키를 읽지 않음) |
-| `app` | 실험 | 앱이 제 종료 문으로 내려감 — `phase`(`exit`). 플러그인 `stop()` 보다 앞, 짧은 상한을 두고 전달을 기다린 뒤 내려감 |
+| `app` | 실험 | 앱 종료·재시작 — `phase`(`exit`/`restart`). `restart`에서는 작별 연출을 생략. 짧은 상한으로 전달을 기다리며, 두 경우 모두 필수 저장·해제는 `stop()`에서 수행 |
 | `island` | 실험 | 정원(섬) 프로세스 시작·정지 요청, 사진 요청 응답 — `phase`(`start`/`stop`/`photo`), `request`(photo 만) |
 | `game` | 실험 | 장치 게임 판이 열림·달리기 시작·닫힘 — `phase`(`start`/`run`/`stop`) |
 

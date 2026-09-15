@@ -5,11 +5,14 @@ Per app version: what changed in the surface a plugin may rely on (`API.md`) —
 
 ## SDK 1.4.0 · 앱 1.4.0 · api_version 1 — 현재 배포 / Current distribution
 
+- `WorkshopContent`의 제작자 파일·구독 식별자 조회를 안정 API로 추가했습니다. / Added stable `WorkshopContent` queries for creator files and subscription identities.
+
+- 재시작은 `app` 이벤트의 `phase=restart`로 구분합니다. `phase=exit`는 일반 종료입니다. 재시작에는 인사 연출을 생략하고 필수 저장·해제는 두 경우 모두 `stop()`에서 수행합니다. / Restarts publish `app` with `phase=restart`; normal exit uses `phase=exit`. Skip farewell presentation on restart and perform required persistence and cleanup in `stop()` for both phases.
 - 제품 버전은 루트 `VERSION`에서 읽습니다. / The product version comes from the root `VERSION` file.
 - SDK 공개 저장소와 ZIP의 문서·예제·도구·API 소스를 갱신하고 기존 고지·대응 소스를 보존합니다. 오디오 라이브러리의 대응 소스도 동봉합니다. / Updated SDK documentation, examples, tools and API sources while preserving existing notices and corresponding sources, including audio library sources.
 - 창작마당 패커는 혼합 보이스팩·캐릭터·네이티브 보조 실행 환경과 추가 데이터 형식을 보존합니다. 지원하지 않는 파일이 있으면 일부만 버리고 성공하지 않고 패키징을 중단합니다. / The Workshop packer preserves mixed voice/character packages, native helpers and additional data formats, and rejects unsupported files without producing a partial package.
-- 창작마당 보이스팩의 데이터는 Steam 원본에서 직접 읽습니다. 코드와 데이터가 섞인 패키지의 전체 동의는 유지하며 실행 코드만 검증 사본을 사용합니다. / Workshop voice data is read directly from Steam originals. Mixed packages retain whole-package approval; executable content uses verified copies.
-- `native/`·`audio-native/`의 Windows x64 DLL과 `plugins/runtime/`의 보조 실행 환경을 지원합니다. 실행용 사본에서 상대 경로를 유지하며, 코드 변경 시 재동의가 필요합니다. / Added support for Windows x64 DLLs under `native/` or `audio-native/` and helper toolchains under `plugins/runtime/`. Verified copies retain relative paths; executable updates require renewed approval.
+- 모든 창작마당 레이아웃의 데이터는 Steam 원본에서 직접 읽습니다. 동의는 출처와 실행 파일 목록·내용을 기준으로 하며, Windows 실행 파일은 내용 복사 없이 잠근 하드링크 경로를 사용합니다. / All Workshop layouts read ordinary data directly from Steam originals. Approval covers executable origins, inventories and contents; Windows execution uses locked hardlinks without copying file contents.
+- `native/`·`audio-native/`의 Windows x64 DLL과 `plugins/runtime/`의 보조 실행 환경을 지원합니다. 보호된 실행 경로에서 상대 폴더 구성을 유지하며, 코드 변경 시 재동의가 필요합니다. / Added support for Windows x64 DLLs under `native/` or `audio-native/` and helper toolchains under `plugins/runtime/`. Protected execution views retain relative paths; executable updates require renewed approval.
 
 ## SDK 1.3.1 · 앱 1.3.1 · api_version 1
 

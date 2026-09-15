@@ -170,7 +170,7 @@ Values are strings unless a type is given. `mascotId` is valid only while that c
 | `alarm` | preview | a reminder was actually delivered — `kind` (`hourly`/`alarm`), `time` (`HH:mm`), `late` (Boolean — an alarm held while the screen was busy) |
 | `pomodoro` | preview | the focus/break cycle moved — `phase` (`focus`/`break`/`stopped`), `minutes` (Integer, length of the phase that begins; 0 on stop), `round` (Integer, focus phases started since the cycle was switched on) |
 | `bongo` | preview | bongo mode drew a keystroke or click — `kind` (`keyboard`/`left_click`/`right_click`), `frame` (Integer, the hand slot drawn), `look` (`bongo`/`small`). **Never a key code or character** (the core does not read keys) |
-| `app` | preview | the app is going down through its own exit door — `phase` (`exit`). Before the plugins' `stop()`; delivery is awaited with a short bound |
+| `app` | preview | app exit or restart — `phase` (`exit`/`restart`). Skip farewell presentation on `restart`. Delivery has a short bound; save state and release resources in `stop()` for both phases |
 | `island` | preview | the garden (island) process was asked to start or stop, or served a photo request — `phase` (`start`/`stop`/`photo`), `request` (photo only) |
 | `game` | preview | the contraption game board opened, started a run, or closed — `phase` (`start`/`run`/`stop`) |
 

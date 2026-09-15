@@ -70,7 +70,7 @@ What stays and what may change as the app moves to a new version is written up i
 
 Installing or subscribing does not authorize execution. Enable the mod's checkbox, review the warning, and agree; code and bundled data are applied on the next app start. Existing last-run hashes are not approval. Changes to any plugin JAR or its `plugins/lib` libraries require approval again. Creator-declared network/behavior fields are informational, not enforced permissions.
 
-Library JARs must belong to the same approved mod as a plugin; unrelated library-only mods are not placed on the class path. Put dependencies in `plugins/lib` instead of a JAR manifest `Class-Path`; manifest class paths and JAR indexes are rejected. The loader executes verified copies, so plugins must not rely on their CodeSource path being their install directory.
+Library JARs must belong to the same approved mod as a plugin; unrelated library-only mods are not placed on the class path. Put dependencies in `plugins/lib` instead of a JAR manifest `Class-Path`; manifest class paths and JAR indexes are rejected. The loader uses a verified, protected execution path, so plugins must not rely on their CodeSource path being their install directory.
 
 Code paths containing symbolic links or junctions are unsupported.
 

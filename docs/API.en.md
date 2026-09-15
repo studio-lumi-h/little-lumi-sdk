@@ -23,6 +23,14 @@ This reference describes **SDK/app 1.4.0, `api_version` 1**. It is the whole sur
 | `ScheduledHandle` · preview | cancel a scheduled task, or ask whether it was cancelled |
 | `PluginSettingsSchema` | the declarative-settings parser — ordinarily you only declare them in `plugin.json` |
 | `PluginTestKit` · preview | a fake context, call records and a clock the test drives (§10) |
+| `WorkshopContent`, `WorkshopContent.PromptSource` | Read-only Workshop creator files and subscription identities |
+
+
+### Workshop creator data
+
+`WorkshopContent.promptSources(imageSet)` returns an immutable list of `PromptSource` records in mod order (later providers win collisions). Each contains `promptsFile()` and `personaFile()` (`Path`, read-only, possibly absent), `workshopId()`, `subscriptionId()` and `modStyleName()` (preserve the persona label including its Workshop ID). Handle missing/unreadable files. Disabled, unsubscribed and unapproved providers are excluded; after startup only the prepared inventory is returned. Invalid character names or missing Workshop support return an empty list.
+
+Bind an explicitly selected creator preset to both IDs: updates, toggles and temporary download waits retain subscription identity; unsubscribe/resubscribe changes it and requires a new selection. Querying never selects a prompt or grants execution consent. `WorkshopContent.hasDirectSource(id)` includes unsubscribed records and lets readers suppress old mirror fallback; it does not indicate enabled/approved status. Both methods query host state and do not require a plugin context.
 
 <a id="manifest"></a>
 
@@ -68,9 +76,9 @@ The entry class goes in `META-INF\services\com.group_finity.mascot.lumi.plugin.L
 
 ## 2. Lifecycle
 
-Code and data may share one mod package. After approval of the entire package, executable files use verified copies. Data in Workshop voice packages is read directly from the Steam installation; an unapproved mixed package contributes neither code nor data. Change mod files while the app is closed.
+Code and data may share one mod package. Approval covers the origin and the names and contents of executable files; changes to ordinary images or audio alone do not require renewed approval. All companion files under `plugins/runtime/` are execution inputs. On Windows, executable contents are not copied: a separate execution path uses hardlinks protected by handles that deny writes and deletion. Ordinary data is read from its original location and validated when used. Disabled or unapproved code packages contribute neither code nor data. Change mod files while the app is closed.
 
-Place Windows x64 DLLs under the mod root's `native/` or `audio-native/` directory. Bundle helper interpreters and tools with their companion files under `plugins/runtime/`. The entire directory is executable content; EXE, DLL and PYD files undergo PE format checks. The mod copy preserves relative directories, and short classpath JAR copies also have the corresponding `native/`, `audio-native/` and `runtime/` directories beside them. The app does not run these tools automatically. Code changes require renewed approval. Do not assume the original installation path or JAR filename is the execution path.
+Place Windows x64 DLLs under the mod root's `native/` or `audio-native/` directory. Bundle helper interpreters and tools with their companion files under `plugins/runtime/`. The entire directory is executable content; EXE, DLL and PYD files undergo PE format checks. The protected execution view preserves relative directories, with the corresponding `native/`, `audio-native/` and `runtime/` directories beside its classpath JARs. The app does not run these tools automatically. Code changes require renewed approval. Do not assume the original installation path or JAR filename is the execution path.
 
 - `start(ctx)` — called once after the built-in features boot, **before** the engine (mascots) loads. Register `on`/`hook`/`addTrayItem`/`onLoad` here. Character state may still be empty at this point, so leave engine-dependent work to `ready`. Throwing marks only this plugin as failed.
 - `ready` event — once, after the engine is up and every plugin's `start` has run; the app publishes it. `PluginTestKit` does not publish it for you (§10).
@@ -250,7 +258,7 @@ Values are strings unless noted. Listeners run one after another on that plugin'
 | `alarm` · preview | a reminder was actually delivered | `kind` (`hourly`/`alarm`), `time` (`HH:mm`), `late` (Boolean — an alarm held while the screen was busy) |
 | `pomodoro` · preview | the focus/break cycle moved | `phase` (`focus`/`break`/`stopped`), `minutes` (Integer, length of the phase that begins; 0 on stop), `round` (Integer, focus phases started since the cycle was switched on) |
 | `bongo` · preview | bongo mode drew a keystroke or click | `kind` (`keyboard`/`left_click`/`right_click`), `frame` (Integer, the hand slot drawn), `look` (`bongo`/`small`). **Never a key code or character** (the core does not read keys) |
-| `app` · preview | the app is going down through its own exit door | `phase` (`exit`). Before the plugins' `stop()`; delivery is awaited with a short bound |
+| `app` · preview | App exit or restart | `phase` (`exit`/`restart`). Delivered before `stop()` with a short bound. Skip farewell presentation on `restart`; save state and release resources in `stop()` for both phases |
 | `island` · preview | the garden (island) process was asked to start or stop, or served a photo request | `phase` (`start`/`stop`/`photo`), `request` (photo only) |
 | `game` · preview | the contraption game board opened, started a run, or closed | `phase` (`start`/`run`/`stop`) |
 
@@ -273,7 +281,7 @@ pomodoro    {phase=break, minutes=5, round=2}
 bongo       {kind=keyboard, frame=3, look=bongo}
 settings    {phase=apply, changed=lumi.selftalk.frequency}
 settings    {phase=language, language=ja}
-app         {phase=exit}
+app         {phase=exit} / {phase=restart}
 ```
 
 <a id="hooks"></a>
