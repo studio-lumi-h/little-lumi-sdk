@@ -15,7 +15,7 @@ import java.awt.Rectangle;
  *       {@code click}·{@code mascot}·{@code behavior} 이벤트의 {@code mascotId} 와 같은 값이다.
  *       그 개체가 사는 동안만 유효하다(사라지면 재사용될 수 있다).</li>
  *   <li>{@code imageSet} — {@code img\<폴더>} 이름. 캐릭터의 신원.</li>
- *   <li>{@code bounds} — 그림 창의 사각형. 크기가 곧 캐릭터 크기(배율 포함).</li>
+ *   <li>{@code bounds} — 그림 창의 사각형(회전·배율 포함). 논리 물리 충돌 영역과는 별개.</li>
  *   <li>{@code anchor} — 발끝(닻). 서 있는 바닥의 y 가 여기다.</li>
  *   <li>{@code lookRight} — 오른쪽을 보고 있는가.</li>
  *   <li>{@code behavior} — 지금 행동 이름({@code behaviors.xml} 의 이름). 모르면 {@code ""}.</li>

@@ -830,6 +830,29 @@ public final class PluginTestKit implements AutoCloseable {
             return true;
         }
 
+        private final java.util.Set<String> terrainNames = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+        @Override
+        public TerrainHandle registerTerrain(String owner, String name, List<TerrainRect> rects) {
+            if (!terrainNames.add(name)) throw new IllegalArgumentException("terrain already registered: " + name);
+            record("registerTerrain", name, rects);
+            return new TerrainHandle() {
+                private boolean removed;
+                @Override public synchronized boolean update(List<TerrainRect> replacement) {
+                    if (removed) return false;
+                    record("updateTerrain", name, List.copyOf(replacement));
+                    return true;
+                }
+                @Override public synchronized void remove() {
+                    if (removed) return;
+                    removed = true;
+                    terrainNames.remove(name);
+                    record("removeTerrain", name);
+                }
+                @Override public synchronized boolean isRemoved() { return removed; }
+            };
+        }
+
         @Override
         public boolean moveTo(int mascotId, int x, int y) {
             record("moveTo", mascotId, x, y);

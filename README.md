@@ -5,13 +5,13 @@
 
 > **이 저장소는 읽을 것만 담고 있습니다.** 문서·예제·도구·공개 API 소스입니다.
 > **플러그인을 만들려면 [Releases](https://github.com/studio-lumi-h/little-lumi-sdk/releases)에서 ZIP 을 받으세요** — 컴파일에 필요한
-> `lib/` 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 **1.4.0** 입니다.
+> `lib/` 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 **1.5.0** 입니다.
 
 ---
 
 반갑습니다. 이 SDK 는 루미에 내 것을 더하는 도구 모음입니다. 클릭·쓰다듬기·알람 같은 일에 반응시키고, 대사·메뉴·단축키를 더하고, 그림이나 행동·번역 같은 데이터만으로 된 모드도 만들 수 있습니다.
 
-이 배포본은 **SDK 1.4.0 / 앱 1.4.0 / api_version 1** 입니다.
+이 배포본은 **SDK 1.5.0 / 앱 1.5.0 / api_version 1** 입니다.
 
 문서 모음은 [index.html](index.html)에서 브라우저로 읽을 수 있습니다. 코드 예제에는 복사 버튼이 있고, 원본 Markdown과 라이선스도 그대로 들어 있습니다.
 
@@ -23,7 +23,7 @@
 | `plugin-guide.html` | 처음부터 따라 하는 첫걸음 안내 |
 | `lib\` | 플러그인을 컴파일할 때 쓰는 jar |
 | `tools\` | 굽기·검사·창작마당 준비 스크립트 |
-| `examples\` | 그대로 구워 볼 수 있는 본보기 둘 |
+| `examples\` | 대사·변환기·발판 하나 본보기 |
 | `docs\` | API 참조 · 이름 카탈로그 · 변경 이력 · javadoc |
 | `sdk.json` | 이 배포본의 버전 번호와, 이 앱이 주는 훅·이벤트 목록 |
 | `LICENSE-SDK.txt` | 이용 조건 |
@@ -54,7 +54,7 @@ Copy-Item -Recurse dist\hello.lumi.sample "<설치 폴더>\mods\hello.lumi.sampl
 | [docs/API.md](docs/API.md) | 할 수 있는 것 전부 |
 | [docs/CATALOG.md](docs/CATALOG.md) | 행동·이벤트·훅·설정 키의 이름 찾기 |
 | [docs/CHANGELOG.md](docs/CHANGELOG.md) | 버전마다 바뀐 것 |
-| `examples\` | 본보기 둘 — 인사 플러그인과 바이트코드 변환기 |
+| `examples\` | 본보기 셋 — 인사 플러그인·바이트코드 변환기·발판 하나 |
 | `tools\` | 굽기·검사, 그리고 창작마당에 올리기 전 확인 |
 
 ## 알아 둘 것

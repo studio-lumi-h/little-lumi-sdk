@@ -5,13 +5,13 @@
 
 > **This repository holds the readable parts only** — docs, examples, tools and the public API sources.
 > **To build a plugin, download the ZIP from [Releases](https://github.com/studio-lumi-h/little-lumi-sdk/releases)**: the `lib/` jars you compile
-> against and the generated javadoc live there. This is version **1.4.0**.
+> against and the generated javadoc live there. This is version **1.5.0**.
 
 ---
 
 Welcome. This SDK is the toolkit for adding your own things to Little LUMI: make her react to clicks, head pats and alarms, add lines, menus and hotkeys, or build a mod out of nothing but data — artwork, behaviours, translations.
 
-This distribution is **SDK 1.4.0 / app 1.4.0 / api_version 1**.
+This distribution is **SDK 1.5.0 / app 1.5.0 / api_version 1**.
 
 Open [index.html](index.html) for the offline document collection. Code examples have copy buttons; the original Markdown and licence notices are preserved.
 
@@ -23,7 +23,7 @@ Open [index.html](index.html) for the offline document collection. Code examples
 | `plugin-guide.en.html` | the walkthrough, start to finish |
 | `lib\` | the jars you compile a plugin against |
 | `tools\` | scripts that build, test and prepare for the Workshop |
-| `examples\` | two samples you can build as they are |
+| `examples\` | greeting, transformer and single-platform samples |
 | `docs\` | API reference · identifier catalogue · changelog · javadoc |
 | `sdk.json` | this distribution's versions, and the hooks and events this app offers |
 | `LICENSE-SDK.txt` | terms of use |
@@ -54,7 +54,7 @@ The first line builds the example into `dist\hello.lumi.sample\`, the second tes
 | [docs/API.en.md](docs/API.en.md) | everything you can do |
 | [docs/CATALOG.en.md](docs/CATALOG.en.md) | names of behaviours, events, hooks and settings keys |
 | [docs/CHANGELOG.md](docs/CHANGELOG.md) | what changed in each version |
-| `examples\` | two samples — a greeting plugin and a bytecode transformer |
+| `examples\` | three samples — a greeting plugin, a bytecode transformer and a single platform |
 | `tools\` | building and testing, and the check before a Workshop upload |
 
 ## Worth knowing

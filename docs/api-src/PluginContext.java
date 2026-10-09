@@ -122,6 +122,40 @@ public final class PluginContext {
      */
     private final PluginBackend backend;
     private volatile PluginText text;
+    private AuthoringPreview.Session authoringPreview;
+    private final List<WorkshopPublisher> workshopPublishers = new ArrayList<>();
+
+    /** User-confirmed Steam Workshop publishing. Context shutdown closes the service. */
+    public synchronized WorkshopPublisher workshopPublisher() {
+        WorkshopPublisher publisher = new WorkshopPublisherRuntime(descriptor.id, dataDir(),
+                () -> !released && backend == RealPluginBackend.INSTANCE);
+        if (!released) workshopPublishers.add(publisher);
+        return publisher;
+    }
+
+
+    /** Opens one explicit, ephemeral authoring test actor. Call off EDT; see {@link AuthoringPreview}. */
+    private boolean openingAuthoringPreview;
+    public AuthoringPreview.Session openAuthoringPreview(AuthoringPreview.Snapshot snapshot) {
+        if (javax.swing.SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("Call authoring preview off EDT");
+        synchronized (this) {
+            if (released) throw new IllegalStateException("Plugin context has been released");
+            if (backend != RealPluginBackend.INSTANCE) throw new UnsupportedOperationException("Authoring preview requires the running desktop app");
+            if (openingAuthoringPreview || authoringPreview != null && !authoringPreview.state().closed())
+                throw new IllegalStateException("This plugin already owns an authoring preview");
+            openingAuthoringPreview = true;
+        }
+        AuthoringPreview.Session candidate = null;
+        try {
+            candidate = new AuthoringPreviewRuntime(snapshot, () -> !released);
+            synchronized (this) {
+                if (!released) { authoringPreview = candidate; return candidate; }
+            }
+            candidate.close();
+            throw new IllegalStateException("Plugin context was released while opening preview");
+        } finally { synchronized (this) { openingAuthoringPreview = false; } }
+    }
+
 
     // ── 등록 장부 — stop() 뒤 releaseAll() 이 거둔다 ─────────────────────────
     private record Subscription(String topic, Consumer<Map<String, Object>> listener) {
@@ -137,12 +171,13 @@ public final class PluginContext {
     private final List<PluginUi.FeatureToggle> featureToggles = new ArrayList<>();
     private final List<ScheduledHandle> tasks = new ArrayList<>();
     private final List<MicCaptureLease> micCaptures = new ArrayList<>();
+    private final List<TerrainHandle> terrainHandles = new ArrayList<>();
     /**
      * {@link #releaseAll} 이 지나갔다 — 이 모니터 아래에서만 읽고 쓴다. 등록 문마다 {@link #refused}
      * 로 먼저 묻고, 백엔드에 건 뒤 {@link #ledger} 로 다시 묻는다: 그 사이에 거둠이 지나갔으면
      * 곧장 되돌린다. 그래서 거두는 도중에 끼어든 등록은 함께 거둬지거나 거절되거나 둘 중 하나다.
      */
-    private boolean released;
+    private volatile boolean released;
     /** 거둔 뒤의 등록을 플러그인마다 한 번만 경고하려고. */
     private boolean warnedAfterRelease;
     /** 앱 종료 길에서 거뒀다 — 캐릭터를 보내거나 EDT 를 건드리는 복구는 그때 건너뛴다. */
@@ -1041,10 +1076,56 @@ public final class PluginContext {
         return handle;
     }
 
+    /**
+     * Registers desktop terrain owned by this plugin. Names are independent between plugins;
+     * a second live registration with the same name in this plugin throws IllegalArgumentException.
+     * Piece IDs must be unique within the registration. A snapshot contains at most
+     * {@link TerrainRect#MAX_PIECES} pieces. Registering an empty list reserves the name.
+     * Geometry is applied before the next mascot movement tick. Existing areas of the garden,
+     * game and other plugins are preserved. Registration order breaks ties between plugin pieces.
+     * The plugin owns painting and must update/remove terrain when its drawing moves or disappears;
+     * desktop-window occlusion is not inferred. Broadcast mode suspends desktop terrain.
+     * Returns an already removed handle after stop. All other invalid inputs throw before mutation.
+     */
+    public TerrainHandle registerTerrain(String name, List<TerrainRect> rects) {
+        if (refused("registerTerrain")) return REFUSED_TERRAIN;
+        TerrainRect.requireId(name);
+        List<TerrainRect> copy = TerrainRect.snapshot(rects);
+        TerrainHandle raw = java.util.Objects.requireNonNull(backend.registerTerrain(id(), name, copy));
+        TerrainHandle managed = new TerrainHandle() {
+            @Override
+            public boolean update(List<TerrainRect> replacement) {
+                if (raw.isRemoved() || refused("terrain.update")) return false;
+                return raw.update(TerrainRect.snapshot(replacement));
+            }
+
+            @Override
+            public void remove() {
+                raw.remove();
+                synchronized (PluginContext.this) {
+                    terrainHandles.remove(this);
+                }
+            }
+
+            @Override
+            public boolean isRemoved() {
+                return raw.isRemoved();
+            }
+        };
+        ledger(() -> terrainHandles.add(managed), managed::remove);
+        return managed;
+    }
+
+    private static final TerrainHandle REFUSED_TERRAIN = new TerrainHandle() {
+        @Override public boolean update(List<TerrainRect> rects) { return false; }
+        @Override public void remove() { }
+        @Override public boolean isRemoved() { return true; }
+    };
+
     // ── 생애 — stop() 뒤 로더가 거둔다, 그 뒤의 등록은 거절한다 ────────────────
 
     /**
-     * 이 컨텍스트로 등록한 것 전부를 거둔다 — 리스너·훅·단축키·메뉴 줄·예약 작업 — 그리고 바꾼
+     * 이 컨텍스트로 등록한 것 전부를 거둔다 — 리스너·훅·단축키·메뉴 줄·예약 작업·지형 — 그리고 바꾼
      * 상태를 되돌린다 — 클릭 인사 점유(이 플러그인이 쥔 경우만), 부른 개체(아직 안 보낸 것),
      * 숨겨 둔 캐릭터(마지막 값이 {@code false} 면 다시 보인다). {@code stop()} 이 돌아오거나 던진 뒤
      * {@link PluginLoader} 가 부른다({@link PluginTestKit#close} 도). 두 번 불러도 안전. 변환기는
@@ -1067,6 +1148,7 @@ public final class PluginContext {
         List<PluginUi.FeatureToggle> tgs;
         List<ScheduledHandle> tks;
         List<MicCaptureLease> captures;
+        List<TerrainHandle> terrain;
         boolean claim;
         boolean showAgain;
         List<Integer> ids;
@@ -1076,6 +1158,8 @@ public final class PluginContext {
                 return;
             }
             released = true;
+            for (WorkshopPublisher publisher : workshopPublishers) publisher.close();
+            workshopPublishers.clear();
             releasedAtShutdown = atShutdown;
             subs = List.copyOf(subscriptions);
             subscriptions.clear();
@@ -1089,6 +1173,8 @@ public final class PluginContext {
             featureToggles.clear();
             tks = List.copyOf(tasks);
             tasks.clear();
+            terrain = List.copyOf(terrainHandles);
+            terrainHandles.clear();
             captures = List.copyOf(micCaptures);
             micCaptures.clear();
             claim = clickGreetingClaimed;
@@ -1097,6 +1183,12 @@ public final class PluginContext {
             charactersVisibleLast = null;
             ids = List.copyOf(summoned);
             summoned.clear();
+        }
+        AuthoringPreview.Session preview;
+        synchronized (this) { preview = authoringPreview; authoringPreview = null; }
+        if (preview != null) quietly(preview::close);
+        for (TerrainHandle handle : terrain) {
+            quietly(handle::remove);
         }
         // Close microphone holds outside this monitor, including acquisitions still in flight.
         for (MicCaptureLease lease : captures) {
@@ -1151,7 +1243,7 @@ public final class PluginContext {
     /** 검사용 — 아직 거두지 않은 등록 수(리스너+훅+단축키+줄+작업). */
     synchronized int registeredCount() {
         return subscriptions.size() + hooks.size() + hotkeys.size() + rows.size()
-                + featureToggles.size() + tasks.size()
+                + featureToggles.size() + tasks.size() + terrainHandles.size()
                 + (int) micCaptures.stream().filter(lease -> !lease.isClosed()).count();
     }
 

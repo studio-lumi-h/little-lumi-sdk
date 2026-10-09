@@ -88,7 +88,7 @@
   <p class="eyebrow">Little LUMI Model · Plugin guide</p>
   <h1>Little LUMI plugins — first steps</h1>
   <p class="lede">It is fine if you have never written code. Follow this page from the top and within thirty minutes Lumi will be saying the words you gave her.</p>
-  <div class="meta"><span>Plugin API version 1</span><span>Java 25</span><span>Windows</span><span>App 1.4.0</span><span><a href="plugin-guide.html">한국어</a></span></div>
+  <div class="meta"><span>Plugin API version 1</span><span>Java 25</span><span>Windows</span><span>App 1.5.0</span><span><a href="plugin-guide.html">한국어</a></span></div>
 
   <h2 id="zero">Step 0 — starting from nothing</h2>
   <p>This section is for <strong>someone who has never programmed</strong>. You do not need to know what a command prompt is, or what "compile" means. Click and type what is written below and you will be done in thirty minutes. If you already use a command prompt, skip this section and start at <a href="#prep">What you need</a>.</p>
@@ -129,7 +129,7 @@
 
     <li><h3>Download and unpack the Mod SDK</h3>
       <p>It is a zip file holding everything you need to build a plugin.</p>
-      <p><strong>What to do.</strong> On the <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK downloads</a> page pick the release of <strong>the same version as the Lumi you run</strong>, and under <strong>Assets</strong> download <code>LittleLUMI-ModSDK-1.4.0-…zip</code> (as of this guide the app and the SDK are both 1.4.0). In Explorer, right-click the zip → <strong>Extract All</strong>. A <strong>short path with no spaces and no non-English characters</strong> is easiest — below we will use <code>C:\LumiSDK</code>.</p>
+      <p><strong>What to do.</strong> On the <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK downloads</a> page pick the release of <strong>the same version as the Lumi you run</strong>, and under <strong>Assets</strong> download <code>LittleLUMI-ModSDK-1.5.0-…zip</code> (as of this guide the app and the SDK are both 1.5.0). In Explorer, right-click the zip → <strong>Extract All</strong>. A <strong>short path with no spaces and no non-English characters</strong> is easiest — below we will use <code>C:\LumiSDK</code>.</p>
       <p>When it is unpacked, <code>C:\LumiSDK</code> looks like this at the top level.</p>
 <div class="tree">C:\LumiSDK\
 ├─ lib\                  <span class="c">← the Lumi jars, for building only. You cannot run Lumi with these</span>
@@ -233,7 +233,7 @@ Rules to follow:
 - That services file holds one line: the full name of the entry class (e.g. my.plugin.MyPlugin).
   It is not the file where the plugin.json id goes.
 - The id in plugin.json uses only lower-case letters, digits, dots, hyphens and underscores,
-  and starts with a lower-case letter or a digit. api_version is 1 and app_version is 1.4.0.
+  and starts with a lower-case letter or a digit. api_version is 1 and app_version is 1.5.0.
   The id becomes the data folder name, so do not change it later.
 - Reach app features only through PluginContext (ctx). Do not call app classes that are not in
   docs\API.en.md, and do not go digging with reflection.
@@ -324,7 +324,7 @@ Rules to follow:
   "description": "Greets you when Lumi appears, and logs every behaviour change.",
   "dependencies": [],
   "api_version": 1,
-  "app_version": "1.4.0",
+  "app_version": "1.5.0",
   "affects_character": false,
   "network": false
 }</code></pre>
@@ -334,7 +334,7 @@ Rules to follow:
         <tr><td><code>name</code> · <code>version</code> · <code>author</code> · <code>description</code></td><td>Shown as they are on the Mods tab. The version is in the <code>1.0.0</code> shape.</td></tr>
         <tr><td><code>dependencies</code></td><td>The ids of other plugins that must load first. If one of them is not loaded, your plugin does not load either and the tab shows "needs another plugin".</td></tr>
         <tr><td><code>api_version</code></td><td><code>1</code> as of this guide.</td></tr>
-        <tr><td><code>app_version</code></td><td>The app version you tested against. When the running app differs, the Mods tab shows a chip such as "made for 1.4.0" — information only, it never blocks.</td></tr>
+        <tr><td><code>app_version</code></td><td>The app version you tested against. When the running app differs, the Mods tab shows a chip such as "made for 1.5.0" — information only, it never blocks.</td></tr>
         <tr><td><code>affects_character</code></td><td><code>true</code> if it changes Lumi's behaviour or her lines. The tab marks it "changes behaviour".</td></tr>
         <tr><td><code>network</code></td><td><code>true</code> if it uses the internet. The tab marks it "uses the internet". It is there to tell the user honestly.</td></tr>
       </table></div></li>
@@ -680,7 +680,7 @@ python tools\pack_workshop.py C:\LumiPlugins\hello-workshop</code></pre>
 ├─ examples\hello\         <span class="c">← the skeleton of events, a settings card, a tray row and a transformer + test\ — copy from here to start</span>
 └─ examples\plugin-transformer\  <span class="c">← changing one app method with java.lang.classfile (advanced)</span></div>
   <p><strong>What you need.</strong> JDK 25 and Python 3 (<a href="#prep">What you need</a>). The tools look for <code>javac</code> in the order <code>--javac</code> → <code>JAVAC</code> → <code>JAVA_HOME</code> → PATH (both <code>build_plugin.py</code> and <code>run_tests.py</code>).</p>
-  <p><strong>Where to get it.</strong> On the <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK downloads</a> page pick the release of the same version as the Lumi you run. Under <strong>Assets</strong>, take the ZIP whose name starts with <code>LittleLUMI-ModSDK-</code>. After unpacking, check that <code>lib\Shimeji-ee.jar</code> and <code>sdk.json</code> are there. The SDK and the app carry the same version number (currently SDK/app 1.4.0, API 1). See the release notes for documentation and example revisions. What changed in each app version is in <code>docs\CHANGELOG.md</code>.</p>
+  <p><strong>Where to get it.</strong> On the <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Little LUMI SDK downloads</a> page pick the release of the same version as the Lumi you run. Under <strong>Assets</strong>, take the ZIP whose name starts with <code>LittleLUMI-ModSDK-</code>. After unpacking, check that <code>lib\Shimeji-ee.jar</code> and <code>sdk.json</code> are there. The SDK and the app carry the same version number (currently SDK/app 1.5.0, API 1). See the release notes for documentation and example revisions. What changed in each app version is in <code>docs\CHANGELOG.md</code>.</p>
   <p><strong>Compatibility policy.</strong> Entries in the API tables are one of two things: <strong>stable</strong> or <strong>experimental</strong>. An entry with no mark is stable, and within the same <code>api_version</code> such entries are only added to — they do not disappear and they do not change shape. An entry with the "experimental" chip may still change or disappear, and when it does it is written up in <code>docs\CHANGELOG.md</code>. When <code>api_version</code> goes up, plugins built for the version just before still load for one more version. Doors added in a later version are not in an older app even at the same <code>api_version</code>, so write the app version you tested against into <code>app_version</code> in <code>plugin.json</code>. The full text is "Compatibility policy" in <code>docs\API.en.md</code>.</p>
   <p><strong>The terms in one line.</strong> Use the SDK only for making Lumi plugins and do not redistribute it; publish the mods you make free of charge only; the rights to the Lumi character, artwork and lines belong to STUDIO LUMI — the full text is <code>LICENSE-SDK.txt</code> inside the zip.</p>
   <p><strong>When it ends.</strong> After <code>stop()</code>, Lumi collects only what you registered through the context — windows you made yourself, worker threads and <code>prefs().onChange</code> listeners you tidy up in <code>stop()</code> yourself. <code>ask()</code> on a released context returns <code>-2</code> immediately on the calling thread, and bad <code>every()</code> arguments (null, a period of 0 or less) still throw afterwards. The detailed contract is "Lifecycle" in <code>docs\API.en.md</code>.</p>
@@ -700,7 +700,7 @@ ctx.hook("behavior.force", (hook, current, c) -&gt; "HappyHop".equals(current) &
   <h2 id="fragments">Data mods go in fragments</h2>
   <p>If your mod adds one behaviour, a few lines or a few strings, <strong>do not ship a whole <code>behaviors.xml</code> or <code>language_ko.properties</code></strong>. When whole files collide with another mod only one survives, and when Lumi updates and that file changes, the mod's copy takes it back to the old file. Put a <strong>fragment</strong> instead — put just "what to add" into a folder whose name is the file name with <code>.d</code> after it, and Lumi merges it over the original at startup.</p>
 <div class="tree">mods\my-dance\
-├─ mod.json                                  <span class="c">← {"name":"My Dance","version":"1.0.0","app_version":"1.4.0"} — a v1.0.0 chip on the Mods tab</span>
+├─ mod.json                                  <span class="c">← {"name":"My Dance","version":"1.0.0","app_version":"1.5.0"} — a v1.0.0 chip on the Mods tab</span>
 ├─ img\Lumi\conf\behaviors.d\dance.xml     <span class="c">← adding one behaviour to Lumi (example below)</span>
 ├─ img\Lumi\conf\actions.d\dance.xml       <span class="c">← the action that behaviour uses</span>
 ├─ conf\language.d\my-dance_en.properties   <span class="c">← overriding and adding strings (en only). my-dance.properties fills only missing keys, in every language</span>
@@ -715,6 +715,7 @@ ctx.hook("behavior.force", (hook, current, c) -&gt; "HappyHop".equals(current) &
 &lt;/Mascot&gt;</code></pre>
   <p><strong>The rules.</strong> ① A fragment is complete XML of the same shape as the original (root <code>&lt;Mascot&gt;</code>). What is inside the lists is <strong>appended</strong> to the original, and if the same <code>Name</code> already exists it is <strong>replaced in place</strong>. ② When several mods change the same name, <strong>the lower one in the mod list wins</strong>. ③ Line fragments are appended after the original, so voice pack numbering does not shift. ④ String fragments apply only to the language at the end of the file name (<code>_ko</code> · <code>_ja</code> · <code>_zh</code> · <code>_zh_TW</code> · <code>_en</code>). ⑤ A broken fragment skips only that file and leaves one line in the log. If the merged result fails the engine's validation, Lumi reads it again without the fragments — a character never disappears. ⑥ Fragments do not count towards "overlaps" on the Mods tab.</p>
   <p><strong>Version marking.</strong> Put <code>version</code> and <code>app_version</code> in the <code>mod.json</code> at the top of the mod folder (<code>plugin.json</code> for a plugin) and the Mods tab row gets a <code>v1.0.0</code> chip, and if it differs from the Lumi you are running it says so with a "made for &lt;that version&gt;" chip (it does not block anything).</p>
+  <p><strong>List icon.</strong> Put an <code>icon.png</code> at the top of the mod folder and the Mods tab row shows it as a small icon before the title (square works best; other shapes are scaled down keeping their proportions). Without one, a mod that carries a character uses that character's first frame, and anything else gets a default icon drawn for its kind. Only PNG is read. Broken files, files over 8 MiB, and images over 8192 px on a side or 40 million pixels are skipped. The character frame is tried next; if no image can be read, a default icon is shown. Being at the top of the folder, it is never copied over Lumi's own files and does not count as an "overlap".</p>
 
   <h2 id="trouble">When it does not work</h2>
   <div class="tw"><table>

@@ -1,8 +1,8 @@
 {
  "product": "Little LUMI Model",
- "sdk_version": "1.4.0",
- "app_version": "1.4.0",
- "built": "2026-09-16 04:05",
+ "sdk_version": "1.5.0",
+ "app_version": "1.5.0",
+ "built": "2026-10-09 13:53",
  "java": "25",
  "api_version": 1,
  "hooks": [
@@ -84,11 +84,20 @@
    "after",
    "onEdt",
    "offEdt",
-   "mouthFlapFor"
+   "mouthFlapFor",
+   "openAuthoringPreview",
+   "registerTerrain"
   ],
   "types": [
    "ScheduledHandle",
-   "PluginTestKit"
+   "PluginTestKit",
+   "VisualLogic",
+   "CharacterDefinition",
+   "CharacterTemplates",
+   "AnimationActivities",
+   "AuthoringPreview",
+   "TerrainRect",
+   "TerrainHandle"
   ],
   "hooks": [
    "bubble.text"
@@ -124,6 +133,9 @@
   "examples/hello/src/META-INF/little-lumi/docs/licenses/README.html",
   "examples/plugin-transformer/README.html",
   "examples/plugin-transformer/src/META-INF/little-lumi/docs/licenses/README.html",
+  "examples/terrain-basic/README.en.html",
+  "examples/terrain-basic/README.html",
+  "examples/terrain-basic/src/META-INF/little-lumi/docs/licenses/README.html",
   "LICENSE-SDK.html",
   "docs/licenses/APP-LICENSE.html",
   "docs/licenses/CREDITS.html",

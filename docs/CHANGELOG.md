@@ -3,7 +3,31 @@
 플러그인이 기대도 되는 표면(`API.md`)이 앱 버전마다 어떻게 바뀌는지 여기에 적습니다 — 더한 것은 「추가」, 기본값만 돌려주는 빈 자리가 된 훅은 「폐기」. 실험 항목(「실험」 칩, `sdk.json` 의 `preview`)의 변경과 폐기도 여기에 적습니다.
 Per app version: what changed in the surface a plugin may rely on (`API.md`) — "Added" for additions, "Deprecated" for a hook that became an empty default-only slot. Changes to and removals of preview items (the "preview" chip, `preview` in `sdk.json`) are listed here too.
 
-## SDK 1.4.0 · 앱 1.4.0 · api_version 1 — 현재 배포 / Current distribution
+## SDK 1.5.0 · 앱 1.5.0 · api_version 1 — 현재 배포 / Current distribution
+
+`api_version`은 1을 유지하며 기존 안정 API를 계속 지원합니다. 아래 캐릭터 제작·미리보기·지형 API는 실험 항목입니다. / `api_version` remains 1 and existing stable APIs remain supported. Character authoring, preview and terrain APIs below are preview features.
+
+### 캐릭터 제작 / Character authoring
+
+- `VisualLogic`·`CharacterDefinition`으로 시각 규칙과 자체 캐릭터를 생성하고, `CharacterTemplates`로 행동·공유 액션·모션 템플릿을 조회할 수 있습니다. 독립 내보내기는 본체 안내 이미지·원음을 포함하지 않습니다. / Generate visual rules and original characters, query behavior/action/motion templates, and export standalone characters without host guide images or sounds.
+- 45종의 자동 애니메이션으로 이동·벽·천장·착지·앱 반응과 캐릭터 간 상호작용을 구성할 수 있습니다. 최소 실행 프로필은 사용자 모션과 최대 2초의 종료 반응을 지원합니다. / Configure 45 automatic animations for movement, terrain, app reactions and social activities. Minimal profiles support custom motions and exit reactions of up to two seconds.
+- 프레임별 WAV·무음·반복·음량과 `SoundPlayback` 재생 범위를 지원합니다. `validSoundPath`는 Unicode·공백이 있는 상대 경로를, `validAutomaticImageSetName`은 자동 캐릭터 폴더 이름을 검사합니다. / Added per-frame WAV, silence, looping, gain and playback scope, plus Unicode/space-aware sound-path and automatic character-folder validation.
+- `HeldMotion.PHYSICS`로 잡았을 때의 연속 물리 회전을 선택할 수 있습니다. 기존 생성 호출은 기존 동작을 유지하며, `MascotState.bounds`는 회전 후 표시 영역을 반환합니다. / Opt into continuous held rotation with `HeldMotion.PHYSICS`; existing generation calls keep their behavior. `MascotState.bounds` reports the rotated display area.
+- 자동 캐릭터의 창 옆면 접촉 위치, 선물 받기 후 대기·종료, 행동 전환 뒤 효과음 정리를 개선했습니다. / Improved window-edge alignment, finite gift waiting/end sequences and sound cleanup after behavior transitions.
+- `HelperVisuals`와 5인자 생성 오버로드는 이전 자동 출력의 비교·복원을 위한 호환 API입니다. 새 제작과 실제 미리보기에는 기존 생성·미리보기 API를 사용하세요. / `HelperVisuals` and five-argument generation overloads support historical-output comparison/recovery; use the existing generation and preview APIs for new work.
+
+### 미리보기와 지형 / Preview and terrain
+
+- `AuthoringPreview`로 실제 엔진에서 1–3마리의 임시 캐릭터를 시험하고 구성·규칙·변수를 확인할 수 있습니다. `AnimationActivities`로 연계 단계·역할·대체 그림을 조회하고 활동을 시작·일시정지·중지할 수 있습니다. / Test 1–3 temporary engine characters, inspect configuration/rules/variables, query linked stages/roles/visuals, and start, pause or stop activities.
+- `registerTerrain`, `TerrainRect`, `TerrainHandle`로 발판을 등록·갱신·해제할 수 있습니다. `examples/terrain-basic`에서 사용법을 확인하세요. / Register, update and remove platforms; see `examples/terrain-basic`.
+
+### 창작마당과 플러그인 UI / Workshop and plugin UI
+
+- `PluginContext.workshopPublisher()`로 사용자 확인 후 모드를 게시·갱신할 수 있습니다. 계정·소유권을 검사하고, 업데이트의 기존 공개 범위를 유지하며, 실패한 신규 게시를 같은 항목으로 재시도할 수 있습니다. / Publish/update after user confirmation, with account/ownership checks, preserved update visibility and retries using the created item ID.
+- `WorkshopPublisher.Request`에 파일 목록·미리보기 SHA-256 검증을 추가했습니다. `Listener.sourceReleased()`로 임시 원본 파일을 정리할 시점을 알 수 있습니다. 기존 8인자 요청도 계속 지원합니다. / Added exact file/preview hash verification and a source-release callback for temporary-file cleanup, while preserving eight-argument requests.
+- `MenuHandle.setLabel` 변경이 이미 표시 중인 메뉴·설정 단추에도 반영됩니다. 설정 카탈로그에 `PomodoroCycles`, `lumi.reminder.sound.*`, `lumi.reminder.speaker`를 추가했으며, 포모도로는 지정한 주기 완료 시 `phase=stopped`를 한 번 발행합니다. / Label changes reach visible menu/settings controls. Added cycle-count and reminder audio settings; Pomodoro emits one stopped phase when the configured cycles finish.
+
+## SDK 1.4.0 · 앱 1.4.0 · api_version 1
 
 - `WorkshopContent`의 제작자 파일·구독 식별자 조회를 안정 API로 추가했습니다. / Added stable `WorkshopContent` queries for creator files and subscription identities.
 

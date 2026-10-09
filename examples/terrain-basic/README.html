@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>발판 하나 예제</title><style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;font-size:18px;line-height:1.8;color:#243349;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:32px 24px 72px}header{border-bottom:1px solid #ccd8e6;margin-bottom:24px;padding-bottom:18px}.kicker{font-size:14px;color:#536c89}h1{font-size:clamp(28px,4vw,38px);line-height:1.3;word-break:keep-all;margin:14px 0}h2{font-size:26px;line-height:1.4;margin:38px 0 14px}h3{font-size:22px;line-height:1.5;margin-top:28px}h4,h5,h6{font-size:20px}p{margin:12px 0}a{color:#175baa;text-underline-offset:3px;overflow-wrap:anywhere}nav{display:flex;gap:10px 20px;flex-wrap:wrap}article{background:white;border:1px solid #d2deea;border-radius:14px;padding:26px;min-width:0;overflow-wrap:anywhere}ul,ol{padding-left:28px}li{margin:8px 0}code{font-family:ui-monospace,Consolas,monospace;font-size:1rem;white-space:normal;overflow-wrap:anywhere}p code,li code,td code{background:#edf2f8;border-radius:4px;padding:1px 3px}.codebox{border:1px solid #c8d7e8;border-radius:10px;overflow:hidden;margin:20px 0;background:#f5f8fc}.codebar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #d7e2ee}.codebar span{font-size:14px;color:#526783}button{font:inherit;font-size:16px;border:0;border-radius:6px;background:#175baa;color:#fff;padding:7px 14px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d68c19;outline-offset:3px}pre{margin:0;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65;font-size:18px}pre code{white-space:pre-wrap;font-size:18px;background:none}table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:18px;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #d1dce8;overflow-wrap:anywhere}th{background:#eaf1fa}blockquote{margin:18px 0;padding:6px 18px;border-left:4px solid #87a8cc;background:#f2f6fc}.copy-status{display:block;min-height:1.4em;font-size:15px;color:#3b644b}details{margin:16px 0}summary{cursor:pointer;color:#175baa}.contents{font-size:16px}.contents ol{columns:2}footer{margin-top:28px;color:#5c7088;font-size:14px}.doclist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;list-style:none;padding:0}.doclist li{background:white;border:1px solid #d2deea;border-radius:9px;padding:14px;margin:0}
+@media(max-width:720px){main{padding:22px 14px 50px}article{padding:17px}h2{font-size:24px}.contents ol{columns:1}.doclist{grid-template-columns:1fr}table,tbody,tr,td{display:block;width:100%}thead{display:none}tr{border:1px solid #d1dce8;border-radius:8px;margin:12px 0;padding:5px}td{border:0;padding:7px}td:before{content:attr(data-label);display:block;font-size:15px;color:#526783;font-weight:700}.codebar{flex-wrap:wrap}pre{padding:13px}}
+@media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
+</style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="../../index.html">SDK 문서 / Documents</a><a href="../../README.html">한국어</a><a href="../../README.en.html">English</a></nav></header><article><h1 id="발판-하나-예제">발판 하나 예제</h1>
+<p>지형 API의 등록·갱신·해제를 보여주는 작은 예제입니다. 트레이 메뉴 세 개로 초록색 발판 하나를 표시하고, 너비를 바꾸고, 제거합니다.</p>
+<table><thead><tr><th>메뉴</th><th>API</th></tr></thead><tbody>
+<tr><td data-label="메뉴">SDK: 발판 표시</td><td data-label="API"><code>ctx.registerTerrain(&quot;platform&quot;, geometry)</code></td></tr>
+<tr><td data-label="메뉴">SDK: 발판 너비 변경</td><td data-label="API"><code>terrain.update(geometry)</code></td></tr>
+<tr><td data-label="메뉴">SDK: 발판 제거</td><td data-label="API"><code>terrain.remove()</code></td></tr>
+</tbody></table>
+<p>발판의 초록색 막대는 제목 없는 <code>JWindow</code>로 표시합니다. 막대 위치와 지형에는 같은 바탕화면 논리 좌표를 사용합니다. 갱신할 때 조각 ID <code>bar</code>를 유지하며, 종료 시에는 지형과 창을 함께 제거합니다. 바탕화면 모드에서 사용합니다.</p>
+<p>SDK 폴더에서 빌드하고 테스트합니다.</p>
+<div class="codebox"><div class="codebar"><span>powershell</span><button type="button" data-copy="code-1">Copy / 복사</button></div><pre><code id="code-1">python tools\build_plugin.py examples\terrain-basic
+python tools\run_tests.py examples\terrain-basic
+</code></pre><span class="copy-status" role="status" aria-live="polite"></span></div>
+<p>생성된 <code>dist\lumi.sdk.example.terrain</code> 폴더를 앱 설치 폴더의 <code>mods</code> 아래에 복사합니다. 설정 → 모드에서 코드 실행에 동의하고 앱을 다시 실행하면 트레이 메뉴가 생깁니다. 이 예제는 <code>registerTerrain</code>이 포함된 앱이 필요합니다. 이전 앱은 같은 <code>api_version</code>이어도 해당 메서드가 없을 수 있습니다.</p>
+<p>꼬미를 막대 위에서 놓아 착지를 확인할 수 있습니다. 너비를 줄이거나 발판을 제거하면 지형도 다음 이동 틱에 바뀝니다. 동봉 테스트는 창을 열기 전의 메뉴 등록과 종료를 확인합니다. 실제 화면의 좌표 정렬과 움직임은 앱에서 확인합니다. 자세한 계약은 <a href="../../docs/API.html">API.md</a>의 지형 절을 참고합니다.</p></article><footer>Offline reader / 오프라인 읽기용 · 원본 문서와 라이선스 파일은 패키지에 그대로 보존됩니다.</footer></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const code=document.getElementById(button.dataset.copy);let copied=false;
+ try{await navigator.clipboard.writeText(code.textContent);copied=true}catch(error){
+  const field=document.createElement('textarea');field.value=code.textContent;
+  field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.focus();field.select();
+  try{copied=document.execCommand('copy')}catch(error){}field.remove();
+ }
+ const status=button.closest('.codebox').querySelector('.copy-status');
+ status.textContent=copied?'Copied / 복사 완료':'Select the text to copy / 문안을 선택해 복사해 주세요';
+}));
+</script></body></html>

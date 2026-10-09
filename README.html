@@ -5,10 +5,10 @@
 @media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
 </style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="index.html">SDK 문서 / Documents</a><a href="README.html">한국어</a><a href="README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%93%A4%EC%96%B4-%EC%9E%88%EB%82%98">무엇이 들어 있나</a></li><li><a href="#%EC%B2%98%EC%9D%8C%EC%9D%B4%EB%9D%BC%EB%A9%B4">처음이라면</a></li><li><a href="#%EB%B9%A8%EB%A6%AC-%ED%95%B4-%EB%B3%B4%EA%B3%A0-%EC%8B%B6%EB%8B%A4%EB%A9%B4">빨리 해 보고 싶다면</a></li><li><a href="#%EA%B7%B8%EB%8B%A4%EC%9D%8C%EC%97%90-%EB%B3%BC-%EA%B2%83">그다음에 볼 것</a></li><li><a href="#%EC%95%8C%EC%95%84-%EB%91%98-%EA%B2%83">알아 둘 것</a></li><li><a href="#%EC%BD%94%EB%93%9C-%EB%AA%A8%EB%93%9C-%ED%99%9C%EC%84%B1%ED%99%94">코드 모드 활성화</a></li></ol></details><article><h1 id="little-lumi-model-플러그인-sdk">Little LUMI Model — 플러그인 SDK</h1>
 <p><a href="README.en.html">English</a> · <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">다운로드(Releases)</a></p>
-<blockquote><strong>이 저장소는 읽을 것만 담고 있습니다.</strong> 문서·예제·도구·공개 API 소스입니다. <strong>플러그인을 만들려면 <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a>에서 ZIP 을 받으세요</strong> — 컴파일에 필요한 <code>lib/</code> 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 <strong>1.4.0</strong> 입니다.</blockquote>
+<blockquote><strong>이 저장소는 읽을 것만 담고 있습니다.</strong> 문서·예제·도구·공개 API 소스입니다. <strong>플러그인을 만들려면 <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a>에서 ZIP 을 받으세요</strong> — 컴파일에 필요한 <code>lib/</code> 의 jar 와 생성된 javadoc 이 그 안에 들어 있습니다. 지금 버전은 <strong>1.5.0</strong> 입니다.</blockquote>
 <hr>
 <p>반갑습니다. 이 SDK 는 루미에 내 것을 더하는 도구 모음입니다. 클릭·쓰다듬기·알람 같은 일에 반응시키고, 대사·메뉴·단축키를 더하고, 그림이나 행동·번역 같은 데이터만으로 된 모드도 만들 수 있습니다.</p>
-<p>이 배포본은 <strong>SDK 1.4.0 / 앱 1.4.0 / api_version 1</strong> 입니다.</p>
+<p>이 배포본은 <strong>SDK 1.5.0 / 앱 1.5.0 / api_version 1</strong> 입니다.</p>
 <p>문서 모음은 <a href="index.html">index.html</a>에서 브라우저로 읽을 수 있습니다. 코드 예제에는 복사 버튼이 있고, 원본 Markdown과 라이선스도 그대로 들어 있습니다.</p>
 <h2 id="무엇이-들어-있나">무엇이 들어 있나</h2>
 <table><thead><tr><th>폴더·파일</th><th>무엇에 쓰나</th></tr></thead><tbody>
@@ -16,7 +16,7 @@
 <tr><td data-label="폴더·파일"><a href="plugin-guide.html"><code>plugin-guide.html</code></a></td><td data-label="무엇에 쓰나">처음부터 따라 하는 첫걸음 안내</td></tr>
 <tr><td data-label="폴더·파일"><code>lib\</code></td><td data-label="무엇에 쓰나">플러그인을 컴파일할 때 쓰는 jar</td></tr>
 <tr><td data-label="폴더·파일"><code>tools\</code></td><td data-label="무엇에 쓰나">굽기·검사·창작마당 준비 스크립트</td></tr>
-<tr><td data-label="폴더·파일"><code>examples\</code></td><td data-label="무엇에 쓰나">그대로 구워 볼 수 있는 본보기 둘</td></tr>
+<tr><td data-label="폴더·파일"><code>examples\</code></td><td data-label="무엇에 쓰나">대사·변환기·발판 하나 본보기</td></tr>
 <tr><td data-label="폴더·파일"><code>docs\</code></td><td data-label="무엇에 쓰나">API 참조 · 이름 카탈로그 · 변경 이력 · javadoc</td></tr>
 <tr><td data-label="폴더·파일"><code>sdk.json</code></td><td data-label="무엇에 쓰나">이 배포본의 버전 번호와, 이 앱이 주는 훅·이벤트 목록</td></tr>
 <tr><td data-label="폴더·파일"><a href="LICENSE-SDK.html"><code>LICENSE-SDK.txt</code></a></td><td data-label="무엇에 쓰나">이용 조건</td></tr>
@@ -37,7 +37,7 @@ Copy-Item -Recurse dist\hello.lumi.sample &quot;&lt;설치 폴더&gt;\mods\hello
 <tr><td data-label="문서"><a href="docs/API.html">docs/API.md</a></td><td data-label="무엇">할 수 있는 것 전부</td></tr>
 <tr><td data-label="문서"><a href="docs/CATALOG.html">docs/CATALOG.md</a></td><td data-label="무엇">행동·이벤트·훅·설정 키의 이름 찾기</td></tr>
 <tr><td data-label="문서"><a href="docs/CHANGELOG.html">docs/CHANGELOG.md</a></td><td data-label="무엇">버전마다 바뀐 것</td></tr>
-<tr><td data-label="문서"><code>examples\</code></td><td data-label="무엇">본보기 둘 — 인사 플러그인과 바이트코드 변환기</td></tr>
+<tr><td data-label="문서"><code>examples\</code></td><td data-label="무엇">본보기 셋 — 인사 플러그인·바이트코드 변환기·발판 하나</td></tr>
 <tr><td data-label="문서"><code>tools\</code></td><td data-label="무엇">굽기·검사, 그리고 창작마당에 올리기 전 확인</td></tr>
 </tbody></table>
 <h2 id="알아-둘-것">알아 둘 것</h2>

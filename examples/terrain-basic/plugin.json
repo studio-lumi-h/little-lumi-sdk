@@ -1,0 +1,12 @@
+{
+  "id": "lumi.sdk.example.terrain",
+  "name": "SDK example: single platform",
+  "version": "1.0.0",
+  "author": "Little LUMI team",
+  "description": "Register one platform, change its width and remove it using the preview terrain API.",
+  "dependencies": [],
+  "api_version": 1,
+  "app_version": "1.5.0",
+  "affects_character": true,
+  "network": false
+}

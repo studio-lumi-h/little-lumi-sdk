@@ -5,10 +5,10 @@
 @media print{body{background:white}button,nav,.copy-status{display:none}article{border:0;padding:0}main{max-width:none}.codebox,tr{break-inside:avoid}}
 </style></head><body><main><header><div class="kicker">Little LUMI Model · Plugin SDK</div><nav><a href="index.html">SDK 문서 / Documents</a><a href="README.html">한국어</a><a href="README.en.html">English</a></nav></header><details class="contents"><summary>목차 / Contents</summary><ol><li><a href="#what-is-in-here">What is in here</a></li><li><a href="#new-here">New here</a></li><li><a href="#in-a-hurry">In a hurry</a></li><li><a href="#where-to-go-next">Where to go next</a></li><li><a href="#worth-knowing">Worth knowing</a></li><li><a href="#code-mod-consent">Code mod consent</a></li></ol></details><article><h1 id="little-lumi-model-plugin-sdk">Little LUMI Model — Plugin SDK</h1>
 <p><a href="README.html">한국어</a> · <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Downloads (Releases)</a></p>
-<blockquote><strong>This repository holds the readable parts only</strong> — docs, examples, tools and the public API sources. <strong>To build a plugin, download the ZIP from <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a></strong>: the <code>lib/</code> jars you compile against and the generated javadoc live there. This is version <strong>1.4.0</strong>.</blockquote>
+<blockquote><strong>This repository holds the readable parts only</strong> — docs, examples, tools and the public API sources. <strong>To build a plugin, download the ZIP from <a href="https://github.com/studio-lumi-h/little-lumi-sdk/releases">Releases</a></strong>: the <code>lib/</code> jars you compile against and the generated javadoc live there. This is version <strong>1.5.0</strong>.</blockquote>
 <hr>
 <p>Welcome. This SDK is the toolkit for adding your own things to Little LUMI: make her react to clicks, head pats and alarms, add lines, menus and hotkeys, or build a mod out of nothing but data — artwork, behaviours, translations.</p>
-<p>This distribution is <strong>SDK 1.4.0 / app 1.4.0 / api_version 1</strong>.</p>
+<p>This distribution is <strong>SDK 1.5.0 / app 1.5.0 / api_version 1</strong>.</p>
 <p>Open <a href="index.html">index.html</a> for the offline document collection. Code examples have copy buttons; the original Markdown and licence notices are preserved.</p>
 <h2 id="what-is-in-here">What is in here</h2>
 <table><thead><tr><th>Folder or file</th><th>What it is for</th></tr></thead><tbody>
@@ -16,7 +16,7 @@
 <tr><td data-label="Folder or file"><a href="plugin-guide.en.html"><code>plugin-guide.en.html</code></a></td><td data-label="What it is for">the walkthrough, start to finish</td></tr>
 <tr><td data-label="Folder or file"><code>lib\</code></td><td data-label="What it is for">the jars you compile a plugin against</td></tr>
 <tr><td data-label="Folder or file"><code>tools\</code></td><td data-label="What it is for">scripts that build, test and prepare for the Workshop</td></tr>
-<tr><td data-label="Folder or file"><code>examples\</code></td><td data-label="What it is for">two samples you can build as they are</td></tr>
+<tr><td data-label="Folder or file"><code>examples\</code></td><td data-label="What it is for">greeting, transformer and single-platform samples</td></tr>
 <tr><td data-label="Folder or file"><code>docs\</code></td><td data-label="What it is for">API reference · identifier catalogue · changelog · javadoc</td></tr>
 <tr><td data-label="Folder or file"><code>sdk.json</code></td><td data-label="What it is for">this distribution&#x27;s versions, and the hooks and events this app offers</td></tr>
 <tr><td data-label="Folder or file"><a href="LICENSE-SDK.html"><code>LICENSE-SDK.txt</code></a></td><td data-label="What it is for">terms of use</td></tr>
@@ -37,7 +37,7 @@ Copy-Item -Recurse dist\hello.lumi.sample &quot;&lt;install folder&gt;\mods\hell
 <tr><td data-label="Document"><a href="docs/API.en.html">docs/API.en.md</a></td><td data-label="What it holds">everything you can do</td></tr>
 <tr><td data-label="Document"><a href="docs/CATALOG.en.html">docs/CATALOG.en.md</a></td><td data-label="What it holds">names of behaviours, events, hooks and settings keys</td></tr>
 <tr><td data-label="Document"><a href="docs/CHANGELOG.html">docs/CHANGELOG.md</a></td><td data-label="What it holds">what changed in each version</td></tr>
-<tr><td data-label="Document"><code>examples\</code></td><td data-label="What it holds">two samples — a greeting plugin and a bytecode transformer</td></tr>
+<tr><td data-label="Document"><code>examples\</code></td><td data-label="What it holds">three samples — a greeting plugin, a bytecode transformer and a single platform</td></tr>
 <tr><td data-label="Document"><code>tools\</code></td><td data-label="What it holds">building and testing, and the check before a Workshop upload</td></tr>
 </tbody></table>
 <h2 id="worth-knowing">Worth knowing</h2>
