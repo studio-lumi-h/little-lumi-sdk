@@ -1,8 +1,8 @@
 {
  "product": "Little LUMI Model",
- "sdk_version": "1.5.0",
- "app_version": "1.5.0",
- "built": "2026-10-15 14:29",
+ "sdk_version": "1.5.1",
+ "app_version": "1.5.1",
+ "built": "2026-10-15 15:15",
  "java": "25",
  "api_version": 1,
  "hooks": [

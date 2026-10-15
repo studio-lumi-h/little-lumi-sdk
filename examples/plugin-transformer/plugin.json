@@ -6,7 +6,7 @@
   "description": "Rewrites one method of the app jar (FocusDirector.setManual) at load time with the JDK's java.lang.classfile API — the last-resort door, for a spot no event or hook covers. Copy this folder to start your own.",
   "dependencies": [],
   "api_version": 1,
-  "app_version": "1.5.0",
+  "app_version": "1.5.1",
   "affects_character": true,
   "network": false
 }

@@ -5,13 +5,13 @@
 
 > **This repository holds the readable parts only** — docs, examples, tools and the public API sources.
 > **To build a plugin, download the ZIP from [Releases](https://github.com/studio-lumi-h/little-lumi-sdk/releases)**: the `lib/` jars you compile
-> against and the generated javadoc live there. This is version **1.5.0**.
+> against and the generated javadoc live there. This is version **1.5.1**.
 
 ---
 
 Welcome. This SDK is the toolkit for adding your own things to Little LUMI: make her react to clicks, head pats and alarms, add lines, menus and hotkeys, or build a mod out of nothing but data — artwork, behaviours, translations.
 
-This distribution is **SDK 1.5.0 / app 1.5.0 / api_version 1**.
+This distribution is **SDK 1.5.1 / app 1.5.1 / api_version 1**.
 
 Open [index.html](index.html) for the offline document collection. Code examples have copy buttons; the original Markdown and licence notices are preserved.
 

@@ -170,6 +170,9 @@ Bundled libraries (lib/):
   Classpath Exception — the full license text ships with this
   distribution at jre/legal/java.base/LICENSE.
   Source code: https://github.com/openjdk/nashorn
+  Modified for Little LUMI Model: ClassFilter host-access restrictions.
+  The shipped build is 15.7-lumi.2; see git history and the included
+  nashorn/classfilter-host-access.patch and nashorn/rebuild.py.
   This jar embeds the Joni regular-expression engine at
   org/openjdk/nashorn/internal/runtime/regexp/joni/**, which is under the
   MIT License (text below) rather than the GPL — 71 of the 589 source
@@ -273,14 +276,17 @@ upstream, without modification, and the corresponding source code is
 publicly available to anyone at the locations below.
 
 - OpenJDK Nashorn 15.7 (nashorn-core), in lib/
-    binary  https://repo1.maven.org/maven2/org/openjdk/nashorn/nashorn-core/15.7/nashorn-core-15.7.jar
+    upstream binary (before the included local patch):
+      https://repo1.maven.org/maven2/org/openjdk/nashorn/nashorn-core/15.7/nashorn-core-15.7.jar
     source  https://repo1.maven.org/maven2/org/openjdk/nashorn/nashorn-core/15.7/nashorn-core-15.7-sources.jar
     repo    https://github.com/openjdk/nashorn
     complete source and build materials: third-party-sources.zip
     (SDK: docs/sources/third-party-sources.zip), nashorn/nashorn-15.7-source.zip.
     This is the complete upstream release-15.7 repository snapshot at
     4923f1e70e460d87c0eeb1f5232344487d46108d, including Ant build scripts,
-    nasgen, resources and tests. The bundle accompanies the binary; no separate
+    nasgen, resources and tests, plus classfilter-host-access.patch and
+    rebuild.py for the modified 15.7-lumi.2 binary. The bundle accompanies
+    the binary; no separate
     request is required. See its README for the verified build command.
 
 - Eclipse Temurin JRE 25.0.4+7, in jre/

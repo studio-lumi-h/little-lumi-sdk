@@ -39,26 +39,30 @@ Modify the sources, compile all four compatible classes, and supply the installe
 
 Recombination, modification of the library portion and reverse engineering for debugging those modifications are permitted. The shipped app JAR is unsigned, so no private signing key is required. The helper refuses separately signed JARs.
 
-## Nashorn 15.7
+## Nashorn 15.7 + Little LUMI host-access patch
 
-- 완전한 고정 소스 스냅숏 / Complete pinned source snapshot: `nashorn/nashorn-15.7-source.zip`
+- 완전한 고정 원본 소스 / Complete pinned upstream source: `nashorn/nashorn-15.7-source.zip`
 - 출처 / Source: https://github.com/openjdk/nashorn/tree/4923f1e70e460d87c0eeb1f5232344487d46108d (`release-15.7`)
-- GPL v2 + Classpath Exception. 스냅숏의 `LICENSE`, `ADDITIONAL_LICENSE_INFO`, 각 파일 헤더를 보존합니다. 소스·리소스·Ant 빌드 파일·nasgen 생성 도구·테스트를 포함한 upstream 전체 스냅숏입니다.
-- Maven Central 15.7 `sources.jar`의 Java 589개와 스냅숏의 대응 Java 589개가 모두 바이트 단위로 일치합니다. 배포 바이너리는 Maven Central 15.7 원본 해시와 일치합니다.
+- 수정 내역 / Local changes: `nashorn/classfilter-host-access.patch` (2026-10-12).
+- GPL v2 + Classpath Exception. 스냅숏의 `LICENSE`, `ADDITIONAL_LICENSE_INFO`, 파일 헤더를 보존합니다. 원본 소스·리소스·Ant 빌드 파일·nasgen·테스트 전체와 수정 패치를 함께 제공합니다.
+- 원본 Java 589개는 Maven Central 15.7 sources.jar와 일치합니다. 동봉 바이너리는 원본에 패치를 적용해 재빌드한 `15.7-lumi.2`이며 Maven 원본 바이너리와 다릅니다. 파일명은 기존 로더 호환성을 위해 `nashorn-core-15.7.jar`를 유지합니다. 원본/수정본 해시와 패치 해시는 `sources.json`에 있습니다.
 
-내부 ZIP을 풀고 JDK와 Apache Ant 1.9.9 이상을 준비한 다음 실행합니다. 확인한 환경은 JDK 25.0.4와 Ant 1.10.15입니다. 첫 빌드에는 ASM 7.3.1 의존성을 Maven Central에서 받기 위한 인터넷 연결이 필요합니다. 빌드에 필요한 의존성은 upstream Ant 스크립트에 버전과 다운로드 주소가 고정되어 있습니다.
+패치는 ClassFilter가 있는 엔진에서 engine/context 자동 노출, 호스트 스크립트 로딩, 프로세스 종료, scripting 모드 및 JSR-223 호스트 객체 접근을 제한합니다. ClassFilter가 없는 신뢰된 엔진은 기존 동작을 유지합니다. 이 변경은 임의의 Java 호스트 객체나 CPU/메모리 사용량을 격리하는 완전한 샌드박스를 제공하지 않습니다.
 
-Extract the inner ZIP and install a JDK and Apache Ant 1.9.9 or newer. Verified with JDK 25.0.4 and Ant 1.10.15. The first build downloads ASM 7.3.1 from Maven Central; the upstream build scripts specify the dependency versions and URLs.
+The shipped binary is locally modified (`15.7-lumi.2`), not the Maven Central binary. The patch restricts implicit engine/context access, host loading, process exit, scripting mode and JSR-223 host capabilities when a ClassFilter is present. Unfiltered engines retain their original behavior. Arbitrary bound Java objects and CPU/memory consumption are not isolated by this patch.
+
+Python 3, Git, JDK 11 이상과 앱/SDK의 ASM 7.3.1 JAR 다섯 개로 오프라인 재빌드합니다. 확인한 환경은 JDK 25.0.4.1입니다. 압축 해제한 이 소스 묶음의 루트에서 다음 명령을 실행합니다. `--lib`는 앱 또는 SDK의 lib 폴더입니다.
+
+Rebuild offline with Python 3, Git, JDK 11+ and the five ASM 7.3.1 JARs from the app/SDK. Verified with JDK 25.0.4.1. From this extracted source bundle's root:
 
 ```text
-cd nashorn-4923f1e70e460d87c0eeb1f5232344487d46108d/make/nashorn
-ant -Drepo.url=https://repo.maven.apache.org/maven2 jar
+python nashorn/rebuild.py --lib <app-or-sdk-lib> --output <output>/nashorn-core-15.7.jar
 ```
 
-`build/nashorn/dist/nashorn.jar`가 결과입니다. SDK/앱의 `nashorn-core-15.7.jar`와 파일명·ZIP 타임스탬프·Build-Jdk 메타데이터가 달라질 수 있으므로 전체 JAR 해시의 재현을 주장하지 않습니다. 이 동봉은 외부 소스 링크만 안내하던 방식을 소스·빌드 자료의 직접 제공으로 보완합니다.
+도구는 원본 및 패치 해시를 검증하고 임시 폴더에서 패치 적용 → 전체 Java 컴파일 → upstream nasgen → 리소스/서비스 등록 → JAR 생성을 수행합니다. 중간 파일은 자동 정리합니다. 같은 JDK의 반복 빌드를 검사했으며 다른 JDK의 바이트 단위 동일성은 보장하지 않습니다. 패치를 바꾸면 회귀 검사 후 `sources.json`의 패치·바이너리 해시를 함께 갱신해야 합니다. 원본 ZIP의 Ant 절차만 실행하면 보안 패치가 없는 원본 엔진이 만들어집니다.
 
-The result is `build/nashorn/dist/nashorn.jar`. Its filename, ZIP timestamps and Build-Jdk metadata can differ from the published Maven artifact; no whole-JAR hash reproducibility claim is made. This bundle directly supplies the complete source/build materials instead of relying only on an external source link.
+The helper checks pinned source/patch hashes, compiles all engine sources, runs upstream nasgen, and packages resources/services in an OS temporary directory. Different JDKs need not produce byte-identical output. Updating the patch requires regression checks and updating both patch/binary hashes in `sources.json`. Running only the upstream Ant build produces the unpatched engine.
 
-`relink_hqx.py`는 STUDIO LUMI가 작성한 재결합 도구이며 `HELPER-LICENSE.txt`의 BSD-3-Clause 조건으로 별도 제공됩니다. 이 파일과 hqx·Nashorn의 라이선스를 서로 혼동하지 마세요.
+`relink_hqx.py`와 `nashorn/rebuild.py`는 STUDIO LUMI가 작성한 빌드 도구이며 `HELPER-LICENSE.txt`의 BSD-3-Clause 조건으로 별도 제공됩니다. 이 파일과 hqx·Nashorn의 라이선스를 서로 혼동하지 마세요.
 
-The STUDIO LUMI recombination helper is separately provided under BSD-3-Clause in `HELPER-LICENSE.txt`; it does not replace the hqx or Nashorn licences.
+The STUDIO LUMI build helpers are separately provided under BSD-3-Clause in `HELPER-LICENSE.txt`; it does not replace the hqx or Nashorn licences.

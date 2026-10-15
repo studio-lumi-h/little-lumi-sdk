@@ -3,7 +3,14 @@
 플러그인이 기대도 되는 표면(`API.md`)이 앱 버전마다 어떻게 바뀌는지 여기에 적습니다 — 더한 것은 「추가」, 기본값만 돌려주는 빈 자리가 된 훅은 「폐기」. 실험 항목(「실험」 칩, `sdk.json` 의 `preview`)의 변경과 폐기도 여기에 적습니다.
 Per app version: what changed in the surface a plugin may rely on (`API.md`) — "Added" for additions, "Deprecated" for a hook that became an empty default-only slot. Changes to and removals of preview items (the "preview" chip, `preview` in `sdk.json`) are listed here too.
 
-## SDK 1.5.0 · 앱 1.5.0 · api_version 1 — 현재 배포 / Current distribution
+## SDK 1.5.1 · 앱 1.5.1 · api_version 1 — 현재 배포 / Current distribution
+
+- 조건식 엔진의 호스트 접근 제한을 보강했습니다. 엔진·컨텍스트 객체 접근, 추가 스크립트 로딩과 프로세스 종료 등 제한 대상 기능을 사용하는 모드는 호환성을 확인하세요. 일반 JavaScript와 기존 캐릭터 조건식 바인딩은 유지합니다. / Hardened expression-engine host access. Check mods that rely on engine/context objects, additional script loading or process exit. Ordinary JavaScript and existing character-expression bindings remain available.
+- 수정된 Nashorn `15.7-lumi.2`와 대응 소스·패치·오프라인 재빌드 자료, 갱신된 제3자 고지를 동봉합니다. JAR 파일명은 `nashorn-core-15.7.jar`를 유지합니다. / Bundled patched Nashorn, corresponding sources, patches, offline rebuild materials and updated third-party notices; the JAR filename is unchanged.
+- 설정 → 행동의 ▶ 버튼이 선택한 캐릭터 종류에만 실행 요청을 보내고 진행 상태를 표시하도록 수정했습니다. / Fixed manual behavior playback and its running indicator to target only the selected character type.
+- 공개 API 서명과 `api_version` 1을 유지합니다. / Public API signatures and `api_version` 1 are unchanged.
+
+## SDK 1.5.0 · 앱 1.5.0 · api_version 1
 
 `api_version`은 1을 유지하며 기존 안정 API를 계속 지원합니다. 아래 캐릭터 제작·미리보기·지형 API는 실험 항목입니다. / `api_version` remains 1 and existing stable APIs remain supported. Character authoring, preview and terrain APIs below are preview features.
 

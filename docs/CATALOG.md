@@ -1,7 +1,7 @@
 <!-- 자동 생성 — 손대지 말 것 · python build/gen_plugin_catalog.py -->
 # Little LUMI Model — 플러그인 카탈로그
 
-**SDK/앱 1.5.0, API 1** 의 이름·값 참조표입니다. 생성기가 소스에서 만듭니다 — 손으로 고치지 않습니다(SDK 빌드가 낡은 사본을 거부합니다). 규약과 예시는 [API.md](API.md), 여기는 이름과 값만 있습니다. [English](CATALOG.en.md) · [시작 안내](../README.md).
+**SDK/앱 1.5.1, API 1** 의 이름·값 참조표입니다. 생성기가 소스에서 만듭니다 — 손으로 고치지 않습니다(SDK 빌드가 낡은 사본을 거부합니다). 규약과 예시는 [API.md](API.md), 여기는 이름과 값만 있습니다. [English](CATALOG.en.md) · [시작 안내](../README.md).
 
 [행동](#behaviours) · [이벤트](#events) · [훅](#hooks) · [캐릭터 상태](#mascot-state) · [앱 설정](#app-settings) · [설정 타입](#setting-types) · [기능 ID](#feature-ids)
 

@@ -1,6 +1,6 @@
 # Little LUMI Model — Plugin API reference (api_version 1)
 
-This reference describes **SDK/app 1.5.0, `api_version` 1**. It is the whole surface a plugin may rely on: only what is written here is promised to survive an app update (see the [compatibility policy](#compatibility)). `javadoc\index.html` in this folder carries the signatures and comments of the types below verbatim, and `api-src\` holds those source files. Start with the [walkthrough](../plugin-guide.en.html); look identifiers up in the [catalogue](CATALOG.en.md). [한국어](API.md).
+This reference describes **SDK/app 1.5.1, `api_version` 1**. It is the whole surface a plugin may rely on: only what is written here is promised to survive an app update (see the [compatibility policy](#compatibility)). `javadoc\index.html` in this folder carries the signatures and comments of the types below verbatim, and `api-src\` holds those source files. Start with the [walkthrough](../plugin-guide.en.html); look identifiers up in the [catalogue](CATALOG.en.md). [한국어](API.md).
 
 [Manifest](#manifest) · [Lifecycle](#lifecycle) · [Methods](#context) · [Events](#events) · [Hooks](#hooks) · [Bytecode](#bytecode) · [Data fragments](#data-mods) · [Compatibility policy](#compatibility) · [Do not](#practices) · [Testing](#testing) · [Catalogue](#catalogue) · [Outside the promise](#alternatives) · [Recipes](#recipes) · [Character authoring](#character-authoring) · [Live preview](#authoring-preview) · [Linked activities](#animation-activities) · [Held motion](#held-motion) · [Workshop publishing](#workshop-publishing)
 
@@ -63,7 +63,7 @@ At the root of the jar. The only thing the parser insists on is `id`. A missing 
   "id": "my.first.lumi",
   "name": "My first LUMI plugin",
   "api_version": 1,
-  "app_version": "1.5.0",
+  "app_version": "1.5.1",
   "settings": [
   { "key": "greet",  "type": "bool",   "default": true, "label": { "ko": "인사하기", "en": "Greet" } },
   { "key": "volume", "type": "int",    "default": 50, "min": 0, "max": 100, "step": 5, "label": "Volume" },
@@ -386,17 +386,23 @@ A mod folder may carry **additive fragments** instead of whole files. They are m
 
 A broken fragment is skipped with one warning; if the merged set fails engine validation the base loads without fragments. Details: the [walkthrough](../plugin-guide.en.html), section "Data fragments".
 
+### Expression execution and host access
+
+XML conditions and script attributes run in Nashorn with restricted host access. Arithmetic, comparisons, logical expressions, ordinary JavaScript functions and `eval`, and the existing `mascot`/`lumi` bindings remain available. Do not depend on engine/context objects, additional script loading through `load`/`loadWithNewGlobal`, `exit`/`quit`, or scripting-mode capabilities. Mods that use those host capabilities need adjustment.
+
+The bundled `nashorn-core-15.7.jar` is the patched `15.7-lumi.2` build. Its filename is unchanged, but it differs from the Maven Central binary. Replacing it with the original JAR causes the host protection check to reject expression-engine initialization. Patches, build instructions and hashes are in the [corresponding-source guide](sources/README.md). This change applies to the host expression evaluator; approved Java plugin permissions and the public API compatibility number remain unchanged.
+
 <a id="compatibility"></a>
 
 ## 8. Compatibility policy
 
 - The public surface of the plugin API is split into **stable** and **preview**. Unmarked items are stable; preview items carry a "preview" chip in the tables and are listed under `preview` in `sdk.json`.
 - **Stable items only ever gain entries within one `api_version`** — nothing is removed, no type changes. A hook whose decision point leaves the app stays as an empty slot returning the default, marked deprecated in the table. Events may gain keys, never lose them — ignore keys you do not know.
-- **Preview items may change or disappear without an `api_version` bump.** Each such change is listed in `CHANGELOG.md` and a removed item stays as an empty slot for one app release. A preview item that survives one app release unchanged is promoted to stable. The 1.5.0 split: doors the first-party plugins (LUMI Chat, Super Bongo) or the app itself use, and their counterparts, are stable; the rest is preview.
+- **Preview items may change or disappear without an `api_version` bump.** Each such change is listed in `CHANGELOG.md` and a removed item stays as an empty slot for one app release. A preview item that survives one app release unchanged is promoted to stable. The 1.5.1 split: doors the first-party plugins (LUMI Chat, Super Bongo) or the app itself use, and their counterparts, are stable; the rest is preview.
 - **`api_version` rises only when a stable item must be removed or reshaped.** The migration list goes to `CHANGELOG.md`, and **plugins written for the previous version (N-1) keep loading for one more version** (removed hooks as empty slots, removed methods as forwarding shims). Plugins two versions behind are not loaded and get an update notice; neither is a plugin declaring a newer `api_version` than the app.
 - "Additive only" also means a method, hook or topic added in a later app is absent from older apps with the same `api_version`. Declare the app version you tested in `app_version` in `plugin.json`; a running app that differs shows an informational chip in the Mods tab (it blocks nothing).
 - Outside the promise: the shape of core classes a transformer touches, public classes outside `PluginContext` and this document's type table (callable from the class path, free to change per release), the app's own keys in `conf\settings.properties`.
-- (Current build) The 1.5.0 loader reads `api_version` but does not act on it; the refusals and chips above are enforced by the loader from the next app version.
+- (Current build) The 1.5.1 loader reads `api_version` but does not act on it; the refusals and chips above are enforced by the loader from the next app version.
 - The SDK version equals the app version (`sdk_version` = `app_version` in `sdk.json`); `api_version` is the separate compatibility number in this document's title. See the release notes for documentation and example revisions.
 
 <a id="practices"></a>
@@ -412,9 +418,9 @@ A broken fragment is skipped with one warning; if the merged set fails engine va
 
 ## 10. Test kit — `PluginTestKit`
 
-SDK 1.5.0 includes a fake for `beginMicCapture()`. The kit records `beginMicCapture`/`endMicCapture` with the owner id; `speak` during a hold records `speakSuppressed` without playback callbacks. `kit.close()` releases all nested holds. No audio device is opened.
+SDK 1.5.1 includes a fake for `beginMicCapture()`. The kit records `beginMicCapture`/`endMicCapture` with the owner id; `speak` during a hold records `speakSuppressed` without playback callbacks. `kit.close()` releases all nested holds. No audio device is opened.
 
-This compatible addition keeps `api_version` at 1. Plugins supporting older apps must check that the method exists and disable microphone input when it does not. `app_version` is informational, not an enforced minimum host version. Compiling against SDK 1.5.0 does not add the new method to an older host.
+This compatible addition keeps `api_version` at 1. Plugins supporting older apps must check that the method exists and disable microphone input when it does not. `app_version` is informational, not an enforced minimum host version. Compiling against SDK 1.5.1 does not add the new method to an older host.
 
 `lib\Shimeji-ee.jar` cannot start the app (the gate), but a plugin's **unit tests** need no app. The `PluginContext` a `PluginTestKit` hands out leads to the kit behind every door — what the plugin does is **recorded**, what it reads comes from **fakes**, and events, hooks and the clock are driven by the test. No engine, no window, no Steam. `tools\run_tests.py <plugin folder>` builds and runs `test\*.java` (see `examples\hello\test\HelloPluginTest.java` — a plain `main`, no framework).
 
